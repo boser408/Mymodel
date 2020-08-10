@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.myproject.mymodel.mapper.HighLowPriceMapper">
+
+    <select id="selectHighLow" resultType="HighLowPrice">
+        select Id, Open, High, Low, Close from spxm
+    </select>
+
+   <insert id="save" parameterType="HighLowPrice">
+        insert into pricerelation values (#{id},#{open},#{high},#{low},#{close},#{ndhigh},#{ndlow})
+   </insert>
+
+    <insert id="batchinsert" parameterType="java.util.List">
+        insert into pricerelation (Id, Open, High, Low, Close, ndHigh, ndLow) values
+        <foreach collection="list" item="highLowPrice" separator=",">
+            (#{highLowPrice.id, jdbcType=INTEGER},#{highLowPrice.open, jdbcType=FLOAT},
+            #{highLowPrice.high, jdbcType=FLOAT}, #{highLowPrice.low, jdbcType=FLOAT},
+            #{highLowPrice.close, jdbcType=FLOAT},#{highLowPrice.ndhigh, jdbcType=FLOAT},
+            #{highLowPrice.ndlow, jdbcType=FLOAT})
+        </foreach>
+    </insert>
+
+</mapper>

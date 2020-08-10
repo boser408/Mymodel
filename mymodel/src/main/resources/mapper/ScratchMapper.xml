@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.myproject.mymodel.mapper.ScratchMapper">
+
+    <select id="selectAllsmall" resultType="Scratch">
+        select * from smallscratch
+    </select>
+
+    <select id="selectAndSortAll" parameterType="int" resultType="Scratch" >
+        select * from smallscratch where Status <![CDATA[<>]]> 0 AND Length <![CDATA[>=]]> #{length} order by StartId
+    </select>
+
+    <select id="selectByLength" parameterType="int" resultType="Scratch">
+        select * from findscratch where Length >= #{length}
+    </select>
+
+    <select id="selectSmallerByLength" parameterType="int" resultType="Scratch">
+        select * from findscratch where Length &lt; #{length}
+    </select>
+
+    <delete id="deleteAll" parameterType="String">
+        delete from ${tableName}
+    </delete>
+
+    <insert id="save" parameterType="Scratch">
+        insert into smallscratch values (#{length},#{startId},#{high},#{low},#{status})
+    </insert>
+
+    <insert id="batchinsert" parameterType="java.util.List">
+        insert into findscratch (Length, StartId, High, Low, Status) values
+        <foreach collection="list" item="scratch" separator=",">
+            (#{scratch.length, jdbcType=INTEGER},#{scratch.startId, jdbcType=INTEGER},
+            #{scratch.high, jdbcType=FLOAT}, #{scratch.low, jdbcType=FLOAT},
+            #{scratch.status, jdbcType=INTEGER})
+        </foreach>
+    </insert>
+
+    <insert id="batchsmallinsert" parameterType="java.util.List">
+        insert into smallscratch (Length, StartId, High, Low, Status) values
+        <foreach collection="list" item="scratch" separator=",">
+            (#{scratch.length, jdbcType=INTEGER},#{scratch.startId, jdbcType=INTEGER},
+            #{scratch.high, jdbcType=FLOAT}, #{scratch.low, jdbcType=FLOAT},
+            #{scratch.status, jdbcType=INTEGER})
+        </foreach>
+    </insert>
+
+</mapper>
