@@ -560,15 +560,77 @@ public class PivotHandleImpl implements PivotHandle {
         Pivot dwpivot=new Pivot();
         while (n<=scratches.size()-3){
             if(pivot.getPivotType()==1){
-                if(scratches.get(n).getLow()<pivot.getLow()){
-                    
-                }
-            }else if(pivot.getPivotType()==-1){
+                if(scratches.get(n).getStatus()<1){
 
+                }else {
+
+                }
+                /*if(scratches.get(n).getStatus()>-1 && scratches.get(n).getHigh()>=pivot.getHigh()){
+                    pivot.setLength(scratches.get(n).getLength()+pivot.getLength()-1);
+                    pivot.setHigh(scratches.get(n).getHigh());
+                    if(scratches.get(n-1).getStatus()==-1){
+                         pivot.getScratches().add(scratches.get(n-1));
+                    }
+
+                }else if(dwpivot.getScratches().size()>0 && scratches.get(n).getLow()<=dwpivot.getLow()) {
+
+                    break;
+                }else if(scratches.get(n).getLow()<pivot.getLow()){
+                    pivots.add(pivot);
+                    dwpivot.setLength(scratches.get(n).getLength());
+                    dwpivot.setStartId(scratches.get(n).getStartId());
+                    dwpivot.setHigh(scratches.get(n).getHigh());
+                    dwpivot.setLow(scratches.get(n).getLow());
+                    dwpivot.setPivotType(0);
+                    dwpivot.setScratches(null);
+                    pivots.add(dwpivot);
+                    break;
+                }else {
+                    pivot.setLength(scratches.get(n).getLength()+pivot.getLength()-1);
+                    dwpivot.setLength(scratches.get(n).getLength()+pivot.getLength()-1);
+                }*/
+            }else if(pivot.getPivotType()==-1){
+                if(scratches.get(n).getStatus()>-1){
+
+                }else {
+
+                }
+                /*if( scratches.get(n).getStatus()<1 && scratches.get(n).getLow()<=pivot.getLow()){
+                    pivot.setLength(scratches.get(n).getLength()+pivot.getLength()-1);
+                    pivot.setLow(scratches.get(n).getLow());
+                    if(scratches.get(n-1).getStatus()==1){
+                        pivot.getScratches().add(scratches.get(n-1));
+                    }
+
+                }else if(uppivot.getScratches().size()>0 && scratches.get(n).getHigh()>=uppivot.getHigh()) {
+                    break;
+                }else if(scratches.get(n).getHigh()>pivot.getHigh()) {
+                    pivots.add(pivot);
+                    uppivot.setLength(scratches.get(n).getLength());
+                    uppivot.setStartId(scratches.get(n).getStartId());
+                    uppivot.setHigh(scratches.get(n).getHigh());
+                    uppivot.setLow(scratches.get(n).getLow());
+                    uppivot.setPivotType(0);
+                    uppivot.setScratches(null);
+                    pivots.add(uppivot);
+                    break;
+                }else {
+                    pivot.setLength(scratches.get(n).getLength()+pivot.getLength()-1);
+                    uppivot.setLength(scratches.get(n).getLength()+pivot.getLength()-1);
+                }*/
             }
             n++;
         }
-        return null;
+        if(pivots.isEmpty()){
+            if(pivot.getPivotType()==1){
+                pivots.add(pivot);
+                pivots.add(dwpivot);
+            }else{
+                pivots.add(pivot);
+                pivots.add(uppivot);
+            }
+        }
+        return pivots;
     }
 
 }
