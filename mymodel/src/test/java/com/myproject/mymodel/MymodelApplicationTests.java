@@ -552,24 +552,66 @@ class MymodelApplicationTests {
         PivotHandle pivotHandle=new PivotHandleImpl();
         List<Pivot> pivotList=new ArrayList<>();
         List<Pivot> simplepivots = pivotHandle.findPivots(listofsmall,1);
+        Pivot currentpivot=new Pivot();
 
         int i=0;
         if(simplepivots.size()==2){
             pivotList.add(simplepivots.get(0));
             i=1;
         }
-        List<Pivot> extendedpivots=pivotHandle.pivotExtension(listofsmall,simplepivots.get(i),pivotHandle.getNumberofLoop()+1);
+        currentpivot.setLength(simplepivots.get(i).getLength());
+        currentpivot.setStartId(simplepivots.get(i).getStartId());
+        currentpivot.setHigh(simplepivots.get(i).getHigh());
+        currentpivot.setLow(simplepivots.get(i).getLow());
+        currentpivot.setPivotType(simplepivots.get(i).getPivotType());
+        currentpivot.setScratches(simplepivots.get(i).getScratches());
 
-        /*for (Pivot pivot: pivots) {
-            if(pivot.getPivotType()==1){
+        int n=pivotHandle.getNumberofLoop()+1;
+        while (n<listofsmall.size()-3){
 
-            }else if(pivot.getPivotType()==-1){
+            if(currentpivot.getPivotType()!=0){
+
+                 List<Pivot> extendedpivots=pivotHandle.pivotExtension(listofsmall,currentpivot,n);
+                   pivotList.add(extendedpivots.get(0));
+                   currentpivot.setLength(extendedpivots.get(1).getLength());
+                   currentpivot.setStartId(extendedpivots.get(1).getStartId());
+                   currentpivot.setHigh(extendedpivots.get(1).getHigh());
+                   currentpivot.setLow(extendedpivots.get(1).getLow());
+                   currentpivot.setPivotType(extendedpivots.get(1).getPivotType());
+                   currentpivot.setScratches(extendedpivots.get(1).getScratches());
+                   n=pivotHandle.getNumberofLoop()+1;
 
             }else {
-
+                simplepivots = pivotHandle.findPivots(listofsmall,n);
+                i=0;
+                if(simplepivots.size()==2){
+                    pivotList.add(simplepivots.get(0));
+                    i=1;
+                }
+                currentpivot.setLength(simplepivots.get(i).getLength());
+                currentpivot.setStartId(simplepivots.get(i).getStartId());
+                currentpivot.setHigh(simplepivots.get(i).getHigh());
+                currentpivot.setLow(simplepivots.get(i).getLow());
+                currentpivot.setPivotType(simplepivots.get(i).getPivotType());
+                currentpivot.setScratches(simplepivots.get(i).getScratches());
+                n=pivotHandle.getNumberofLoop()+1;
             }
-        }*/
 
+        }
 
+        for(Pivot pivot:pivotList){
+            System.out.println(pivot.toString());
+        }
+    }
+    @Test
+    void testScratchsize(){
+        Pivot pivot=new Pivot();
+        List<Scratch> scratches=new ArrayList<>();
+        pivot.setScratches(scratches);
+        System.out.println(pivot.getScratches().size());
     }
 }
+
+
+
+
