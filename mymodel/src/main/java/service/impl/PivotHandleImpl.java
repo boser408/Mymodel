@@ -604,10 +604,10 @@ public class PivotHandleImpl implements PivotHandle {
                             pivot.getScratches().add(scratches.get(n));
                         }
 
-                        dwpivot.setLength(scratches.get(n+1).getLength());
-                        dwpivot.setStartId(scratches.get(n+1).getStartId());
-                        dwpivot.setHigh(scratches.get(n+1).getHigh());
-                        dwpivot.setLow(scratches.get(n+1).getLow());
+                        dwpivot.setLength(scratches.get(n+2).getLength());
+                        dwpivot.setStartId(scratches.get(n+2).getStartId());
+                        dwpivot.setHigh(scratches.get(n+2).getHigh());
+                        dwpivot.setLow(scratches.get(n+2).getLow());
                         dwpivot.setPivotType(0);
                         dwpivot.setScratches(scratchList);
                     }else {
@@ -655,10 +655,10 @@ public class PivotHandleImpl implements PivotHandle {
                            pivot.getScratches().add(scratches.get(n));
                        }
 
-                       uppivot.setLength(scratches.get(n+1).getLength());
-                       uppivot.setStartId(scratches.get(n+1).getStartId());
-                       uppivot.setHigh(scratches.get(n+1).getHigh());
-                       uppivot.setLow(scratches.get(n+1).getLow());
+                       uppivot.setLength(scratches.get(n+2).getLength());
+                       uppivot.setStartId(scratches.get(n+2).getStartId());
+                       uppivot.setHigh(scratches.get(n+2).getHigh());
+                       uppivot.setLow(scratches.get(n+2).getLow());
                        uppivot.setPivotType(0);
                        uppivot.setScratches(scratchList);
                    }else {
