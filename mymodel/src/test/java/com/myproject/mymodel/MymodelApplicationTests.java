@@ -581,34 +581,98 @@ class MymodelApplicationTests {
                 currentpivot.setLow(extendedpivots.get(1).getLow());
                 currentpivot.setPivotType(extendedpivots.get(1).getPivotType());
                 currentpivot.setScratches(extendedpivots.get(1).getScratches());
-                System.out.println("Sn1, currentpivot="+currentpivot.toString());
+
                 n=pivotHandle.getNumberofLoop()+1;
 
+                    while (n<listofsmall.size()-2 && currentpivot.getScratches().size()==0){
+                        if((listofsmall.get(n).getStatus()==1 && listofsmall.get(n).getHigh()>currentpivot.getHigh()) ||
+                                (listofsmall.get(n).getStatus()==-1 && listofsmall.get(n).getLow()<currentpivot.getLow()) ){
+                            Pivot tmppivot=new Pivot();
+                            tmppivot.setLength(currentpivot.getLength());
+                            tmppivot.setStartId(currentpivot.getStartId());
+                            tmppivot.setHigh(currentpivot.getHigh());
+                            tmppivot.setLow(currentpivot.getLow());
+                            tmppivot.setPivotType(currentpivot.getPivotType());
+                            tmppivot.setScratches(currentpivot.getScratches());
+                            pivotList.add(tmppivot);
+
+                            currentpivot.setLength(listofsmall.get(n).getLength());
+                            currentpivot.setStartId(listofsmall.get(n).getStartId());
+                            currentpivot.setHigh(listofsmall.get(n).getHigh());
+                            currentpivot.setLow(listofsmall.get(n).getLow());
+                            n=n+1;
+                        }else {
+                            break;
+                        }
+
+                    }
+                System.out.println("Sn1, currentpivot="+currentpivot.toString());
+                System.out.println("Sn1, next Scratch="+listofsmall.get(n).toString());
             }else {
 
                 List<Pivot> simplepivots = pivotHandle.findPivots(listofsmall,n);
                 int i=0;
                 if(simplepivots.size()==2){
-                    Pivot savepivot=new Pivot();
-                    savepivot.setLength(simplepivots.get(0).getLength());
-                    savepivot.setStartId(simplepivots.get(0).getStartId());
-                    savepivot.setHigh(simplepivots.get(0).getHigh());
-                    savepivot.setLow(simplepivots.get(0).getLow());
-                    savepivot.setPivotType(simplepivots.get(0).getPivotType());
-                    savepivot.setScratches(simplepivots.get(0).getScratches());
-                    pivotList.add(savepivot);
-                    System.out.println("Sn2, savepivot="+ savepivot.toString());
-                    i=1;
+                    if(simplepivots.get(0).getStartId()<simplepivots.get(1).getStartId()){
+                        Pivot savepivot=new Pivot();
+                        savepivot.setLength(simplepivots.get(i).getLength());
+                        savepivot.setStartId(simplepivots.get(i).getStartId());
+                        savepivot.setHigh(simplepivots.get(i).getHigh());
+                        savepivot.setLow(simplepivots.get(i).getLow());
+                        savepivot.setPivotType(simplepivots.get(i).getPivotType());
+                        savepivot.setScratches(simplepivots.get(i).getScratches());
+                        pivotList.add(savepivot);
+                        System.out.println("Sn2, savepivot="+ savepivot.toString());
+                        i=1;
+                    }else {
+                        i=1;
+                        Pivot savepivot=new Pivot();
+                        savepivot.setLength(simplepivots.get(i).getLength());
+                        savepivot.setStartId(simplepivots.get(i).getStartId());
+                        savepivot.setHigh(simplepivots.get(i).getHigh());
+                        savepivot.setLow(simplepivots.get(i).getLow());
+                        savepivot.setPivotType(simplepivots.get(i).getPivotType());
+                        savepivot.setScratches(simplepivots.get(i).getScratches());
+                        pivotList.add(savepivot);
+                        System.out.println("Sn2, savepivot="+ savepivot.toString());
+                        i=0;
+                    }
+
                 }
+                n=pivotHandle.getNumberofLoop()+1;
+
                 currentpivot.setLength(simplepivots.get(i).getLength());
                 currentpivot.setStartId(simplepivots.get(i).getStartId());
                 currentpivot.setHigh(simplepivots.get(i).getHigh());
                 currentpivot.setLow(simplepivots.get(i).getLow());
                 currentpivot.setPivotType(simplepivots.get(i).getPivotType());
                 currentpivot.setScratches(simplepivots.get(i).getScratches());
-                System.out.println("Sn2, currentpivot="+currentpivot.toString());
-                n=pivotHandle.getNumberofLoop()+1;
 
+
+                while (n<listofsmall.size()-2 && currentpivot.getScratches().size()==0){
+                    if((listofsmall.get(n).getStatus()==1 && listofsmall.get(n).getHigh()>currentpivot.getHigh()) ||
+                            (listofsmall.get(n).getStatus()==-1 && listofsmall.get(n).getLow()<currentpivot.getLow()) ){
+                        Pivot tmppivot=new Pivot();
+                        tmppivot.setLength(currentpivot.getLength());
+                        tmppivot.setStartId(currentpivot.getStartId());
+                        tmppivot.setHigh(currentpivot.getHigh());
+                        tmppivot.setLow(currentpivot.getLow());
+                        tmppivot.setPivotType(currentpivot.getPivotType());
+                        tmppivot.setScratches(currentpivot.getScratches());
+                        pivotList.add(tmppivot);
+
+                        currentpivot.setLength(listofsmall.get(n).getLength());
+                        currentpivot.setStartId(listofsmall.get(n).getStartId());
+                        currentpivot.setHigh(listofsmall.get(n).getHigh());
+                        currentpivot.setLow(listofsmall.get(n).getLow());
+                        n=n+1;
+                    }else {
+                        break;
+                    }
+
+                }
+                System.out.println("Sn2, currentpivot="+currentpivot.toString());
+                System.out.println("Sn2, next Scratch="+listofsmall.get(n).toString());
             }
 
         }
