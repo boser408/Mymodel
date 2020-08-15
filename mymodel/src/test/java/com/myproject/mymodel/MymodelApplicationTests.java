@@ -573,13 +573,15 @@ class MymodelApplicationTests {
                 savepivot.setPivotType(extendedpivots.get(0).getPivotType());
                 savepivot.setScratches(extendedpivots.get(0).getScratches());
                 pivotList.add(savepivot);
-                System.out.println(pivotList.get(pivotList.size()-1).toString());
+                System.out.println("Sn1,savepivot="+savepivot.toString());
+
                 currentpivot.setLength(extendedpivots.get(1).getLength());
                 currentpivot.setStartId(extendedpivots.get(1).getStartId());
                 currentpivot.setHigh(extendedpivots.get(1).getHigh());
                 currentpivot.setLow(extendedpivots.get(1).getLow());
                 currentpivot.setPivotType(extendedpivots.get(1).getPivotType());
                 currentpivot.setScratches(extendedpivots.get(1).getScratches());
+                System.out.println("Sn1, currentpivot="+currentpivot.toString());
                 n=pivotHandle.getNumberofLoop()+1;
 
             }else {
@@ -595,7 +597,7 @@ class MymodelApplicationTests {
                     savepivot.setPivotType(simplepivots.get(0).getPivotType());
                     savepivot.setScratches(simplepivots.get(0).getScratches());
                     pivotList.add(savepivot);
-                    System.out.println(pivotList.get(pivotList.size()-1).toString());
+                    System.out.println("Sn2, savepivot="+ savepivot.toString());
                     i=1;
                 }
                 currentpivot.setLength(simplepivots.get(i).getLength());
@@ -604,6 +606,7 @@ class MymodelApplicationTests {
                 currentpivot.setLow(simplepivots.get(i).getLow());
                 currentpivot.setPivotType(simplepivots.get(i).getPivotType());
                 currentpivot.setScratches(simplepivots.get(i).getScratches());
+                System.out.println("Sn2, currentpivot="+currentpivot.toString());
                 n=pivotHandle.getNumberofLoop()+1;
 
             }
