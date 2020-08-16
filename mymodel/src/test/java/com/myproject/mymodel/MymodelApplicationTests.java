@@ -691,8 +691,8 @@ class MymodelApplicationTests {
         }
         /*for(Pivot pivot:pivotList){
             pivotMapper.simpleinsert(pivot);
-        }*/
-        //pivotMapper.batchsaveAll(pivotList);
+        }
+        pivotMapper.batchsaveAll(pivotList);*/
     }
     @Test
     void testScratchsize(){
