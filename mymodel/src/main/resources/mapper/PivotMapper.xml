@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.myproject.mymodel.mapper.PivotMapper">
+
+    <insert id="batchsaveAll" parameterType="java.util.List">
+        insert into basicpivot (Length, StartId, High, Low, PivotType, Scratches) values
+        <foreach collection="pivotList" item="pivot" separator=",">
+            (#{pivot.length, jdbcType=INTEGER},#{pivot.startId, jdbcType=INTEGER},
+            #{pivot.high, jdbcType=FLOAT}, #{pivot.low, jdbcType=FLOAT},
+            #{pivot.pivotType, jdbcType=INTEGER},#{pivot.scratches, jdbcType=CHAR})
+        </foreach>
+    </insert>
+
+
+</mapper>

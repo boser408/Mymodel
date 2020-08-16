@@ -4,6 +4,7 @@ import com.myproject.mymodel.domain.HighLowPrice;
 import com.myproject.mymodel.domain.Pivot;
 import com.myproject.mymodel.domain.Scratch;
 import com.myproject.mymodel.mapper.HighLowPriceMapper;
+import com.myproject.mymodel.mapper.PivotMapper;
 import com.myproject.mymodel.mapper.ScratchMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,8 @@ class MymodelApplicationTests {
     private HighLowPriceMapper highLowPriceMapper;
     @Autowired
     private ScratchMapper scratchMapper;
+    @Autowired
+    private PivotMapper pivotMapper;
     @Test
     void contextLoads() {
 
@@ -560,8 +563,7 @@ class MymodelApplicationTests {
         currentpivot.setScratches(null);
 
         int n=1;
-        while (n<listofsmall.size()-3){
-
+        while (n<listofsmall.size()-2){
             if(currentpivot.getPivotType()!=0){
 
                 List<Pivot> extendedpivots=pivotHandle.pivotExtension(listofsmall,currentpivot,n);
@@ -573,7 +575,6 @@ class MymodelApplicationTests {
                 savepivot.setPivotType(extendedpivots.get(0).getPivotType());
                 savepivot.setScratches(extendedpivots.get(0).getScratches());
                 pivotList.add(savepivot);
-                System.out.println("Sn1,savepivot="+savepivot.toString());
 
                 currentpivot.setLength(extendedpivots.get(1).getLength());
                 currentpivot.setStartId(extendedpivots.get(1).getStartId());
@@ -606,8 +607,11 @@ class MymodelApplicationTests {
                         }
 
                     }
-                System.out.println("Sn1, currentpivot="+currentpivot.toString());
-                System.out.println("Sn1, next Scratch="+listofsmall.get(n).toString());
+
+                    if(n==listofsmall.size()){
+                        break;
+                    }
+
             }else {
 
                 List<Pivot> simplepivots = pivotHandle.findPivots(listofsmall,n);
@@ -622,7 +626,7 @@ class MymodelApplicationTests {
                         savepivot.setPivotType(simplepivots.get(i).getPivotType());
                         savepivot.setScratches(simplepivots.get(i).getScratches());
                         pivotList.add(savepivot);
-                        System.out.println("Sn2, savepivot="+ savepivot.toString());
+
                         i=1;
                     }else {
                         i=1;
@@ -634,7 +638,7 @@ class MymodelApplicationTests {
                         savepivot.setPivotType(simplepivots.get(i).getPivotType());
                         savepivot.setScratches(simplepivots.get(i).getScratches());
                         pivotList.add(savepivot);
-                        System.out.println("Sn2, savepivot="+ savepivot.toString());
+
                         i=0;
                     }
 
@@ -671,15 +675,24 @@ class MymodelApplicationTests {
                     }
 
                 }
-                System.out.println("Sn2, currentpivot="+currentpivot.toString());
-                System.out.println("Sn2, next Scratch="+listofsmall.get(n).toString());
+
+                if(n==listofsmall.size()){
+                    break;
+                }
+
             }
 
         }
-        System.out.println("---------------------------------------------------");
-        for(int t=0;t<pivotList.size();t++){
-            System.out.println(pivotList.get(t).toString());
+        for(Pivot pivot:pivotList){
+            if(pivot.getPivotType()==0 && pivot.getScratches().size()>0){
+                pivot.getScratches().clear();
+            }
+            System.out.println(pivot);
         }
+        /*for(Pivot pivot:pivotList){
+            pivotMapper.simpleinsert(pivot);
+        }*/
+        //pivotMapper.batchsaveAll(pivotList);
     }
     @Test
     void testScratchsize(){
