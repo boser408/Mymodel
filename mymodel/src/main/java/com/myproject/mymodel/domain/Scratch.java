@@ -1,5 +1,8 @@
 package com.myproject.mymodel.domain;
 
+import java.util.HashMap;
+import java.util.Properties;
+
 public class Scratch {
     private int length;
     private int startId;
@@ -14,6 +17,16 @@ public class Scratch {
         this.low = low;
         this.status = status;
     }
+
+    public Scratch(Properties props) {
+        this.length = Integer.parseInt(props.getProperty("length"));
+        this.startId =Integer.parseInt(props.getProperty("startId"));
+        this.high = Float.parseFloat(props.getProperty("high"));
+        this.low = Float.parseFloat(props.getProperty("low"));
+        this.status = Integer.parseInt(props.getProperty("status"));
+
+    }
+
     public int getLength() {
         return length;
     }

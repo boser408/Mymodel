@@ -3,12 +3,16 @@
 
 <mapper namespace="com.myproject.mymodel.mapper.PivotMapper">
 
+    <select id="selectAll" resultType="Dpattern">
+        select * from basicpivot
+    </select>
+
     <insert id="batchsaveAll" parameterType="java.util.List">
         insert into basicpivot (Length, StartId, High, Low, PivotType, Scratches) values
-        <foreach collection="pivotList" item="pivot" separator=",">
-            (#{pivot.length, jdbcType=INTEGER},#{pivot.startId, jdbcType=INTEGER},
-            #{pivot.high, jdbcType=FLOAT}, #{pivot.low, jdbcType=FLOAT},
-            #{pivot.pivotType, jdbcType=INTEGER},#{pivot.scratches, jdbcType=CHAR})
+        <foreach collection="dpatternList" item="dpattern" separator=",">
+            (#{dpattern.length, jdbcType=INTEGER},#{dpattern.startId, jdbcType=INTEGER},
+            #{dpattern.high, jdbcType=FLOAT}, #{dpattern.low, jdbcType=FLOAT},
+            #{dpattern.directionType, jdbcType=INTEGER},#{dpattern.polyline, jdbcType=VARCHAR})
         </foreach>
     </insert>
 

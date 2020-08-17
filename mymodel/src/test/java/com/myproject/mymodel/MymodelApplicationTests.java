@@ -1,11 +1,13 @@
 package com.myproject.mymodel;
 
+import com.myproject.mymodel.domain.Dpattern;
 import com.myproject.mymodel.domain.HighLowPrice;
 import com.myproject.mymodel.domain.Pivot;
 import com.myproject.mymodel.domain.Scratch;
 import com.myproject.mymodel.mapper.HighLowPriceMapper;
 import com.myproject.mymodel.mapper.PivotMapper;
 import com.myproject.mymodel.mapper.ScratchMapper;
+import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -689,17 +691,30 @@ class MymodelApplicationTests {
             }
             System.out.println(pivot);
         }
-        /*for(Pivot pivot:pivotList){
-            pivotMapper.simpleinsert(pivot);
+        /*List<Dpattern> dpatternList=new ArrayList<>();
+        for(Pivot pivot:pivotList){
+            Dpattern dpattern= new Dpattern(pivot);
+            dpatternList.add(dpattern);
+
         }
-        pivotMapper.batchsaveAll(pivotList);*/
+        pivotMapper.batchsaveAll(dpatternList);*/
     }
     @Test
     void testScratchsize(){
+
         Pivot pivot=new Pivot();
-        List<Scratch> scratches=new ArrayList<>();
-        pivot.setScratches(scratches);
-        System.out.println(pivot.getScratches().size());
+        List<Dpattern> dpatternList=pivotMapper.selectAll();
+        for(Dpattern dpattern:dpatternList){
+            List<Scratch> scratchList=new ArrayList<>();
+            String string=dpattern.getPolyline();
+            String [] strings=string.split(",");
+            List<String> stringList=Arrays.asList(strings);
+
+            for(int n=0;n<stringList.size();n++){
+                //Scratch scratch=new Scratch();
+                System.out.println("n="+n);
+            }
+        }
     }
 }
 
