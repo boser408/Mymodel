@@ -683,4 +683,16 @@ public class PivotHandleImpl implements PivotHandle {
         return pivots;
     }
 
+    @Override
+    public List<Pivot> findDoublePivotsPattern(List<Pivot> basicPivotList) {
+        List<Pivot> doublePivotPatternList=new ArrayList<>();
+        for(Pivot pivot: basicPivotList){
+           if(pivot.getScratches().size()>1){
+
+           }
+        }
+
+        return doublePivotPatternList;
+    }
+
 }

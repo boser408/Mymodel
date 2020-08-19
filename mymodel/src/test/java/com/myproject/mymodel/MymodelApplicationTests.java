@@ -1,13 +1,10 @@
 package com.myproject.mymodel;
 
-import com.myproject.mymodel.domain.Dpattern;
 import com.myproject.mymodel.domain.HighLowPrice;
 import com.myproject.mymodel.domain.Pivot;
 import com.myproject.mymodel.domain.Scratch;
 import com.myproject.mymodel.mapper.HighLowPriceMapper;
-import com.myproject.mymodel.mapper.PivotMapper;
 import com.myproject.mymodel.mapper.ScratchMapper;
-import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,7 +12,6 @@ import service.PivotHandle;
 import service.impl.PivotHandleImpl;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @SpringBootTest
 class MymodelApplicationTests {
@@ -23,8 +19,7 @@ class MymodelApplicationTests {
     private HighLowPriceMapper highLowPriceMapper;
     @Autowired
     private ScratchMapper scratchMapper;
-    @Autowired
-    private PivotMapper pivotMapper;
+
     @Test
     void contextLoads() {
 
@@ -499,7 +494,7 @@ class MymodelApplicationTests {
         scratchMapper.batchinsert(scratches);
     }
     @Test
-    void tryUseClass(){
+    void tryUseClass(){ // Create the table of "findscratch"
         List<HighLowPrice> highLowPrices = highLowPriceMapper.selectHighLow();
         PivotHandle pivotHandle=new PivotHandleImpl();
         List<Scratch> scratches = pivotHandle.findScratches(highLowPrices, 1, highLowPrices.size(), 6);
@@ -507,7 +502,7 @@ class MymodelApplicationTests {
         scratchMapper.batchinsert(scratches);
     }
     @Test
-    void findSmallScratch(){
+    void findSmallScratch(){ // Create the table of "smallscratch"
         List<HighLowPrice> highLowPrices = highLowPriceMapper.selectHighLow();
         List<Scratch> list1=scratchMapper.selectSmallerByLength(12);
         List<Scratch> list=scratchMapper.selectByLength(12);
@@ -552,7 +547,7 @@ class MymodelApplicationTests {
         scratchMapper.batchsmallinsert(list1);
     }
     @Test
-    void produceScratchTable(){
+    void produceScratchTable(){ // find all the basic pivots combined by scratches
         List<Scratch> listofsmall=scratchMapper.selectAllsmall();
         PivotHandle pivotHandle=new PivotHandleImpl();
         List<Pivot> pivotList=new ArrayList<>();
@@ -691,31 +686,17 @@ class MymodelApplicationTests {
             }
             System.out.println(pivot);
         }
-        /*List<Dpattern> dpatternList=new ArrayList<>();
-        for(Pivot pivot:pivotList){
-            Dpattern dpattern= new Dpattern(pivot);
-            dpatternList.add(dpattern);
+        System.out.println("Size of pivotList is:"+pivotList.size());
 
+        List<Pivot> doublePivotPatternList=pivotHandle.findDoublePivotsPattern(pivotList);
+
+
+        for(Pivot pivot:doublePivotPatternList){
+            System.out.println(pivot);
         }
-        pivotMapper.batchsaveAll(dpatternList);*/
-    }
-    @Test
-    void testScratchsize(){
 
-        Pivot pivot=new Pivot();
-        List<Dpattern> dpatternList=pivotMapper.selectAll();
-        for(Dpattern dpattern:dpatternList){
-            List<Scratch> scratchList=new ArrayList<>();
-            String string=dpattern.getPolyline();
-            String [] strings=string.split(",");
-            List<String> stringList=Arrays.asList(strings);
-
-            for(int n=0;n<stringList.size();n++){
-                //Scratch scratch=new Scratch();
-                System.out.println("n="+n);
-            }
-        }
     }
+
 }
 
 

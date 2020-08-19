@@ -11,5 +11,5 @@ public interface PivotHandle {
     List<Scratch> findScratches(List<HighLowPrice> highLowPrices, int startindex, int length, int pivotLength);
     List<Pivot> findPivots(List<Scratch> scratches, int startId);
     List<Pivot> pivotExtension(List<Scratch> scratches,Pivot pivot,int startId);
-
+    List<Pivot> findDoublePivotsPattern(List<Pivot> basicPivotList);
 }
