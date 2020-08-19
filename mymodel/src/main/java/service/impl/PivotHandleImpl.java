@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PivotHandleImpl implements PivotHandle {
+    public static final double controlFactor=0.7;
     public int numberofLoop;
     public int getNumberofLoop() {
         return numberofLoop;
@@ -688,7 +689,12 @@ public class PivotHandleImpl implements PivotHandle {
         List<Pivot> doublePivotPatternList=new ArrayList<>();
         for(Pivot pivot: basicPivotList){
            if(pivot.getScratches().size()>1){
+              Scratch scratch=new Scratch(pivot.getScratches().get(0));
+              for(int n=1;n<pivot.getScratches().size();n++){
+                 if(scratch.getLength()<pivot.getScratches().get(n).getLength()*controlFactor){
 
+                 }
+              }
            }
         }
 

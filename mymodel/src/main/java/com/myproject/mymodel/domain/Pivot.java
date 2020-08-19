@@ -1,5 +1,6 @@
 package com.myproject.mymodel.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Pivot {
@@ -9,6 +10,27 @@ public class Pivot {
     private float low;
     private int pivotType;// If not a pivot: 0; is a consolidation up: 1; down: -1; trend up: 2; trend down: -2;
     private List<Scratch> scratches;
+
+    public Pivot() {
+    }
+
+    public Pivot(Pivot pivot) {
+        this.length = pivot.getLength();
+        this.startId = pivot.getStartId();
+        this.high = pivot.getHigh();
+        this.low = pivot.getLow();
+        this.pivotType = pivot.getPivotType();
+        this.scratches = pivot.getScratches();
+    }
+
+    public Pivot(Scratch scratch) {
+        this.length = scratch.getLength();
+        this.startId = scratch.getStartId();
+        this.high = scratch.getHigh();
+        this.low = scratch.getLow();
+        this.pivotType = 0;
+        this.scratches = new ArrayList<>();
+    }
 
     public int getLength() {
         return length;

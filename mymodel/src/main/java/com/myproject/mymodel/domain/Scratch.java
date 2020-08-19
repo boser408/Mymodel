@@ -10,6 +10,17 @@ public class Scratch {
     private float low;
     private int status; // if the scratch fully formed: uptrend:1 ; notrend: 0; downtrend:-1
 
+    public Scratch() {
+    }
+
+    public Scratch(Scratch scratch) {
+        this.length = scratch.getLength();
+        this.startId = scratch.getStartId();
+        this.high = scratch.getHigh();
+        this.low = scratch.getLow();
+        this.status = scratch.getStatus();
+    }
+
     public Scratch(int length, int startId, float high, float low, int status) {
         this.length = length;
         this.startId = startId;
