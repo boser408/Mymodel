@@ -689,15 +689,22 @@ public class PivotHandleImpl implements PivotHandle {
     public List<Pivot> scratchClean(List<Pivot> basicPivotList) {
         List<Pivot> cleanedPivotList=new ArrayList<>();
         for(Pivot pivot: basicPivotList){
-
+            /*System.out.println("n="+basicPivotList.indexOf(pivot));
+            System.out.println("StartId="+pivot.getStartId());*/
             if(pivot.getScratches().size()<=1){
                 Pivot cleanedPivot=new Pivot(pivot);
                 cleanedPivotList.add(cleanedPivot);
             }else {
-                for(int n=pivot.getScratches().size()-1;n>-1;n--){
+                for(int n=pivot.getScratches().size()-1;n>0;n--){
+                    //System.out.println("n--loop="+n);
                     for(int i=n-1;i>-1;i--){
+                        /*System.out.println("nnn--loop="+n);
+                        System.out.println("i--loop="+i);*/
                         if(pivot.getScratches().get(n).getLength()>pivot.getScratches().get(i).getLength()){
+                            /*System.out.println("scratch--n:"+pivot.getScratches().get(n).getStartId());
+                            System.out.println("scratch--i:"+pivot.getScratches().get(i).getStartId());*/
                             pivot.getScratches().remove(i);
+                            n=n-1;
                         }
                     }
                 }

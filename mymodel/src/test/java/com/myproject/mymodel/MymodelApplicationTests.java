@@ -681,6 +681,7 @@ class MymodelApplicationTests {
             }
 
         }
+
         for(Pivot pivot:pivotList){
             if(pivot.getPivotType()==0 && pivot.getScratches().size()>0){
                 pivot.getScratches().clear();
@@ -694,6 +695,7 @@ class MymodelApplicationTests {
             System.out.println(pivot.toString());
         }
         System.out.println("Size of cleanedPivotList is:"+cleanedPivotList.size());
+
         /*List<Dpattern> doublePivotPatternList=pivotHandle.findDoublePivotsPattern(pivotList);
         for(Dpattern dpattern:doublePivotPatternList){
             System.out.println(dpattern);
