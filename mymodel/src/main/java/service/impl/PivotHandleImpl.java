@@ -1,5 +1,6 @@
 package service.impl;
 
+import com.myproject.mymodel.domain.Dpattern;
 import com.myproject.mymodel.domain.HighLowPrice;
 import com.myproject.mymodel.domain.Pivot;
 import com.myproject.mymodel.domain.Scratch;
@@ -685,13 +686,44 @@ public class PivotHandleImpl implements PivotHandle {
     }
 
     @Override
-    public List<Pivot> findDoublePivotsPattern(List<Pivot> basicPivotList) {
-        List<Pivot> doublePivotPatternList=new ArrayList<>();
+    public List<Pivot> scratchClean(List<Pivot> basicPivotList) {
+        List<Pivot> cleanedPivotList=new ArrayList<>();
+        for(Pivot pivot: basicPivotList){
+
+            if(pivot.getScratches().size()<=1){
+                Pivot cleanedPivot=new Pivot(pivot);
+                cleanedPivotList.add(cleanedPivot);
+            }else {
+                for(int n=pivot.getScratches().size()-1;n>-1;n--){
+                    for(int i=n-1;i>-1;i--){
+                        if(pivot.getScratches().get(n).getLength()>pivot.getScratches().get(i).getLength()){
+                            pivot.getScratches().remove(i);
+                        }
+                    }
+                }
+                Pivot cleanedPivot=new Pivot(pivot);
+                cleanedPivotList.add(cleanedPivot);
+            }
+
+        }
+        return cleanedPivotList;
+    }
+
+    @Override
+    public List<Dpattern> findDoublePivotsPattern(List<Pivot> basicPivotList) {
+        List<Dpattern> doublePivotPatternList=new ArrayList<>();
         for(Pivot pivot: basicPivotList){
            if(pivot.getScratches().size()>1){
               Scratch scratch=new Scratch(pivot.getScratches().get(0));
+              List<Pivot> effectivePivots=new ArrayList<>();
               for(int n=1;n<pivot.getScratches().size();n++){
                  if(scratch.getLength()<pivot.getScratches().get(n).getLength()*controlFactor){
+
+                 }else if(pivot.getPivotType()==1){
+
+                 }else if(pivot.getPivotType()==-1){
+
+                 }else {
 
                  }
               }

@@ -1,5 +1,6 @@
 package service;
 
+import com.myproject.mymodel.domain.Dpattern;
 import com.myproject.mymodel.domain.HighLowPrice;
 import com.myproject.mymodel.domain.Pivot;
 import com.myproject.mymodel.domain.Scratch;
@@ -11,5 +12,6 @@ public interface PivotHandle {
     List<Scratch> findScratches(List<HighLowPrice> highLowPrices, int startindex, int length, int pivotLength);
     List<Pivot> findPivots(List<Scratch> scratches, int startId);
     List<Pivot> pivotExtension(List<Scratch> scratches,Pivot pivot,int startId);
-    List<Pivot> findDoublePivotsPattern(List<Pivot> basicPivotList);
+    List<Pivot> scratchClean(List<Pivot> basicPivotList);// Create cleaned pivot lists that only contain effective scratches, which could potentially produce D-pattern;
+    List<Dpattern> findDoublePivotsPattern(List<Pivot> cleanedPivotList);
 }

@@ -10,6 +10,7 @@ public class Dpattern {
     private float low;
     private int pivotDirection; // none: 0; up: 1; down: -1;
     private List<Pivot> featurePivots; //Pivots that determine the double pivots pattern;
+    private List<Pivot> effectPivots; //Pivots that could potentially create D-pattern;
     private List<Pivot> maxPivots; // Pivots that determine the level of trend (polyline);
 
 }

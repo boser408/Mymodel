@@ -1,5 +1,6 @@
 package com.myproject.mymodel;
 
+import com.myproject.mymodel.domain.Dpattern;
 import com.myproject.mymodel.domain.HighLowPrice;
 import com.myproject.mymodel.domain.Pivot;
 import com.myproject.mymodel.domain.Scratch;
@@ -688,12 +689,15 @@ class MymodelApplicationTests {
         }
         System.out.println("Size of pivotList is:"+pivotList.size());
 
-        List<Pivot> doublePivotPatternList=pivotHandle.findDoublePivotsPattern(pivotList);
-
-
-        for(Pivot pivot:doublePivotPatternList){
-            System.out.println(pivot);
+        List<Pivot> cleanedPivotList=pivotHandle.scratchClean(pivotList);
+        for(Pivot pivot:cleanedPivotList){
+            System.out.println(pivot.toString());
         }
+        System.out.println("Size of cleanedPivotList is:"+cleanedPivotList.size());
+        /*List<Dpattern> doublePivotPatternList=pivotHandle.findDoublePivotsPattern(pivotList);
+        for(Dpattern dpattern:doublePivotPatternList){
+            System.out.println(dpattern);
+        }*/
 
     }
 
