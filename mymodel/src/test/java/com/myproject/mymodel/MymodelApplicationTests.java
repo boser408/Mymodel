@@ -696,11 +696,14 @@ class MymodelApplicationTests {
         }
         System.out.println("Size of cleanedPivotList is:"+cleanedPivotList.size());
 
-        /*List<Dpattern> doublePivotPatternList=pivotHandle.findDoublePivotsPattern(pivotList);
+        List<Dpattern> doublePivotPatternList=pivotHandle.findDPatterninPivots(pivotList);
         for(Dpattern dpattern:doublePivotPatternList){
             System.out.println(dpattern);
+        }
+        /*List<Dpattern> findallDpattern = pivotHandle.findallDpattern(cleanedPivotList);
+        for(Dpattern dpattern:findallDpattern){
+            System.out.println(dpattern);
         }*/
-
     }
 
 }

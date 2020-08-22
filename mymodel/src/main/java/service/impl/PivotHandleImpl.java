@@ -717,27 +717,52 @@ public class PivotHandleImpl implements PivotHandle {
     }
 
     @Override
-    public List<Dpattern> findDoublePivotsPattern(List<Pivot> basicPivotList) {
+    public List<Dpattern> findDPatterninPivots(List<Pivot> basicPivotList) {
         List<Dpattern> doublePivotPatternList=new ArrayList<>();
         for(Pivot pivot: basicPivotList){
+            List<Scratch> featureScratches=new ArrayList<>();
+            Dpattern dpattern=new Dpattern(pivot,featureScratches);
            if(pivot.getScratches().size()>1){
-              Scratch scratch=new Scratch(pivot.getScratches().get(0));
-              List<Pivot> effectivePivots=new ArrayList<>();
-              for(int n=1;n<pivot.getScratches().size();n++){
-                 if(scratch.getLength()<pivot.getScratches().get(n).getLength()*controlFactor){
 
-                 }else if(pivot.getPivotType()==1){
+              for(int n=0;n<pivot.getScratches().size();n++){
+                  for(int i=n+1;i<pivot.getScratches().size();i++){
+                      if(pivot.getPivotType()==1){
+                         if((pivot.getScratches().get(i).getLength()/pivot.getScratches().get(n).getLength()>controlFactor &&
+                                 pivot.getScratches().get(i).getLength()/pivot.getScratches().get(n).getLength()<1/controlFactor) &&
+                         pivot.getScratches().get(i).getLow()>pivot.getScratches().get(n).getHigh()){
 
-                 }else if(pivot.getPivotType()==-1){
+                             featureScratches.add(pivot.getScratches().get(n));
+                             featureScratches.add(pivot.getScratches().get(i));
+                             dpattern.setFeatureScratches(featureScratches);
 
-                 }else {
+                         }
+                      }else if(pivot.getPivotType()==-1){
+                          if((pivot.getScratches().get(i).getLength()/pivot.getScratches().get(n).getLength()>controlFactor &&
+                                  pivot.getScratches().get(i).getLength()/pivot.getScratches().get(n).getLength()<1/controlFactor) &&
+                                  pivot.getScratches().get(n).getLow()>pivot.getScratches().get(i).getHigh()){
 
-                 }
+                              featureScratches.add(pivot.getScratches().get(n));
+                              featureScratches.add(pivot.getScratches().get(i));
+                              dpattern.setFeatureScratches(featureScratches);
+                          }
+                      }
+                  }
+
               }
+
            }
+           if(dpattern.getFeatureScratches().size()>=2){
+               doublePivotPatternList.add(dpattern);
+           }
+
         }
 
         return doublePivotPatternList;
+    }
+
+    @Override
+    public List<Dpattern> findallDpattern(List<Pivot> cleanedPivotList) {
+        return null;
     }
 
 }
