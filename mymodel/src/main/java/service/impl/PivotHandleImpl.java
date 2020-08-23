@@ -1,9 +1,6 @@
 package service.impl;
 
-import com.myproject.mymodel.domain.Dpattern;
-import com.myproject.mymodel.domain.HighLowPrice;
-import com.myproject.mymodel.domain.Pivot;
-import com.myproject.mymodel.domain.Scratch;
+import com.myproject.mymodel.domain.*;
 import service.PivotHandle;
 
 import java.util.ArrayList;
@@ -759,13 +756,41 @@ public class PivotHandleImpl implements PivotHandle {
     @Override
     public List<Dpattern> findallDpattern(List<Pivot> cleanedPivotList) {
         List<Dpattern> finalDpatternList=new ArrayList<>();
+        List<Scratch> featureScraches=new ArrayList<>();
+        List<Scratch> featureScrachesofSub=new ArrayList<>();
         int n=0;
         while (cleanedPivotList.get(n).getPivotType()==0){
             n++;
         }
+        for(Scratch scratch:cleanedPivotList.get(n).getScratches()){
+            featureScraches.add(scratch);
+        }
+        Dpattern currentDpattern=new Dpattern(cleanedPivotList.get(n),featureScraches);
+        for(Scratch scratch:cleanedPivotList.get(n+1).getScratches()){
+            featureScrachesofSub.add(scratch);
+        }
+        Dpattern subDpattern=new Dpattern(cleanedPivotList.get(n+1),featureScrachesofSub);
+        while (n<cleanedPivotList.size()-2){
+            if(currentDpattern.getPivotDirection()==1){
+                if(cleanedPivotList.get(n+1).getLow()<currentDpattern.getLow()){
+                    featureScraches.clear();
+                    for(Scratch scratch:cleanedPivotList.get(n+1).getScratches()){
+                        featureScraches.add(scratch);
+                    }
+                    currentDpattern=new Dpattern(cleanedPivotList.get(n+1),featureScraches);
+                }else if(cleanedPivotList.get(n+1).getLow()<subDpattern.getLow()){
+                    for(Scratch scratch:subDpattern.getFeatureScratches()){
+                        
+                    }
+                }else if(cleanedPivotList.get(n+2).getHigh()>currentDpattern.getHigh()){
 
-        for( ;n<cleanedPivotList.size()-2;n=n+2){
+                }else {
 
+                }
+
+            }else if(currentDpattern.getPivotDirection()==-1){
+
+            }
         }
         return finalDpatternList;
     }
