@@ -700,8 +700,8 @@ class MymodelApplicationTests {
         for(Dpattern dpattern:doublePivotPatternList){
             System.out.println(dpattern);
         }
-        /*List<Dpattern> findallDpattern = pivotHandle.findallDpattern(cleanedPivotList);
-        for(Dpattern dpattern:findallDpattern){
+        /*List<Dpattern> finalDpatternList = pivotHandle.findallDpattern(cleanedPivotList);
+        for(Dpattern dpattern:finalDpatternList){
             System.out.println(dpattern);
         }*/
     }

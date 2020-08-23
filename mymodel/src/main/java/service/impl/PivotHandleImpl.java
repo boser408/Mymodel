@@ -542,7 +542,6 @@ public class PivotHandleImpl implements PivotHandle {
          return pivots;
 
     }
-
     @Override
     public List<Pivot> pivotExtension(List<Scratch> scratches, Pivot pivot, int n) {
         int nbegin=n;
@@ -684,7 +683,6 @@ public class PivotHandleImpl implements PivotHandle {
         numberofLoop=n;
         return pivots;
     }
-
     @Override
     public List<Pivot> scratchClean(List<Pivot> basicPivotList) {
         List<Pivot> cleanedPivotList=new ArrayList<>();
@@ -715,7 +713,6 @@ public class PivotHandleImpl implements PivotHandle {
         }
         return cleanedPivotList;
     }
-
     @Override
     public List<Dpattern> findDPatterninPivots(List<Pivot> basicPivotList) {
         List<Dpattern> doublePivotPatternList=new ArrayList<>();
@@ -759,10 +756,18 @@ public class PivotHandleImpl implements PivotHandle {
 
         return doublePivotPatternList;
     }
-
     @Override
     public List<Dpattern> findallDpattern(List<Pivot> cleanedPivotList) {
-        return null;
+        List<Dpattern> finalDpatternList=new ArrayList<>();
+        int n=0;
+        while (cleanedPivotList.get(n).getPivotType()==0){
+            n++;
+        }
+
+        for( ;n<cleanedPivotList.size()-2;n=n+2){
+
+        }
+        return finalDpatternList;
     }
 
 }
