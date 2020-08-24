@@ -1,6 +1,5 @@
 package com.myproject.mymodel.domain;
 
-import java.util.HashMap;
 import java.util.Properties;
 
 public class Scratch {
@@ -20,7 +19,13 @@ public class Scratch {
         this.low = scratch.getLow();
         this.status = scratch.getStatus();
     }
-
+    public Scratch(Pivot pivot) {
+        this.length = pivot.getLength();
+        this.startId = pivot.getStartId();
+        this.high = pivot.getHigh();
+        this.low = pivot.getLow();
+        this.status = pivot.getPivotType();
+    }
     public Scratch(int length, int startId, float high, float low, int status) {
         this.length = length;
         this.startId = startId;
