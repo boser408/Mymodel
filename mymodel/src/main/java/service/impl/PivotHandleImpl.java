@@ -768,7 +768,7 @@ public class PivotHandleImpl implements PivotHandle {
         Pivot subpivot=new Pivot(cleanedPivotList.get(n+1));
         while (n<cleanedPivotList.size()-2){
             if(mainpivot.getPivotType()>0){
-                if(cleanedPivotList.get(n+1).getLow()<mainpivot.getLow()){
+                if(cleanedPivotList.get(n+1).getLow()<mainpivot.getLow()){ //Scenarial 1
                     magaPivotList.add(mainpivot);
 
                     if(subpivot.getPivotType()>-5){
@@ -778,6 +778,7 @@ public class PivotHandleImpl implements PivotHandle {
                         subpivot.setLength(cleanedPivotList.get(n+1).getStartId()-subpivot.getStartId()
                                 +cleanedPivotList.get(n+1).getLength());
                         subpivot.setLow(cleanedPivotList.get(n+1).getLow());
+                        dwpivots.clear();
                         for(Pivot pivot: uppivots){
                             Scratch scratch=new Scratch(pivot);
                             subpivot.getScratches().add(scratch);
@@ -796,7 +797,32 @@ public class PivotHandleImpl implements PivotHandle {
                         }
                         mainpivot=new Pivot(subpivot);
                     }
+                }else if(cleanedPivotList.get(n+2).getHigh()>mainpivot.getHigh()) {
+                    if(subpivot.getPivotType()<-5){
+                        magaPivotList.add(subpivot);
+                    }
+                    uppivots.clear();
+                    mainpivot.setLength(cleanedPivotList.get(n+2).getStartId()-mainpivot.getStartId()
+                    +cleanedPivotList.get(n+2).getLength());
+                    mainpivot.setHigh(cleanedPivotList.get(n+2).getHigh());
+                    mainpivot.setPivotType(6);
+                    for(Pivot pivot:dwpivots){
+                        Scratch scratch=new Scratch(pivot);
+                        mainpivot.getScratches().add(scratch);
+                    }
+                    for(Scratch scratch:cleanedPivotList.get(n+2).getScratches()){
+                        mainpivot.getScratches().add(scratch);
+                    }
+                    Dpattern dpattern=new Dpattern(mainpivot,mainpivot.getScratches());
+                    dpattern=findDpattern(mainpivot,dpattern);
+                    if(dpattern.getFeatureScratches().size()>=2){
+                        finalDpatternList.add(dpattern);
+                    }
+                    if(mainpivot.getScratches().size()>1){
+                        mainpivot=cleanPivot(mainpivot);
+                    }
                 }else {
+
                 }
 
             }else if(mainpivot.getPivotType()<0){
@@ -827,10 +853,35 @@ public class PivotHandleImpl implements PivotHandle {
                         }
                         mainpivot=new Pivot(subpivot);
                     }
+                }else if(cleanedPivotList.get(n+2).getLow()<mainpivot.getLow()) {
+                    if(subpivot.getPivotType()>5){
+                        magaPivotList.add(subpivot);
+                    }
+                    dwpivots.clear();
+                    mainpivot.setLength(cleanedPivotList.get(n+2).getStartId()-mainpivot.getStartId()
+                            +cleanedPivotList.get(n+2).getLength());
+                    mainpivot.setLow(cleanedPivotList.get(n+2).getLow());
+                    mainpivot.setPivotType(-6);
+                    for(Pivot pivot:uppivots){
+                        Scratch scratch=new Scratch(pivot);
+                        mainpivot.getScratches().add(scratch);
+                    }
+                    for(Scratch scratch:cleanedPivotList.get(n+2).getScratches()){
+                        mainpivot.getScratches().add(scratch);
+                    }
+                    Dpattern dpattern=new Dpattern(mainpivot,mainpivot.getScratches());
+                    dpattern=findDpattern(mainpivot,dpattern);
+                    if(dpattern.getFeatureScratches().size()>=2){
+                        finalDpatternList.add(dpattern);
+                    }
+                    if(mainpivot.getScratches().size()>1){
+                        mainpivot=cleanPivot(mainpivot);
+                    }
                 }else {
 
                 }
             }
+            n=n+2;
         }
         return finalDpatternList;
     }
