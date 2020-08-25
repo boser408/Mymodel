@@ -765,8 +765,8 @@ public class PivotHandleImpl implements PivotHandle {
             n++;
         }
         Pivot mainpivot=new Pivot(cleanedPivotList.get(n));
-        Pivot subpivot=new Pivot(cleanedPivotList.get(n+1));
         while (n<cleanedPivotList.size()-2){
+            Pivot subpivot=new Pivot(cleanedPivotList.get(n+1));
             if(mainpivot.getPivotType()>0){
                 if(cleanedPivotList.get(n+1).getLow()<mainpivot.getLow()){ //Scenarial 1
                     magaPivotList.add(mainpivot);
