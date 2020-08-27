@@ -55,8 +55,29 @@ public class PivotHandleImpl implements PivotHandle {
     }
 
     @Override
-    public Pivot tempPivotClean(List<Pivot> uppivots, List<Pivot> dwpivots) {
+    public Pivot tempPivotClean(Pivot subpivot, Pivot currentpivot, List<Pivot> uppivots, List<Pivot> dwpivots) {
         Pivot temppivot=new Pivot();
+
+        if(subpivot.getPivotType()>0){
+           temppivot=new Pivot(dwpivots.get(0));
+           for(Pivot pivot:dwpivots){
+                if(pivot.getLow()<temppivot.getLow()){
+                    temppivot.setLow(pivot.getLow());
+                    temppivot.setLength(pivot.getStartId()-temppivot.getStartId()+pivot.getLength());
+
+                }
+            }
+
+        }else {
+            temppivot=new Pivot(uppivots.get(0));
+            for(Pivot pivot:uppivots){
+                if(pivot.getHigh()>temppivot.getHigh()){
+                    temppivot.setHigh(pivot.getHigh());
+                    temppivot.setLength(pivot.getStartId()-temppivot.getStartId()+pivot.getLength());
+                }
+            }
+        }
+
         return temppivot;
     }
 
@@ -764,8 +785,6 @@ public class PivotHandleImpl implements PivotHandle {
         List<Pivot> magaPivotList=new ArrayList<>();
         List<Pivot> uppivots=new ArrayList<>();
         List<Pivot> dwpivots=new ArrayList<>();
-        List<Scratch> featureScraches=new ArrayList<>();
-        List<Scratch> featureScrachesofSub=new ArrayList<>();
         int n=0;
         while (cleanedPivotList.get(n).getPivotType()==0){
             n++;
