@@ -57,23 +57,36 @@ public class PivotHandleImpl implements PivotHandle {
     @Override
     public Pivot tempPivotClean(Pivot subpivot, Pivot currentpivot, List<Pivot> uppivots, List<Pivot> dwpivots) {
         Pivot temppivot=new Pivot();
-
         if(subpivot.getPivotType()>0){
+           int endpivotId=dwpivots.get(0).getStartId();
            temppivot=new Pivot(dwpivots.get(0));
            for(Pivot pivot:dwpivots){
                 if(pivot.getLow()<temppivot.getLow()){
                     temppivot.setLow(pivot.getLow());
                     temppivot.setLength(pivot.getStartId()-temppivot.getStartId()+pivot.getLength());
-
+                    endpivotId=pivot.getStartId();
                 }
-            }
+           }
+           for(Pivot pivot:uppivots){
+               if (pivot.getStartId()<endpivotId){
+                   Scratch scratch=new Scratch(pivot);
+                   temppivot.getScratches().add(scratch);
+               }
+           }
 
         }else {
+            int endpivotId=uppivots.get(0).getStartId();
             temppivot=new Pivot(uppivots.get(0));
             for(Pivot pivot:uppivots){
                 if(pivot.getHigh()>temppivot.getHigh()){
                     temppivot.setHigh(pivot.getHigh());
                     temppivot.setLength(pivot.getStartId()-temppivot.getStartId()+pivot.getLength());
+                }
+            }
+            for(Pivot pivot:dwpivots){
+                if (pivot.getStartId()<endpivotId){
+                    Scratch scratch=new Scratch(pivot);
+                    temppivot.getScratches().add(scratch);
                 }
             }
         }
