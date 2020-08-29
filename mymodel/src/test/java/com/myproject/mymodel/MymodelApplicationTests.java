@@ -107,7 +107,7 @@ class MymodelApplicationTests {
         for(int n=1;n<bottom;n++){
             if (upscratch.getStatus()==1) { //Scenario 1: A formed up trend scratch exists;
 
-                if(highLowPrices.get(n).getHigh()>upscratch.getHigh()
+                if(highLowPrices.get(n).getHigh()>=upscratch.getHigh()
                         && highLowPrices.get(n).getLow()>=upscratch.getLow() ){
 
                     upscratch.setLength(upscratch.getLength()+1);
@@ -216,7 +216,7 @@ class MymodelApplicationTests {
                 }
 
             }else if (dwscratch.getStatus()==-1){ //Scenario 2: A formed down trend scratch exists;
-                if(highLowPrices.get(n).getLow()<dwscratch.getLow()&&highLowPrices.get(n).getHigh()<=dwscratch.getHigh()){
+                if(highLowPrices.get(n).getLow()<=dwscratch.getLow()&&highLowPrices.get(n).getHigh()<=dwscratch.getHigh()){
                     dwscratch.setLength(dwscratch.getLength()+1);
                     dwscratch.setLow(highLowPrices.get(n).getLow());
 

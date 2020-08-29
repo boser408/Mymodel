@@ -117,7 +117,7 @@ public class PivotHandleImpl implements PivotHandle {
         for(int n=startindex;n<startindex+length-1;n++){
             if (upscratch.getStatus()==1) { //Scenario 1: A formed up trend scratch exists;
 
-                if(highLowPrices.get(n).getHigh()>upscratch.getHigh()
+                if(highLowPrices.get(n).getHigh()>=upscratch.getHigh()
                         && highLowPrices.get(n).getLow()>=upscratch.getLow() ){
 
                     upscratch.setLength(upscratch.getLength()+1);
@@ -227,7 +227,7 @@ public class PivotHandleImpl implements PivotHandle {
                 }
 
             }else if (dwscratch.getStatus()==-1){ //Scenario 2: A formed down trend scratch exists;
-                if(highLowPrices.get(n).getLow()<dwscratch.getLow()&&highLowPrices.get(n).getHigh()<=dwscratch.getHigh()){
+                if(highLowPrices.get(n).getLow()<=dwscratch.getLow()&&highLowPrices.get(n).getHigh()<=dwscratch.getHigh()){
                     dwscratch.setLength(dwscratch.getLength()+1);
                     dwscratch.setLow(highLowPrices.get(n).getLow());
 
@@ -639,19 +639,21 @@ public class PivotHandleImpl implements PivotHandle {
         Pivot uppivot=new Pivot();
         Pivot dwpivot=new Pivot();
         if(pivot.getPivotType()==1){
-            dwpivot.setLength(scratches.get(n).getLength());
+            dwpivot=new Pivot(scratches.get(n));
+            /*dwpivot.setLength(scratches.get(n).getLength());
             dwpivot.setStartId(scratches.get(n).getStartId());
             dwpivot.setHigh(scratches.get(n).getHigh());
             dwpivot.setLow(scratches.get(n).getLow());
             dwpivot.setPivotType(0);
-            dwpivot.setScratches(scratchList);
+            dwpivot.setScratches(scratchList);*/
         }else {
-            uppivot.setLength(scratches.get(n).getLength());
+            uppivot=new Pivot(scratches.get(n));
+            /*uppivot.setLength(scratches.get(n).getLength());
             uppivot.setStartId(scratches.get(n).getStartId());
             uppivot.setHigh(scratches.get(n).getHigh());
             uppivot.setLow(scratches.get(n).getLow());
             uppivot.setPivotType(0);
-            uppivot.setScratches(scratchList);
+            uppivot.setScratches(scratchList);*/
         }
 
         while (n<=scratches.size()-3){
@@ -691,18 +693,24 @@ public class PivotHandleImpl implements PivotHandle {
                     if(scratches.get(n).getStatus()==-1){
                         pivot.getScratches().add(scratches.get(n));
                     }
-
-                    dwpivot.setLength(scratches.get(n+2).getLength());
+                    if(scratchList.size()>0){
+                        pivot.getScratches().addAll(scratchList);
+                        scratchList.clear();
+                    }
+                    dwpivot=new Pivot(scratches.get(n+2));
+                    /*dwpivot.setLength(scratches.get(n+2).getLength());
                     dwpivot.setStartId(scratches.get(n+2).getStartId());
                     dwpivot.setHigh(scratches.get(n+2).getHigh());
                     dwpivot.setLow(scratches.get(n+2).getLow());
                     dwpivot.setPivotType(0);
-                    dwpivot.setScratches(scratchList);
+                    dwpivot.setScratches(scratchList);*/
 
                 }else {
 
+                        if (scratches.get(n).getStatus()==-1 ){
+                            scratchList.add(scratches.get(n));
+                        }
                         if(scratches.get(n+1).getStatus()==1){
-
                             dwpivot.getScratches().add(scratches.get(n+1));
                         }
                 }
@@ -743,15 +751,21 @@ public class PivotHandleImpl implements PivotHandle {
                     if(scratches.get(n).getStatus()==1){
                         pivot.getScratches().add(scratches.get(n));
                     }
-
-                    uppivot.setLength(scratches.get(n+2).getLength());
+                    if(scratchList.size()>0){
+                       pivot.getScratches().addAll(scratchList);
+                       scratchList.clear();
+                    }
+                    uppivot=new Pivot(scratches.get(n+2));
+                    /*uppivot.setLength(scratches.get(n+2).getLength());
                     uppivot.setStartId(scratches.get(n+2).getStartId());
                     uppivot.setHigh(scratches.get(n+2).getHigh());
                     uppivot.setLow(scratches.get(n+2).getLow());
                     uppivot.setPivotType(0);
-                    uppivot.setScratches(scratchList);
+                    uppivot.setScratches(scratchList);*/
                 }else {
-
+                       if(scratches.get(n).getStatus()==1 ){
+                           scratchList.add(scratches.get(n));
+                       }
                        if(scratches.get(n+1).getStatus()==-1){
                            uppivot.getScratches().add(scratches.get(n+1));
                        }
