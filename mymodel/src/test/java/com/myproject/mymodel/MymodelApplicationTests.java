@@ -563,38 +563,16 @@ class MymodelApplicationTests {
         int n=1;
         while (n<listofsmall.size()-2){
             if(currentpivot.getPivotType()!=0){
-
                 List<Pivot> extendedpivots=pivotHandle.pivotExtension(listofsmall,currentpivot,n);
-                Pivot savepivot=new Pivot();
-                savepivot.setLength(extendedpivots.get(0).getLength());
-                savepivot.setStartId(extendedpivots.get(0).getStartId());
-                savepivot.setHigh(extendedpivots.get(0).getHigh());
-                savepivot.setLow(extendedpivots.get(0).getLow());
-                savepivot.setPivotType(extendedpivots.get(0).getPivotType());
-                savepivot.setScratches(extendedpivots.get(0).getScratches());
+                Pivot savepivot=new Pivot(extendedpivots.get(0));
                 pivotList.add(savepivot);
-
-                currentpivot.setLength(extendedpivots.get(1).getLength());
-                currentpivot.setStartId(extendedpivots.get(1).getStartId());
-                currentpivot.setHigh(extendedpivots.get(1).getHigh());
-                currentpivot.setLow(extendedpivots.get(1).getLow());
-                currentpivot.setPivotType(extendedpivots.get(1).getPivotType());
-                currentpivot.setScratches(extendedpivots.get(1).getScratches());
-
+                currentpivot=new Pivot(extendedpivots.get(1));
                 n=pivotHandle.getNumberofLoop()+1;
-
-                    while (n<listofsmall.size()-2 && currentpivot.getScratches().size()==0){
+                  while (n<listofsmall.size()-2 && currentpivot.getScratches().size()==0){
                         if((listofsmall.get(n).getStatus()==1 && listofsmall.get(n).getHigh()>currentpivot.getHigh()) ||
                                 (listofsmall.get(n).getStatus()==-1 && listofsmall.get(n).getLow()<currentpivot.getLow()) ){
-                            Pivot tmppivot=new Pivot();
-                            tmppivot.setLength(currentpivot.getLength());
-                            tmppivot.setStartId(currentpivot.getStartId());
-                            tmppivot.setHigh(currentpivot.getHigh());
-                            tmppivot.setLow(currentpivot.getLow());
-                            tmppivot.setPivotType(currentpivot.getPivotType());
-                            tmppivot.setScratches(currentpivot.getScratches());
+                            Pivot tmppivot=new Pivot(currentpivot);
                             pivotList.add(tmppivot);
-
                             currentpivot.setLength(listofsmall.get(n).getLength());
                             currentpivot.setStartId(listofsmall.get(n).getStartId());
                             currentpivot.setHigh(listofsmall.get(n).getHigh());
@@ -603,66 +581,33 @@ class MymodelApplicationTests {
                         }else {
                             break;
                         }
-
                     }
-
                     if(n==listofsmall.size()){
                         break;
                     }
-
             }else {
-
                 List<Pivot> simplepivots = pivotHandle.findPivots(listofsmall,n);
                 int i=0;
                 if(simplepivots.size()==2){
                     if(simplepivots.get(0).getStartId()<simplepivots.get(1).getStartId()){
-                        Pivot savepivot=new Pivot();
-                        savepivot.setLength(simplepivots.get(i).getLength());
-                        savepivot.setStartId(simplepivots.get(i).getStartId());
-                        savepivot.setHigh(simplepivots.get(i).getHigh());
-                        savepivot.setLow(simplepivots.get(i).getLow());
-                        savepivot.setPivotType(simplepivots.get(i).getPivotType());
-                        savepivot.setScratches(simplepivots.get(i).getScratches());
+                        Pivot savepivot=new Pivot(simplepivots.get(i));
                         pivotList.add(savepivot);
-
                         i=1;
                     }else {
                         i=1;
-                        Pivot savepivot=new Pivot();
-                        savepivot.setLength(simplepivots.get(i).getLength());
-                        savepivot.setStartId(simplepivots.get(i).getStartId());
-                        savepivot.setHigh(simplepivots.get(i).getHigh());
-                        savepivot.setLow(simplepivots.get(i).getLow());
-                        savepivot.setPivotType(simplepivots.get(i).getPivotType());
-                        savepivot.setScratches(simplepivots.get(i).getScratches());
+                        Pivot savepivot=new Pivot(simplepivots.get(i));
                         pivotList.add(savepivot);
-
                         i=0;
                     }
-
                 }
                 n=pivotHandle.getNumberofLoop()+1;
-
-                currentpivot.setLength(simplepivots.get(i).getLength());
-                currentpivot.setStartId(simplepivots.get(i).getStartId());
-                currentpivot.setHigh(simplepivots.get(i).getHigh());
-                currentpivot.setLow(simplepivots.get(i).getLow());
-                currentpivot.setPivotType(simplepivots.get(i).getPivotType());
-                currentpivot.setScratches(simplepivots.get(i).getScratches());
-
+                currentpivot=new Pivot(simplepivots.get(i));
 
                 while (n<listofsmall.size()-2 && currentpivot.getScratches().size()==0){
                     if((listofsmall.get(n).getStatus()==1 && listofsmall.get(n).getHigh()>currentpivot.getHigh()) ||
                             (listofsmall.get(n).getStatus()==-1 && listofsmall.get(n).getLow()<currentpivot.getLow()) ){
-                        Pivot tmppivot=new Pivot();
-                        tmppivot.setLength(currentpivot.getLength());
-                        tmppivot.setStartId(currentpivot.getStartId());
-                        tmppivot.setHigh(currentpivot.getHigh());
-                        tmppivot.setLow(currentpivot.getLow());
-                        tmppivot.setPivotType(currentpivot.getPivotType());
-                        tmppivot.setScratches(currentpivot.getScratches());
+                        Pivot tmppivot=new Pivot(currentpivot);
                         pivotList.add(tmppivot);
-
                         currentpivot.setLength(listofsmall.get(n).getLength());
                         currentpivot.setStartId(listofsmall.get(n).getStartId());
                         currentpivot.setHigh(listofsmall.get(n).getHigh());
@@ -671,39 +616,34 @@ class MymodelApplicationTests {
                     }else {
                         break;
                     }
-
                 }
-
                 if(n==listofsmall.size()){
                     break;
                 }
-
             }
-
         }
-
-        /*for(Pivot pivot:pivotList){
+        for(Pivot pivot:pivotList){
             if(pivot.getPivotType()==0 && pivot.getScratches().size()>0){
                 pivot.getScratches().clear();
             }
-            System.out.println(pivot);
+            System.out.println(pivot.toString());
         }
-        System.out.println("Size of pivotList is:"+pivotList.size());*/
+        System.out.println("Size of pivotList is:"+pivotList.size());
 
-        List<Pivot> cleanedPivotList=pivotHandle.scratchClean(pivotList);
+       /* List<Pivot> cleanedPivotList=pivotHandle.scratchClean(pivotList);
         for(Pivot pivot:cleanedPivotList){
             System.out.println(pivot.toString());
         }
-        System.out.println("Size of cleanedPivotList is:"+cleanedPivotList.size());
+        System.out.println("Size of cleanedPivotList is:"+cleanedPivotList.size());*/
 
-        List<Dpattern> doublePivotPatternList=pivotHandle.findDPatterninPivots(pivotList);
-        /*for(Dpattern dpattern:doublePivotPatternList){
+        /*List<Dpattern> doublePivotPatternList=pivotHandle.findDPatterninPivots(pivotList);
+        *//*for(Dpattern dpattern:doublePivotPatternList){
             System.out.println(dpattern);
-        }*/
+        }*//*
         List<Dpattern> finalDpatternList = pivotHandle.findallDpattern(cleanedPivotList);
         for(Dpattern dpattern:finalDpatternList){
             System.out.println(dpattern);
-        }
+        }*/
     }
 
 }
