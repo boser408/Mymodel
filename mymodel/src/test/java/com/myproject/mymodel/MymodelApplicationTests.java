@@ -516,9 +516,16 @@ class MymodelApplicationTests {
                     scratch.getLength(), 6);
 
             for(Scratch scratch1:scratches){
-                if(scratch.getStatus()*scratch1.getStatus()==-1){
-                   scratchList.add(scratch1);
+                if(scratch.getStatus()>0){
+                    if(scratch.getStatus()*scratch1.getStatus()==-1 && scratch1.getLow()>scratch.getLow()){
+                        scratchList.add(scratch1);
+                    }
+                }else {
+                    if(scratch.getStatus()*scratch1.getStatus()==-1 && scratch1.getHigh()<scratch.getHigh()){
+                        scratchList.add(scratch1);
+                    }
                 }
+
             }
 
             if(scratchList.isEmpty()){
