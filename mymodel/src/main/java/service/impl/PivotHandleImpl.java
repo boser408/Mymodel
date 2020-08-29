@@ -4,6 +4,7 @@ import com.myproject.mymodel.domain.*;
 import service.PivotHandle;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class PivotHandleImpl implements PivotHandle {
@@ -15,6 +16,7 @@ public class PivotHandleImpl implements PivotHandle {
 
     @Override
     public Pivot cleanPivot(Pivot pivot) {
+        
         for(int n=pivot.getScratches().size()-1;n>0;n--){
             for(int i=n-1;i>-1;i--){
                 if(pivot.getScratches().get(n).getLength()>pivot.getScratches().get(i).getLength()){
@@ -640,26 +642,12 @@ public class PivotHandleImpl implements PivotHandle {
         Pivot dwpivot=new Pivot();
         if(pivot.getPivotType()==1){
             dwpivot=new Pivot(scratches.get(n));
-            /*dwpivot.setLength(scratches.get(n).getLength());
-            dwpivot.setStartId(scratches.get(n).getStartId());
-            dwpivot.setHigh(scratches.get(n).getHigh());
-            dwpivot.setLow(scratches.get(n).getLow());
-            dwpivot.setPivotType(0);
-            dwpivot.setScratches(scratchList);*/
         }else {
             uppivot=new Pivot(scratches.get(n));
-            /*uppivot.setLength(scratches.get(n).getLength());
-            uppivot.setStartId(scratches.get(n).getStartId());
-            uppivot.setHigh(scratches.get(n).getHigh());
-            uppivot.setLow(scratches.get(n).getLow());
-            uppivot.setPivotType(0);
-            uppivot.setScratches(scratchList);*/
         }
 
         while (n<=scratches.size()-3){
-            if(scratches.get(n).getStartId()>1000){
-                break;
-            }
+
             if(pivot.getPivotType()==1){
 
                 if(scratches.get(n).getLow()<pivot.getLow()){
@@ -672,10 +660,11 @@ public class PivotHandleImpl implements PivotHandle {
                         dwpivot.setLength(scratches.get(n).getStartId()-dwpivot.getStartId()+scratches.get(n).getLength());
                         dwpivot.setLow(scratches.get(n).getLow());
                         dwpivot.setPivotType(-1);
-                        pivots.add(dwpivot);
-                        break;
+                       /* pivots.add(dwpivot);
+                        break;*/
                     }
-
+                    System.out.println("11--pivot="+pivot.toString());
+                    System.out.println("11--dwpivot="+dwpivot.toString());
                     pivots.add(dwpivot);
                     break;
 
@@ -688,6 +677,8 @@ public class PivotHandleImpl implements PivotHandle {
                     dwpivot.setLow(scratches.get(n).getLow());
                     dwpivot.setPivotType(-1);
                     pivots.add(dwpivot);
+                    System.out.println("22--pivot="+pivot.toString());
+                    System.out.println("22--dwpivot="+dwpivot.toString());
                     break;
                 }else if(scratches.get(n+1).getHigh()>=pivot.getHigh()) {
 
@@ -701,21 +692,30 @@ public class PivotHandleImpl implements PivotHandle {
                         scratchList.clear();
                     }
                     dwpivot=new Pivot(scratches.get(n+2));
-                    /*dwpivot.setLength(scratches.get(n+2).getLength());
-                    dwpivot.setStartId(scratches.get(n+2).getStartId());
-                    dwpivot.setHigh(scratches.get(n+2).getHigh());
-                    dwpivot.setLow(scratches.get(n+2).getLow());
-                    dwpivot.setPivotType(0);
-                    dwpivot.setScratches(scratchList);*/
-
+                    System.out.println("33--pivot="+pivot.toString());
+                    System.out.println("33--dwpivot="+dwpivot.toString());
                 }else {
 
                         if (scratches.get(n).getStatus()==-1 ){
-                            scratchList.add(scratches.get(n));
+                            if(n>nbegin && scratches.get(n-1).getLow()<scratches.get(n).getLow()
+                            && scratches.get(n+1).getHigh()>scratches.get(n).getHigh()){
+                                dwpivot.getScratches().clear();
+                                pivots.add(pivot);
+                                pivots.add(dwpivot);
+                                n=n-2;
+                                System.out.println("00--pivot="+pivot.toString());
+                                System.out.println("00--dwpivot="+dwpivot.toString());
+                                break;
+                            }else {
+                                scratchList.add(scratches.get(n));
+                            }
                         }
                         if(scratches.get(n+1).getStatus()==1){
                             dwpivot.getScratches().add(scratches.get(n+1));
                         }
+                    System.out.println("44--pivot="+pivot.toString());
+                    System.out.println("44--dwpivot="+dwpivot.toString());
+                    System.out.println("44--scratchList="+scratchList.toString());
                 }
 
             }else if(pivot.getPivotType()==-1){
@@ -730,10 +730,11 @@ public class PivotHandleImpl implements PivotHandle {
                         uppivot.setLength(scratches.get(n).getStartId()-uppivot.getStartId()+scratches.get(n).getLength());
                         uppivot.setHigh(scratches.get(n).getHigh());
                         uppivot.setPivotType(1);
-                        pivots.add(uppivot);
-                        break;
+                        /*pivots.add(uppivot);
+                        break;*/
                     }
-
+                    System.out.println("55--pivot="+pivot.toString());
+                    System.out.println("55--uppivot="+uppivot.toString());
                     pivots.add(uppivot);
                     break;
 
@@ -746,6 +747,8 @@ public class PivotHandleImpl implements PivotHandle {
                     uppivot.setHigh(scratches.get(n).getHigh());
                     uppivot.setPivotType(1);
                     pivots.add(uppivot);
+                    System.out.println("66--pivot="+pivot.toString());
+                    System.out.println("66--uppivot="+uppivot.toString());
                     break;
                 }else if(scratches.get(n+1).getLow()<=pivot.getLow()) {
 
@@ -759,19 +762,30 @@ public class PivotHandleImpl implements PivotHandle {
                        scratchList.clear();
                     }
                     uppivot=new Pivot(scratches.get(n+2));
-                    /*uppivot.setLength(scratches.get(n+2).getLength());
-                    uppivot.setStartId(scratches.get(n+2).getStartId());
-                    uppivot.setHigh(scratches.get(n+2).getHigh());
-                    uppivot.setLow(scratches.get(n+2).getLow());
-                    uppivot.setPivotType(0);
-                    uppivot.setScratches(scratchList);*/
+                    System.out.println("77--pivot="+pivot.toString());
+                    System.out.println("77--uppivot="+uppivot.toString());
+
                 }else {
                        if(scratches.get(n).getStatus()==1 ){
-                           scratchList.add(scratches.get(n));
+                           if(n>nbegin&&scratches.get(n-1).getHigh()>scratches.get(n).getHigh()
+                                   &&scratches.get(n+1).getLow()<scratches.get(n).getLow()){
+                               uppivot.getScratches().clear();
+                               pivots.add(pivot);
+                               pivots.add(uppivot);
+                               n=n-2;
+                               System.out.println("99--pivot="+pivot.toString());
+                               System.out.println("99--uppivot="+uppivot.toString());
+                               break;
+                           }else{
+                               scratchList.add(scratches.get(n));
+                           }
                        }
                        if(scratches.get(n+1).getStatus()==-1){
                            uppivot.getScratches().add(scratches.get(n+1));
                        }
+                    System.out.println("88--pivot="+pivot.toString());
+                    System.out.println("88--uppivot="+uppivot.toString());
+                    System.out.println("88--scratchList="+scratchList.toString());
                 }
 
             }

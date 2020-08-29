@@ -541,8 +541,13 @@ class MymodelApplicationTests {
         }
         Collections.sort(list1, Comparator.comparing(Scratch::getStartId));
         for(int n=1;n<list1.size();n++){
-            if(list1.get(n-1).getStartId()==list1.get(n).getStartId()&&list1.get(n-1).getLength()<=list1.get(n).getLength()){
-                list1.remove(n-1);
+            if(list1.get(n-1).getStartId()==list1.get(n).getStartId()){
+                if(list1.get(n-1).getLength()<=list1.get(n).getLength()){
+                    list1.remove(n-1);
+                }else {
+                    list1.remove(n);
+                }
+
             }
         }
         for(int n=0;n<list1.size()-1;n++){
@@ -575,44 +580,10 @@ class MymodelApplicationTests {
                 pivotList.add(savepivot);
                 currentpivot=new Pivot(extendedpivots.get(1));
                 n=pivotHandle.getNumberofLoop()+1;
-                  while (n<listofsmall.size()-2 && currentpivot.getScratches().size()==0){
-                        if((listofsmall.get(n).getStatus()==1 && listofsmall.get(n).getHigh()>currentpivot.getHigh()) ||
-                                (listofsmall.get(n).getStatus()==-1 && listofsmall.get(n).getLow()<currentpivot.getLow()) ){
-                            Pivot tmppivot=new Pivot(currentpivot);
-                            pivotList.add(tmppivot);
-                            currentpivot.setLength(listofsmall.get(n).getLength());
-                            currentpivot.setStartId(listofsmall.get(n).getStartId());
-                            currentpivot.setHigh(listofsmall.get(n).getHigh());
-                            currentpivot.setLow(listofsmall.get(n).getLow());
-                            n=n+1;
-                        }else {
-                            break;
-                        }
-                    }
-                    if(n==listofsmall.size()){
-                        break;
-                    }
-            }else {
-                List<Pivot> simplepivots = pivotHandle.findPivots(listofsmall,n);
-                int i=0;
-                if(simplepivots.size()==2){
-                    if(simplepivots.get(0).getStartId()<simplepivots.get(1).getStartId()){
-                        Pivot savepivot=new Pivot(simplepivots.get(i));
-                        pivotList.add(savepivot);
-                        i=1;
-                    }else {
-                        i=1;
-                        Pivot savepivot=new Pivot(simplepivots.get(i));
-                        pivotList.add(savepivot);
-                        i=0;
-                    }
-                }
-                n=pivotHandle.getNumberofLoop()+1;
-                currentpivot=new Pivot(simplepivots.get(i));
-
                 while (n<listofsmall.size()-2 && currentpivot.getScratches().size()==0){
                     if((listofsmall.get(n).getStatus()==1 && listofsmall.get(n).getHigh()>currentpivot.getHigh()) ||
-                            (listofsmall.get(n).getStatus()==-1 && listofsmall.get(n).getLow()<currentpivot.getLow()) ){
+                            (listofsmall.get(n).getStatus()==-1 && listofsmall.get(n).getLow()<currentpivot.getLow())||
+                            listofsmall.get(n).getStatus()==0){
                         Pivot tmppivot=new Pivot(currentpivot);
                         pivotList.add(tmppivot);
                         currentpivot.setLength(listofsmall.get(n).getLength());
@@ -627,6 +598,52 @@ class MymodelApplicationTests {
                 if(n==listofsmall.size()){
                     break;
                 }
+                System.out.println("pExtension: savpivot="+savepivot.toString());
+                System.out.println("pExtension: currentpivot="+currentpivot.toString());
+                System.out.println("pExtension: pivot of n="+listofsmall.get(n).toString());
+            }else {
+                List<Pivot> simplepivots = pivotHandle.findPivots(listofsmall,n);
+                Pivot savepivot=new Pivot();
+                Pivot tmppivot=new Pivot();
+                int i=0;
+                if(simplepivots.size()==2){
+
+                    if(simplepivots.get(0).getStartId()<simplepivots.get(1).getStartId()){
+                        savepivot=new Pivot(simplepivots.get(i));
+                        pivotList.add(savepivot);
+                        i=1;
+                    }else {
+                        i=1;
+                        savepivot=new Pivot(simplepivots.get(i));
+                        pivotList.add(savepivot);
+                        i=0;
+                    }
+
+                }
+                n=pivotHandle.getNumberofLoop()+1;
+                currentpivot=new Pivot(simplepivots.get(i));
+
+                while (n<listofsmall.size()-2 && currentpivot.getScratches().size()==0){
+                    if((listofsmall.get(n).getStatus()==1 && listofsmall.get(n).getHigh()>currentpivot.getHigh()) ||
+                            (listofsmall.get(n).getStatus()==-1 && listofsmall.get(n).getLow()<currentpivot.getLow())||
+                            listofsmall.get(n).getStatus()==0){
+                        tmppivot=new Pivot(currentpivot);
+                        pivotList.add(tmppivot);
+                        currentpivot.setLength(listofsmall.get(n).getLength());
+                        currentpivot.setStartId(listofsmall.get(n).getStartId());
+                        currentpivot.setHigh(listofsmall.get(n).getHigh());
+                        currentpivot.setLow(listofsmall.get(n).getLow());
+                        n=n+1;
+                    }else {
+                        break;
+                    }
+                }
+                if(n==listofsmall.size()){
+                    break;
+                }
+                System.out.println("pFinding: savpivot="+savepivot.toString());
+                System.out.println("pFinding: tmppivot="+tmppivot.toString());
+                System.out.println("pFinding: currentpivot="+currentpivot.toString());
             }
         }
         for(Pivot pivot:pivotList){
@@ -637,17 +654,25 @@ class MymodelApplicationTests {
         }
         System.out.println("Size of pivotList is:"+pivotList.size());
 
+        System.out.println("Sorted pivotList is:");
+        for(Pivot pivot:pivotList){
+            if(!pivot.getScratches().isEmpty()){
+                pivot.getScratches().sort(Comparator.comparingInt(Scratch::getStartId));
+            }
+            System.out.println(pivot.toString());
+        }
+
        /* List<Pivot> cleanedPivotList=pivotHandle.scratchClean(pivotList);
         for(Pivot pivot:cleanedPivotList){
             System.out.println(pivot.toString());
         }
-        System.out.println("Size of cleanedPivotList is:"+cleanedPivotList.size());*/
+        System.out.println("Size of cleanedPivotList is:"+cleanedPivotList.size());
 
-        /*List<Dpattern> doublePivotPatternList=pivotHandle.findDPatterninPivots(pivotList);
-        *//*for(Dpattern dpattern:doublePivotPatternList){
+        List<Dpattern> doublePivotPatternList=pivotHandle.findDPatterninPivots(pivotList);
+        for(Dpattern dpattern:doublePivotPatternList){
             System.out.println(dpattern);
-        }*//*
-        List<Dpattern> finalDpatternList = pivotHandle.findallDpattern(cleanedPivotList);
+        }*/
+        /*List<Dpattern> finalDpatternList = pivotHandle.findallDpattern(cleanedPivotList);
         for(Dpattern dpattern:finalDpatternList){
             System.out.println(dpattern);
         }*/
