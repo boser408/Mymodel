@@ -657,6 +657,9 @@ public class PivotHandleImpl implements PivotHandle {
         }
 
         while (n<=scratches.size()-3){
+            if(scratches.get(n).getStartId()>1000){
+                break;
+            }
             if(pivot.getPivotType()==1){
 
                 if(scratches.get(n).getLow()<pivot.getLow()){
