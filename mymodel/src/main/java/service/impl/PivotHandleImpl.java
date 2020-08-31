@@ -888,7 +888,7 @@ public class PivotHandleImpl implements PivotHandle {
                     if(uppivots.size()>=2){
                         Pivot temppivot=tempPivotClean(subpivot, cleanedPivotList.get(n+1), uppivots, dwpivots);
                         System.out.println("temppivot--12="+temppivot.toString());
-                        break;
+
                     }
 
                     subpivot.setLength(cleanedPivotList.get(n+1).getStartId()-subpivot.getStartId()
@@ -997,7 +997,7 @@ public class PivotHandleImpl implements PivotHandle {
                     if(dwpivots.size()>=2){
                         Pivot temppivot=tempPivotClean(subpivot, cleanedPivotList.get(n+1), uppivots, dwpivots);
                         System.out.println("temppivot--22="+temppivot.toString());
-                        break;
+
                     }
                     subpivot.setLength(cleanedPivotList.get(n+1).getStartId()-subpivot.getStartId()
                             +cleanedPivotList.get(n+1).getLength());

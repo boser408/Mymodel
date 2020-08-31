@@ -564,13 +564,7 @@ class MymodelApplicationTests {
         List<Scratch> listofsmall=scratchMapper.selectAllsmall();
         PivotHandle pivotHandle=new PivotHandleImpl();
         List<Pivot> pivotList=new ArrayList<>();
-        Pivot currentpivot=new Pivot();
-        currentpivot.setLength(listofsmall.get(0).getLength());
-        currentpivot.setStartId(listofsmall.get(0).getStartId());
-        currentpivot.setHigh(listofsmall.get(0).getHigh());
-        currentpivot.setLow(listofsmall.get(0).getLow());
-        currentpivot.setPivotType(0);
-        currentpivot.setScratches(null);
+        Pivot currentpivot=new Pivot(listofsmall.get(0));
 
         int n=1;
         while (n<listofsmall.size()-2){
@@ -662,20 +656,20 @@ class MymodelApplicationTests {
             System.out.println(pivot.toString());
         }
 
-        /*List<Pivot> cleanedPivotList=pivotHandle.scratchClean(pivotList);
+        List<Pivot> cleanedPivotList=pivotHandle.scratchClean(pivotList);
         for(Pivot pivot:cleanedPivotList){
             System.out.println(pivot.toString());
         }
-        System.out.println("Size of cleanedPivotList is:"+cleanedPivotList.size());*/
+        System.out.println("Size of cleanedPivotList is:"+cleanedPivotList.size());
 
-        List<Dpattern> doublePivotPatternList=pivotHandle.findDPatterninPivots(pivotList);
+        /*List<Dpattern> doublePivotPatternList=pivotHandle.findDPatterninPivots(pivotList);
         for(Dpattern dpattern:doublePivotPatternList){
             System.out.println(dpattern);
-        }
-        /*List<Dpattern> finalDpatternList = pivotHandle.findallDpattern(cleanedPivotList);
+        }*/
+        List<Dpattern> finalDpatternList = pivotHandle.findallDpattern(cleanedPivotList);
         for(Dpattern dpattern:finalDpatternList){
             System.out.println(dpattern);
-        }*/
+        }
     }
 
 }
