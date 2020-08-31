@@ -1,10 +1,12 @@
 package service.impl;
 
-import com.myproject.mymodel.domain.*;
+import com.myproject.mymodel.domain.Dpattern;
+import com.myproject.mymodel.domain.HighLowPrice;
+import com.myproject.mymodel.domain.Pivot;
+import com.myproject.mymodel.domain.Scratch;
 import service.PivotHandle;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public class PivotHandleImpl implements PivotHandle {
@@ -1034,32 +1036,29 @@ public class PivotHandleImpl implements PivotHandle {
                                 Scratch scratch2=new Scratch(cleanedPivotList.get(t));
                                 subpivot.getScratches().add(scratch2);
                             }
-                        }else {
-
                         }
 
-                    }else {
-
+                    }else { // Only 1 pivot between the beginning subpivot and ending subpivot;
+                       Scratch scratch=new Scratch(cleanedPivotList.get(n));
+                       subpivot.getScratches().add(scratch);
                     }
                     subpivot.setLength(cleanedPivotList.get(n+1).getStartId()-subpivot.getStartId()
                             +cleanedPivotList.get(n+1).getLength());
                     subpivot.setHigh(cleanedPivotList.get(n+1).getHigh());
-                    for(Pivot pivot: dwpivots){
-                        Scratch scratch=new Scratch(pivot);
-                        subpivot.getScratches().add(scratch);
-                    }
+
                     for(Scratch scratch:cleanedPivotList.get(n+1).getScratches()){
                         subpivot.getScratches().add(scratch);
                     }
 
-                    Dpattern returndpattern=findDpattern(subpivot);
-                    if(returndpattern.getFeatureScratches().size()>=2){
-                        System.out.println("returndpattern---22:"+returndpattern.toString());
-                        finalDpatternList.add(returndpattern);
-                    }
                     if(subpivot.getScratches().size()>1){
+                        Dpattern returndpattern=findDpattern(subpivot);
+                        if(returndpattern.getFeatureScratches().size()>=2){
+                            //System.out.println("returndpattern---22:"+returndpattern.toString());
+                            finalDpatternList.add(returndpattern);
+                        }
                         subpivot=cleanPivot(subpivot);
                     }
+                    
                     endNumberofsubpivot=n+1;
                 }else if(cleanedPivotList.get(n+2).getLow()<mainpivot.getLow()) {//3
                     if(subpivot.getPivotType()>5){
