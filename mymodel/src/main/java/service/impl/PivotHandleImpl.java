@@ -1004,20 +1004,40 @@ public class PivotHandleImpl implements PivotHandle {
                         int i=endNumberofsubpivot+1;
                         int numberofTmpLow=i;
                         Pivot tmpPivot=new Pivot(cleanedPivotList.get(i));
+                        List<Scratch> scratchesForInsert=new ArrayList<>();
                         i=i+2;
                         while (i<=n){
+                            Scratch scratch=new Scratch(cleanedPivotList.get(i-1));
+                            scratchesForInsert.add(cleanedPivotList.get(i-1));
                            if(cleanedPivotList.get(i).getLow()<=tmpPivot.getLow()){
                                numberofTmpLow=i;
                                tmpPivot.setLength(cleanedPivotList.get(i).getStartId()-tmpPivot.getStartId()
                                        +cleanedPivotList.get(i).getLength());
                                tmpPivot.setLow(cleanedPivotList.get(i).getLow());
+                               for(Scratch scratch1:scratchesForInsert){
+                                   tmpPivot.getScratches().add(scratch1);
+                               }
                            }
                             i=i+2;
                         }
-                        // 1. check the tmpPivot and search for potential D-pattern;
-                        // 2. Clear the tmpPivot;
-                        // 3. Merge the tmpPivot into subpivot;
-                        // 4. Handle the low point of tmpPivot and merge the left pivots into subpivot
+                        if(tmpPivot.getScratches().size()>1){ // 1. check the tmpPivot and search for potential D-pattern;
+
+                            Dpattern dpattern=findDpattern(tmpPivot);
+                            if(dpattern.getFeatureScratches().size()>=2){
+                                finalDpatternList.add(dpattern);
+                            }
+                        }
+                        Scratch scratch=new Scratch(tmpPivot); // 2. Merge the tmpPivot into subpivot;
+                        subpivot.getScratches().add(scratch);
+                        if(numberofTmpLow<n){ // 3. Handle the low point of tmpPivot and merge the left pivots into subpivot
+                            for(int t=numberofTmpLow+2;t<=n;t=t+2){
+                                Scratch scratch2=new Scratch(cleanedPivotList.get(t));
+                                subpivot.getScratches().add(scratch2);
+                            }
+                        }else {
+
+                        }
+
                     }else {
 
                     }
@@ -1031,7 +1051,7 @@ public class PivotHandleImpl implements PivotHandle {
                     for(Scratch scratch:cleanedPivotList.get(n+1).getScratches()){
                         subpivot.getScratches().add(scratch);
                     }
-                    Dpattern dpattern=new Dpattern(subpivot,subpivot.getScratches());
+
                     Dpattern returndpattern=findDpattern(subpivot);
                     if(returndpattern.getFeatureScratches().size()>=2){
                         System.out.println("returndpattern---22:"+returndpattern.toString());
@@ -1044,7 +1064,6 @@ public class PivotHandleImpl implements PivotHandle {
                 }else if(cleanedPivotList.get(n+2).getLow()<mainpivot.getLow()) {//3
                     if(subpivot.getPivotType()>5){
                         magaPivotList.add(subpivot);
-
                     }
                     dwpivots.clear();
                     mainpivot.setLength(cleanedPivotList.get(n+2).getStartId()-mainpivot.getStartId()
