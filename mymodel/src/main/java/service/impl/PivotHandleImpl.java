@@ -845,6 +845,7 @@ public class PivotHandleImpl implements PivotHandle {
         List<Pivot> uppivots=new ArrayList<>();
         List<Pivot> dwpivots=new ArrayList<>();
         int n=0;
+        int endNumberofsubpivot=0;
         while (cleanedPivotList.get(n).getPivotType()==0){
             n++;
         }
@@ -859,6 +860,7 @@ public class PivotHandleImpl implements PivotHandle {
                     if(subpivot.getPivotType()>-5){
                         mainpivot=new Pivot(cleanedPivotList.get(n+1));
                         subpivot=new Pivot(cleanedPivotList.get(n+2));
+                        endNumberofsubpivot=n+2;
                     }else if(subpivot.getPivotType()<=-5){
                         subpivot.setLength(cleanedPivotList.get(n+1).getStartId()-subpivot.getStartId()
                                 +cleanedPivotList.get(n+1).getLength());
@@ -883,11 +885,12 @@ public class PivotHandleImpl implements PivotHandle {
                         }
                         mainpivot=new Pivot(subpivot);
                         subpivot=new Pivot(cleanedPivotList.get(n+2));
+                        endNumberofsubpivot=n+2;
                     }
                 }else if(subpivot.getPivotType()<=-5 && cleanedPivotList.get(n+1).getLow()<subpivot.getLow()){//Scenario 2
-                    if(uppivots.size()>=2){
-                        Pivot temppivot=tempPivotClean(subpivot, cleanedPivotList.get(n+1), uppivots, dwpivots);
-                        System.out.println("temppivot--12="+temppivot.toString());
+                    if(n+1-endNumberofsubpivot>=4){
+
+                    }else {
 
                     }
 
@@ -912,6 +915,7 @@ public class PivotHandleImpl implements PivotHandle {
                     if(subpivot.getScratches().size()>1){
                         subpivot=cleanPivot(subpivot);
                     }
+                    endNumberofsubpivot=n+1;
                 }else if(cleanedPivotList.get(n+2).getHigh()>mainpivot.getHigh()) {//Scenario 3
                     if(subpivot.getPivotType()<-5){
                         magaPivotList.add(subpivot);
@@ -940,6 +944,7 @@ public class PivotHandleImpl implements PivotHandle {
                     }
                     if(n<cleanedPivotList.size()-4){
                         subpivot=new Pivot(cleanedPivotList.get(n+3));
+                        endNumberofsubpivot=n+3;
                     }
                 }else {//Scenario 4
                     if(mainpivot.getPivotType()<5 && cleanedPivotList.get(n+1).getPivotType()==-1){
@@ -968,7 +973,7 @@ public class PivotHandleImpl implements PivotHandle {
                     if(subpivot.getPivotType()<5){
                         mainpivot=new Pivot(cleanedPivotList.get(n+1));
                         subpivot=new Pivot(cleanedPivotList.get(n+2));
-
+                        endNumberofsubpivot=n+2;
                     }else if(subpivot.getPivotType()>=5){
                         subpivot.setLength(cleanedPivotList.get(n+1).getStartId()-subpivot.getStartId()
                                 +cleanedPivotList.get(n+1).getLength());
@@ -992,11 +997,28 @@ public class PivotHandleImpl implements PivotHandle {
 
                         mainpivot=new Pivot(subpivot);
                         subpivot=new Pivot(cleanedPivotList.get(n+2));
+                        endNumberofsubpivot=n+2;
                     }
                 }else if(subpivot.getPivotType()>=5 && cleanedPivotList.get(n+1).getHigh()>subpivot.getHigh()){//2
-                    if(dwpivots.size()>=2){
-                        Pivot temppivot=tempPivotClean(subpivot, cleanedPivotList.get(n+1), uppivots, dwpivots);
-                        System.out.println("temppivot--22="+temppivot.toString());
+                    if(n+1-endNumberofsubpivot>=4){//Potentiall exists a subpivotlist of current subpivot;
+                        int i=endNumberofsubpivot+1;
+                        int numberofTmpLow=i;
+                        Pivot tmpPivot=new Pivot(cleanedPivotList.get(i));
+                        i=i+2;
+                        while (i<=n){
+                           if(cleanedPivotList.get(i).getLow()<=tmpPivot.getLow()){
+                               numberofTmpLow=i;
+                               tmpPivot.setLength(cleanedPivotList.get(i).getStartId()-tmpPivot.getStartId()
+                                       +cleanedPivotList.get(i).getLength());
+                               tmpPivot.setLow(cleanedPivotList.get(i).getLow());
+                           }
+                            i=i+2;
+                        }
+                        // 1. check the tmpPivot and search for potential D-pattern;
+                        // 2. Clear the tmpPivot;
+                        // 3. Merge the tmpPivot into subpivot;
+                        // 4. Handle the low point of tmpPivot and merge the left pivots into subpivot
+                    }else {
 
                     }
                     subpivot.setLength(cleanedPivotList.get(n+1).getStartId()-subpivot.getStartId()
@@ -1018,6 +1040,7 @@ public class PivotHandleImpl implements PivotHandle {
                     if(subpivot.getScratches().size()>1){
                         subpivot=cleanPivot(subpivot);
                     }
+                    endNumberofsubpivot=n+1;
                 }else if(cleanedPivotList.get(n+2).getLow()<mainpivot.getLow()) {//3
                     if(subpivot.getPivotType()>5){
                         magaPivotList.add(subpivot);
@@ -1046,6 +1069,7 @@ public class PivotHandleImpl implements PivotHandle {
                     }
                     if(n<cleanedPivotList.size()-4){
                         subpivot=new Pivot(cleanedPivotList.get(n+3));
+                        endNumberofsubpivot=n+3;
                     }
                 }else {//4
                     if(mainpivot.getPivotType()>-5 && cleanedPivotList.get(n+1).getPivotType()==1){
