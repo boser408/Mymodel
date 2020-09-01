@@ -11,7 +11,7 @@ public interface PivotHandle {
     int getNumberofLoop();
     Pivot cleanPivot (Pivot pivot);
     Dpattern findDpattern (Pivot pivot);
-    Pivot tempPivotClean(Pivot subpivot, Pivot currentpivot, List<Pivot> uppivots, List<Pivot> dwpivots);
+
     List<Scratch> findScratches(List<HighLowPrice> highLowPrices, int startindex, int length, int pivotLength);
     List<Pivot> findPivots(List<Scratch> scratches, int startId);
     List<Pivot> pivotExtension(List<Scratch> scratches,Pivot pivot,int startId);
