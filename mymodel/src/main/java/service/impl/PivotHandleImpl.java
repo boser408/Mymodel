@@ -63,6 +63,59 @@ public class PivotHandleImpl implements PivotHandle {
     }
 
     @Override
+    public Pivot subpivotHandle(List<Pivot> cleanedPivotList, Pivot subpivot, int n, int endNumberofsubpivot) {
+
+        if(n+1-endNumberofsubpivot>=4){//Potentiall exists a subpivotlist of current subpivot;
+            int i=endNumberofsubpivot+1;
+            int numberofTmpLow=i;
+            Pivot tmpPivot=new Pivot(cleanedPivotList.get(i));
+            List<Scratch> scratchesForInsert=new ArrayList<>();
+            i=i+2;
+            while (i<=n){
+                Scratch scratch=new Scratch(cleanedPivotList.get(i-1));
+                scratchesForInsert.add(scratch);
+                if(cleanedPivotList.get(i).getLow()<=tmpPivot.getLow()){
+                    numberofTmpLow=i;
+                    tmpPivot.setLength(cleanedPivotList.get(i).getStartId()-tmpPivot.getStartId()
+                            +cleanedPivotList.get(i).getLength());
+                    tmpPivot.setLow(cleanedPivotList.get(i).getLow());
+                    for(Scratch scratch1:scratchesForInsert){
+                        tmpPivot.getScratches().add(scratch1);
+                    }
+                }
+                i=i+2;
+            }
+
+            Scratch scratch=new Scratch(tmpPivot); // 2. Merge the tmpPivot into subpivot;
+            subpivot.getScratches().add(scratch);
+            if(numberofTmpLow<n){ // 3. Handle the low point of tmpPivot and merge the left pivots into subpivot
+                for(int t=numberofTmpLow+2;t<=n;t=t+2){
+                    Scratch scratch2=new Scratch(cleanedPivotList.get(t));
+                    subpivot.getScratches().add(scratch2);
+                }
+            }
+
+        }else { // Only 1 pivot between the beginning subpivot and ending subpivot;
+            Scratch scratch=new Scratch(cleanedPivotList.get(n));
+            subpivot.getScratches().add(scratch);
+        }
+        subpivot.setLength(cleanedPivotList.get(n+1).getStartId()-subpivot.getStartId()
+                +cleanedPivotList.get(n+1).getLength());
+        subpivot.setHigh(cleanedPivotList.get(n+1).getHigh());
+
+        for(Scratch scratch:cleanedPivotList.get(n+1).getScratches()){
+            subpivot.getScratches().add(scratch);
+        }
+
+        if(subpivot.getScratches().size()>1){
+
+            subpivot=cleanPivot(subpivot);
+        }
+        Pivot returnpivot=new Pivot(subpivot);
+        return returnpivot;
+    }
+
+    @Override
     public List<Scratch> findScratches(List<HighLowPrice> highLowPrices, int startindex, int length, int pivotLength) {
 
         List<Scratch> scratches = new ArrayList<>();
@@ -797,6 +850,7 @@ public class PivotHandleImpl implements PivotHandle {
         List<Pivot> dwpivots=new ArrayList<>();
         int n=0;
         int endNumberofsubpivot=0;
+
         while (cleanedPivotList.get(n).getPivotType()==0){
             n++;
         }
@@ -898,6 +952,10 @@ public class PivotHandleImpl implements PivotHandle {
 
                     endNumberofsubpivot=n+1;
                 }else if(cleanedPivotList.get(n+2).getHigh()>mainpivot.getHigh()) {//Scenario 3
+                    System.out.println("Entering---13");
+                    System.out.println("uppivots="+uppivots.toString());
+                    System.out.println("dwpivots="+dwpivots.toString());
+                    System.out.println("mainpivot before handle="+mainpivot.toString());
                     if(subpivot.getPivotType()<-5){
                         magaPivotList.add(subpivot);
 
@@ -914,7 +972,7 @@ public class PivotHandleImpl implements PivotHandle {
                     for(Scratch scratch:cleanedPivotList.get(n+2).getScratches()){
                         mainpivot.getScratches().add(scratch);
                     }
-
+                    System.out.println("mainpivot after handle="+mainpivot.toString());
                     Dpattern returndpattern=findDpattern(mainpivot);
                     if(returndpattern.getFeatureScratches().size()>=2){
                         System.out.println("returndpattern---13:"+returndpattern.toString());
@@ -949,95 +1007,26 @@ public class PivotHandleImpl implements PivotHandle {
                 }
             }else if(mainpivot.getPivotType()<0){//Downtrend;
                 if(cleanedPivotList.get(n+1).getHigh()>mainpivot.getHigh()){//1
+                    System.out.println("Entering------21");
+                    System.out.println("subpivot before handle="+subpivot.toString());
+                    System.out.println("mainpivot before handle="+mainpivot.toString());
                     magaPivotList.add(mainpivot);
+                    subpivot=subpivotHandle(cleanedPivotList,subpivot,n,endNumberofsubpivot);
 
-                    if(subpivot.getPivotType()<5){
-                        mainpivot=new Pivot(cleanedPivotList.get(n+1));
-                        subpivot=new Pivot(cleanedPivotList.get(n+2));
-                        endNumberofsubpivot=n+2;
-                    }else if(subpivot.getPivotType()>=5){
-                        subpivot.setLength(cleanedPivotList.get(n+1).getStartId()-subpivot.getStartId()
-                                +cleanedPivotList.get(n+1).getLength());
-                        subpivot.setHigh(cleanedPivotList.get(n+1).getHigh());
-                        for(Pivot pivot: dwpivots){
-                            Scratch scratch=new Scratch(pivot);
-                            subpivot.getScratches().add(scratch);
-                        }
-                        for(Scratch scratch:cleanedPivotList.get(n+1).getScratches()){
-                            subpivot.getScratches().add(scratch);
-                        }
+                    System.out.println("subpivot after handle="+subpivot.toString());
+                    System.out.println("mainpivot after handle="+mainpivot.toString());
+                    mainpivot=new Pivot(subpivot);
+                    subpivot=new Pivot(cleanedPivotList.get(n+2));
+                    endNumberofsubpivot=n+2;
 
-                        Dpattern returndpattern=findDpattern(subpivot);
-                        if(returndpattern.getFeatureScratches().size()>=2){
-                            System.out.println("returndpattern---21:"+returndpattern.toString());
-                            finalDpatternList.add(returndpattern);
-                        }
-                        if(subpivot.getScratches().size()>1){
-                            subpivot=cleanPivot(subpivot);
-                        }
-
-                        mainpivot=new Pivot(subpivot);
-                        subpivot=new Pivot(cleanedPivotList.get(n+2));
-                        endNumberofsubpivot=n+2;
-                    }
                 }else if(subpivot.getPivotType()>=5 && cleanedPivotList.get(n+1).getHigh()>subpivot.getHigh()){//2
-                    if(n+1-endNumberofsubpivot>=4){//Potentiall exists a subpivotlist of current subpivot;
-                        int i=endNumberofsubpivot+1;
-                        int numberofTmpLow=i;
-                        Pivot tmpPivot=new Pivot(cleanedPivotList.get(i));
-                        List<Scratch> scratchesForInsert=new ArrayList<>();
-                        i=i+2;
-                        while (i<=n){
-                            Scratch scratch=new Scratch(cleanedPivotList.get(i-1));
-                            scratchesForInsert.add(scratch);
-                           if(cleanedPivotList.get(i).getLow()<=tmpPivot.getLow()){
-                               numberofTmpLow=i;
-                               tmpPivot.setLength(cleanedPivotList.get(i).getStartId()-tmpPivot.getStartId()
-                                       +cleanedPivotList.get(i).getLength());
-                               tmpPivot.setLow(cleanedPivotList.get(i).getLow());
-                               for(Scratch scratch1:scratchesForInsert){
-                                   tmpPivot.getScratches().add(scratch1);
-                               }
-                           }
-                            i=i+2;
-                        }
-                        if(tmpPivot.getScratches().size()>1){ // 1. check the tmpPivot and search for potential D-pattern;
+                    System.out.println("Entering------22");
+                    System.out.println("subpivot before handle="+subpivot.toString());
+                    System.out.println("mainpivot before handle="+mainpivot.toString());
+                    subpivot=subpivotHandle(cleanedPivotList,subpivot,n,endNumberofsubpivot);
 
-                            Dpattern dpattern=findDpattern(tmpPivot);
-                            if(dpattern.getFeatureScratches().size()>=2){
-                                finalDpatternList.add(dpattern);
-                            }
-                        }
-                        Scratch scratch=new Scratch(tmpPivot); // 2. Merge the tmpPivot into subpivot;
-                        subpivot.getScratches().add(scratch);
-                        if(numberofTmpLow<n){ // 3. Handle the low point of tmpPivot and merge the left pivots into subpivot
-                            for(int t=numberofTmpLow+2;t<=n;t=t+2){
-                                Scratch scratch2=new Scratch(cleanedPivotList.get(t));
-                                subpivot.getScratches().add(scratch2);
-                            }
-                        }
-
-                    }else { // Only 1 pivot between the beginning subpivot and ending subpivot;
-                       Scratch scratch=new Scratch(cleanedPivotList.get(n));
-                       subpivot.getScratches().add(scratch);
-                    }
-                    subpivot.setLength(cleanedPivotList.get(n+1).getStartId()-subpivot.getStartId()
-                            +cleanedPivotList.get(n+1).getLength());
-                    subpivot.setHigh(cleanedPivotList.get(n+1).getHigh());
-
-                    for(Scratch scratch:cleanedPivotList.get(n+1).getScratches()){
-                        subpivot.getScratches().add(scratch);
-                    }
-
-                    if(subpivot.getScratches().size()>1){
-                        Dpattern returndpattern=findDpattern(subpivot);
-                        if(returndpattern.getFeatureScratches().size()>=2){
-                            System.out.println("returndpattern---22:"+returndpattern.toString());
-                            finalDpatternList.add(returndpattern);
-                        }
-                        subpivot=cleanPivot(subpivot);
-                    }
-                    
+                    System.out.println("subpivot after handle="+subpivot.toString());
+                    System.out.println("mainpivot after handle="+mainpivot.toString());
                     endNumberofsubpivot=n+1;
                 }else if(cleanedPivotList.get(n+2).getLow()<mainpivot.getLow()) {//3
                     if(subpivot.getPivotType()>5){
