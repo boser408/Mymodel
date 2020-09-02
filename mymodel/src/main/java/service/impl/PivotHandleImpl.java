@@ -21,7 +21,8 @@ public class PivotHandleImpl implements PivotHandle {
 
         for(int n=pivot.getScratches().size()-1;n>0;n--){
             for(int i=n-1;i>-1;i--){
-                if(pivot.getScratches().get(n).getLength()>pivot.getScratches().get(i).getLength()){
+                double factor=(double) pivot.getScratches().get(i).getLength()/pivot.getScratches().get(n).getLength();
+                if(factor<controlFactor){
                     pivot.getScratches().remove(i);
                     n=n-1;
                 }
@@ -32,24 +33,25 @@ public class PivotHandleImpl implements PivotHandle {
     @Override
     public Dpattern findDpattern(Pivot pivot) {
         List<Scratch> scratchList=new ArrayList<>();
-        //System.out.println("pivot in handling is:"+pivot.toString());
+        System.out.println("pivot in findDpattern is XXXXXXXX:"+pivot.toString());
         for(int n=0;n<pivot.getScratches().size()-1;n++){
             for(int i=n+1;i<pivot.getScratches().size();i++){
                 double factor=(double) pivot.getScratches().get(i).getLength()/pivot.getScratches().get(n).getLength();
-                if(pivot.getPivotType()==1){
+                //System.out.println("i="+i+","+"n="+n+","+"factor="+factor);
+                if(pivot.getPivotType()>=1){
                     if((factor>controlFactor && factor<1/controlFactor) && pivot.getScratches().get(i).getLow()>pivot.getScratches().get(n).getHigh()){
-                        /*System.out.println("Dpattern Found in"+pivot.toString());
+                        System.out.println("Dpattern Found in"+pivot.toString());
                         System.out.println("the 1st Scratch is"+pivot.getScratches().get(n).toString());
-                        System.out.println("the 2nd Scratch is"+pivot.getScratches().get(i).toString());*/
+                        System.out.println("the 2nd Scratch is"+pivot.getScratches().get(i).toString());
                         scratchList.add(pivot.getScratches().get(n));
                         scratchList.add(pivot.getScratches().get(i));
 
                     }
-                }else if(pivot.getPivotType()==-1){
+                }else if(pivot.getPivotType()<=-1){
                   if((factor>controlFactor && factor<1/controlFactor) && pivot.getScratches().get(n).getLow()>pivot.getScratches().get(i).getHigh()){
-                        /*System.out.println("Dpattern Found in"+pivot.toString());
+                        System.out.println("Dpattern Found in"+pivot.toString());
                         System.out.println("the 1st Scratch is"+pivot.getScratches().get(n).toString());
-                        System.out.println("the 2nd Scratch is"+pivot.getScratches().get(i).toString());*/
+                        System.out.println("the 2nd Scratch is"+pivot.getScratches().get(i).toString());
                         scratchList.add(pivot.getScratches().get(n));
                         scratchList.add(pivot.getScratches().get(i));
 
@@ -61,7 +63,6 @@ public class PivotHandleImpl implements PivotHandle {
             Dpattern foundDpattern=new Dpattern(pivot,scratchList);
             return foundDpattern;
     }
-
     @Override
     public Pivot dwsubpivotHandle(List<Pivot> cleanedPivotList, Pivot subpivot, int n, int endNumberofsubpivot) {
         if(n+1-endNumberofsubpivot>=4){//Potentiall exists a subpivotlist of current subpivot;
@@ -113,7 +114,6 @@ public class PivotHandleImpl implements PivotHandle {
         Pivot returnpivot=new Pivot(subpivot);
         return returnpivot;
     }
-
     @Override
     public Pivot subpivotHandle(List<Pivot> cleanedPivotList, Pivot subpivot, int n, int endNumberofsubpivot) {
 
@@ -166,7 +166,6 @@ public class PivotHandleImpl implements PivotHandle {
         Pivot returnpivot=new Pivot(subpivot);
         return returnpivot;
     }
-
     @Override
     public List<Scratch> findScratches(List<HighLowPrice> highLowPrices, int startindex, int length, int pivotLength) {
 
@@ -908,7 +907,7 @@ public class PivotHandleImpl implements PivotHandle {
         Pivot mainpivot=new Pivot(cleanedPivotList.get(n));
         Pivot subpivot=new Pivot(cleanedPivotList.get(n+1));
         int endNumberofsubpivot=n+1;
-        while (n<cleanedPivotList.size()-3){
+        while (n<cleanedPivotList.size()-2){
 
             if(mainpivot.getPivotType()>0){ // Uptrend;
                 if(cleanedPivotList.get(n+1).getLow()<mainpivot.getLow()){ //Scenario 1
@@ -969,7 +968,7 @@ public class PivotHandleImpl implements PivotHandle {
                         if(mainpivot.getScratches().size()>1){
                             mainpivot=cleanPivot(mainpivot);
                         }
-                        if(n<cleanedPivotList.size()-4){
+                        if(n<cleanedPivotList.size()-3){
                             subpivot=new Pivot(cleanedPivotList.get(n+3));
                             endNumberofsubpivot=n+3;
                         }
@@ -1047,7 +1046,7 @@ public class PivotHandleImpl implements PivotHandle {
                         if(mainpivot.getScratches().size()>1){
                             mainpivot=cleanPivot(mainpivot);
                         }
-                        if(n<cleanedPivotList.size()-4){
+                        if(n<cleanedPivotList.size()-3){
                             subpivot=new Pivot(cleanedPivotList.get(n+3));
                             endNumberofsubpivot=n+3;
                         }
