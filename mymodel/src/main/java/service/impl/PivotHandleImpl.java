@@ -63,6 +63,47 @@ public class PivotHandleImpl implements PivotHandle {
             Dpattern foundDpattern=new Dpattern(pivot,scratchList);
             return foundDpattern;
     }
+
+    @Override
+    public Dpattern findTpattern(Pivot pivot) {
+        List<Scratch> scratchList=new ArrayList<>();
+        for(int n=0;n<pivot.getScratches().size()-1;n++){
+            for(int i=n+1;i<pivot.getScratches().size();i++){
+                double factor=(double) pivot.getScratches().get(i).getLength()/pivot.getScratches().get(n).getLength();
+                if(pivot.getPivotType()>=1){
+                    if((factor>controlFactor && factor<1/controlFactor) && pivot.getScratches().get(i).getLow()<=pivot.getScratches().get(n).getHigh()){
+                        for(int t=i+1;t<pivot.getScratches().size();t++){
+                            double factor2=(double) pivot.getScratches().get(t).getLength()/pivot.getScratches().get(n).getLength();
+                            double factor3=(double) pivot.getScratches().get(i).getLength()/pivot.getScratches().get(t).getLength();
+                            boolean criteria=(factor2>controlFactor && factor2<1/controlFactor)&&(factor3>controlFactor && factor3<1/controlFactor);
+                            if(criteria && pivot.getScratches().get(t).getLow()<=pivot.getScratches().get(n).getHigh() ){
+                                scratchList.add(pivot.getScratches().get(n));
+                                scratchList.add(pivot.getScratches().get(i));
+                                scratchList.add(pivot.getScratches().get(t));
+                            }
+                        }
+                    }
+                }else if(pivot.getPivotType()<=-1){
+                    if((factor>controlFactor && factor<1/controlFactor) && pivot.getScratches().get(n).getLow()<=pivot.getScratches().get(i).getHigh()){
+                        for(int t=i+1;t<pivot.getScratches().size();t++){
+                            double factor2=(double) pivot.getScratches().get(t).getLength()/pivot.getScratches().get(n).getLength();
+                            double factor3=(double) pivot.getScratches().get(i).getLength()/pivot.getScratches().get(t).getLength();
+                            boolean criteria=(factor2>controlFactor && factor2<1/controlFactor)&&(factor3>controlFactor && factor3<1/controlFactor);
+                            if(criteria && pivot.getScratches().get(n).getLow()<=pivot.getScratches().get(t).getHigh() ){
+                                scratchList.add(pivot.getScratches().get(n));
+                                scratchList.add(pivot.getScratches().get(i));
+                                scratchList.add(pivot.getScratches().get(t));
+                            }
+                        }
+
+                    }
+                }
+            }
+        }
+        Dpattern returnTpattern=new Dpattern(pivot,scratchList);
+        return returnTpattern;
+    }
+
     @Override
     public Pivot dwsubpivotHandle(List<Pivot> cleanedPivotList, Pivot subpivot, int n, int endNumberofsubpivot) {
         if(n+1-endNumberofsubpivot>=4){//Potentiall exists a subpivotlist of current subpivot;

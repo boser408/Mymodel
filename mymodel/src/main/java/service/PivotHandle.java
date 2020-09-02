@@ -11,6 +11,7 @@ public interface PivotHandle {
     int getNumberofLoop();
     Pivot cleanPivot (Pivot pivot);
     Dpattern findDpattern (Pivot pivot);
+    Dpattern findTpattern(Pivot pivot);
     Pivot dwsubpivotHandle(List<Pivot> cleanedPivotList, Pivot subpivot, int nloop,int endNumberofsubpivot);
     Pivot subpivotHandle(List<Pivot> cleanedPivotList, Pivot subpivot, int nloop,int endNumberofsubpivot);
     List<Scratch> findScratches(List<HighLowPrice> highLowPrices, int startindex, int length, int pivotLength);
