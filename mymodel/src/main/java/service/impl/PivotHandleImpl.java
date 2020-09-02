@@ -938,6 +938,7 @@ public class PivotHandleImpl implements PivotHandle {
                     if(cleanedPivotList.get(n+2).getHigh()>mainpivot.getHigh()) {//Scenario 3
                         System.out.println("Entering---13");
                         System.out.println("mainpivot before handle="+mainpivot.toString());
+                        System.out.println("subpivot before handle="+subpivot.toString());
                         if(subpivot.getPivotType()<-5){
                             magaPivotList.add(subpivot);
                         }
@@ -946,17 +947,20 @@ public class PivotHandleImpl implements PivotHandle {
                                 +cleanedPivotList.get(n+2).getLength());
                         mainpivot.setHigh(cleanedPivotList.get(n+2).getHigh());
                         mainpivot.setPivotType(6);
+                        Scratch scratch=new Scratch(subpivot);
+                        mainpivot.getScratches().add(scratch);
                         if(endNumberofsubpivot<n+1){
                             for(int i=endNumberofsubpivot+2;i<=n+1;i=i+2){
-                                Scratch scratch=new Scratch(cleanedPivotList.get(i));
-                                mainpivot.getScratches().add(scratch);
+                                Scratch scratch1=new Scratch(cleanedPivotList.get(i));
+                                mainpivot.getScratches().add(scratch1);
                             }
                         }
 
-                        for(Scratch scratch:cleanedPivotList.get(n+2).getScratches()){
-                            mainpivot.getScratches().add(scratch);
+                        for(Scratch scratch2:cleanedPivotList.get(n+2).getScratches()){
+                            mainpivot.getScratches().add(scratch2);
                         }
                         System.out.println("mainpivot after handle="+mainpivot.toString());
+                        System.out.println("subpivot after handle="+subpivot.toString());
                         Dpattern returndpattern=findDpattern(mainpivot);
                         if(returndpattern.getFeatureScratches().size()>=2){
                             System.out.println("returndpattern---13:"+returndpattern.toString());
@@ -1022,15 +1026,17 @@ public class PivotHandleImpl implements PivotHandle {
                                 +cleanedPivotList.get(n+2).getLength());
                         mainpivot.setLow(cleanedPivotList.get(n+2).getLow());
                         mainpivot.setPivotType(-6);
+                        Scratch scratch=new Scratch(subpivot);
+                        mainpivot.getScratches().add(scratch);
                         if(endNumberofsubpivot<n+1){
                             for(int i=endNumberofsubpivot+2;i<=n+1;i=i+2){
-                                Scratch scratch=new Scratch(cleanedPivotList.get(i));
-                                mainpivot.getScratches().add(scratch);
+                                Scratch scratch1=new Scratch(cleanedPivotList.get(i));
+                                mainpivot.getScratches().add(scratch1);
                             }
                         }
 
-                        for(Scratch scratch:cleanedPivotList.get(n+2).getScratches()){
-                            mainpivot.getScratches().add(scratch);
+                        for(Scratch scratch2:cleanedPivotList.get(n+2).getScratches()){
+                            mainpivot.getScratches().add(scratch2);
                         }
 
                         Dpattern returndpattern=findDpattern(mainpivot);
