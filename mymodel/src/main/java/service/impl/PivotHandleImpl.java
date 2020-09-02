@@ -63,7 +63,6 @@ public class PivotHandleImpl implements PivotHandle {
             Dpattern foundDpattern=new Dpattern(pivot,scratchList);
             return foundDpattern;
     }
-
     @Override
     public Dpattern findTpattern(Pivot pivot) {
         List<Scratch> scratchList=new ArrayList<>();
@@ -99,6 +98,9 @@ public class PivotHandleImpl implements PivotHandle {
                     }
                 }
             }
+        }
+        if(scratchList.size()>=3){ // Mark the pivot as Tripple-Pivots pattern;
+            pivot.setPivotType(33*pivot.getPivotType());
         }
         Dpattern returnTpattern=new Dpattern(pivot,scratchList);
         return returnTpattern;
