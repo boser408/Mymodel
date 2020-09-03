@@ -79,11 +79,13 @@ public class PivotHandleImpl implements PivotHandle {
         for(int n=0;n<pivot.getScratches().size()-1;n++){
             for(int i=n+1;i<pivot.getScratches().size();i++){
                 double factor=(double) pivot.getScratches().get(i).getLength()/pivot.getScratches().get(n).getLength();
+                if(factor>=controlFactor){break;}
                 if(pivot.getPivotType()>=1){
                     if((factor>controlFactor && factor<1/controlFactor) && pivot.getScratches().get(i).getLow()<=pivot.getScratches().get(n).getHigh()){
                         for(int t=i+1;t<pivot.getScratches().size();t++){
                             double factor2=(double) pivot.getScratches().get(t).getLength()/pivot.getScratches().get(n).getLength();
-                            double factor3=(double) pivot.getScratches().get(i).getLength()/pivot.getScratches().get(t).getLength();
+                            double factor3=(double) pivot.getScratches().get(t).getLength()/pivot.getScratches().get(i).getLength();
+                            if(factor2>=controlFactor||factor3>=controlFactor){break;}
                             boolean criteria=(factor2>controlFactor && factor2<1/controlFactor)&&(factor3>controlFactor && factor3<1/controlFactor);
                             if(criteria && pivot.getScratches().get(t).getLow()<=pivot.getScratches().get(n).getHigh() ){
                                 tmppivot.getScratches().clear();
@@ -99,7 +101,8 @@ public class PivotHandleImpl implements PivotHandle {
                     if((factor>controlFactor && factor<1/controlFactor) && pivot.getScratches().get(n).getLow()<=pivot.getScratches().get(i).getHigh()){
                         for(int t=i+1;t<pivot.getScratches().size();t++){
                             double factor2=(double) pivot.getScratches().get(t).getLength()/pivot.getScratches().get(n).getLength();
-                            double factor3=(double) pivot.getScratches().get(i).getLength()/pivot.getScratches().get(t).getLength();
+                            double factor3=(double) pivot.getScratches().get(t).getLength()/pivot.getScratches().get(i).getLength();
+                            if(factor2>=controlFactor||factor3>=controlFactor){break;}
                             boolean criteria=(factor2>controlFactor && factor2<1/controlFactor)&&(factor3>controlFactor && factor3<1/controlFactor);
                             if(criteria && pivot.getScratches().get(n).getLow()<=pivot.getScratches().get(t).getHigh() ){
                                 tmppivot.getScratches().clear();
@@ -114,10 +117,9 @@ public class PivotHandleImpl implements PivotHandle {
                 }
             }
         }
-        if(scratchList.size()>=3){ // Mark the pivot as Tripple-Pivots pattern;
+        if(returnTpattern.getFeaturePivots().size()>=1){ // Mark the pivot as Tripple-Pivots pattern;
             pivot.setPivotType(33*pivot.getPivotType());
         }
-
         return returnTpattern;
     }
 
