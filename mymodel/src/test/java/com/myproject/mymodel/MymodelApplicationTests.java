@@ -647,7 +647,6 @@ class MymodelApplicationTests {
             System.out.println(pivot.toString());
         }
         System.out.println("Size of pivotList is:"+pivotList.size());
-
         System.out.println("Sorted pivotList is:");
         for(Pivot pivot:pivotList){
             if(!pivot.getScratches().isEmpty()){
@@ -655,18 +654,16 @@ class MymodelApplicationTests {
             }
             System.out.println(pivot.toString());
         }
-
-        List<Pivot> cleanedPivotList=pivotHandle.scratchClean(pivotList);
-        for(Pivot pivot:cleanedPivotList){
-            System.out.println(pivot.toString());
-        }
-        System.out.println("Size of cleanedPivotList is:"+cleanedPivotList.size());
-
         List<Dpattern> doublePivotPatternList=pivotHandle.findDPatterninPivots(pivotList);
         for(Dpattern dpattern:doublePivotPatternList){
             System.out.println(dpattern);
         }
-        List<Dpattern> finalDpatternList = pivotHandle.findallDpattern(cleanedPivotList);
+        /*List<Pivot> cleanedPivotList=pivotHandle.scratchClean(pivotList);
+        for(Pivot pivot:cleanedPivotList){
+            System.out.println(pivot.toString());
+        }
+        System.out.println("Size of cleanedPivotList is:"+cleanedPivotList.size());*/
+        List<Dpattern> finalDpatternList = pivotHandle.findallDpattern(pivotList);
         finalDpatternList.addAll(doublePivotPatternList);
         for(Dpattern dpattern:finalDpatternList){
             System.out.println(dpattern);

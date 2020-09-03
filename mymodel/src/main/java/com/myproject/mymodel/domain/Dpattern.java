@@ -1,5 +1,6 @@
 package com.myproject.mymodel.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Dpattern {
@@ -15,14 +16,14 @@ public class Dpattern {
     public Dpattern() {
     }
 
-    public Dpattern(Pivot pivot, List<Scratch> featureScratches) {
+    public Dpattern(Pivot pivot) {
         this.startId = pivot.getStartId();
         this.length = pivot.getLength();
         this.high = pivot.getHigh();
         this.low = pivot.getLow();
         this.pivotDirection = pivot.getPivotType();
-        this.featureScratches = featureScratches;
-        this.featurePivots = null;
+        this.featureScratches = pivot.getScratches();
+        this.featurePivots = new ArrayList<>();
     }
 
     public int getStartId() {
