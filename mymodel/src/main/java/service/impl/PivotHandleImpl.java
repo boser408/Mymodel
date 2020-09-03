@@ -33,7 +33,7 @@ public class PivotHandleImpl implements PivotHandle {
     @Override
     public Dpattern findDpattern(Pivot pivot) {
         Dpattern foundDpattern=new Dpattern(pivot);
-        Pivot tmppivot=new Pivot(pivot);
+
         List<Scratch> scratchList=new ArrayList<>();
         System.out.println("pivot in findDpattern is XXXXXXXX:"+pivot.toString());
         for(int n=0;n<pivot.getScratches().size()-1;n++){
@@ -47,6 +47,7 @@ public class PivotHandleImpl implements PivotHandle {
                         /*System.out.println("Dpattern Found in"+pivot.toString());
                         System.out.println("the 1st Scratch is"+pivot.getScratches().get(n).toString());
                         System.out.println("the 2nd Scratch is"+pivot.getScratches().get(i).toString());*/
+                        Pivot tmppivot=new Pivot(pivot);
                         tmppivot.getScratches().clear();
                         tmppivot.getScratches().add(pivot.getScratches().get(n));
                         tmppivot.getScratches().add(pivot.getScratches().get(i));
@@ -58,6 +59,7 @@ public class PivotHandleImpl implements PivotHandle {
                         /*System.out.println("Dpattern Found in"+pivot.toString());
                         System.out.println("the 1st Scratch is"+pivot.getScratches().get(n).toString());
                         System.out.println("the 2nd Scratch is"+pivot.getScratches().get(i).toString());*/
+                      Pivot tmppivot=new Pivot(pivot);
                       tmppivot.getScratches().clear();
                       tmppivot.getScratches().add(pivot.getScratches().get(n));
                       tmppivot.getScratches().add(pivot.getScratches().get(i));
@@ -74,7 +76,7 @@ public class PivotHandleImpl implements PivotHandle {
     @Override
     public Dpattern findTpattern(Pivot pivot) {
         Dpattern returnTpattern=new Dpattern(pivot);
-        Pivot tmppivot=new Pivot(pivot);
+
         List<Scratch> scratchList=new ArrayList<>();
         for(int n=0;n<pivot.getScratches().size()-1;n++){
             for(int i=n+1;i<pivot.getScratches().size();i++){
@@ -88,6 +90,7 @@ public class PivotHandleImpl implements PivotHandle {
                             if(factor2>=controlFactor||factor3>=controlFactor){break;}
                             boolean criteria=(factor2>controlFactor && factor2<1/controlFactor)&&(factor3>controlFactor && factor3<1/controlFactor);
                             if(criteria && pivot.getScratches().get(t).getLow()<=pivot.getScratches().get(n).getHigh() ){
+                                Pivot tmppivot=new Pivot(pivot);
                                 tmppivot.getScratches().clear();
                                 tmppivot.getScratches().add(pivot.getScratches().get(n));
                                 tmppivot.getScratches().add(pivot.getScratches().get(i));
@@ -105,6 +108,7 @@ public class PivotHandleImpl implements PivotHandle {
                             if(factor2>=controlFactor||factor3>=controlFactor){break;}
                             boolean criteria=(factor2>controlFactor && factor2<1/controlFactor)&&(factor3>controlFactor && factor3<1/controlFactor);
                             if(criteria && pivot.getScratches().get(n).getLow()<=pivot.getScratches().get(t).getHigh() ){
+                                Pivot tmppivot=new Pivot(pivot);
                                 tmppivot.getScratches().clear();
                                 tmppivot.getScratches().add(pivot.getScratches().get(n));
                                 tmppivot.getScratches().add(pivot.getScratches().get(i));
