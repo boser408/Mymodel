@@ -652,9 +652,9 @@ class MymodelApplicationTests {
             if(!pivot.getScratches().isEmpty()){
                 pivot.getScratches().sort(Comparator.comparingInt(Scratch::getStartId));
             }
-            System.out.println(pivot.toString());
+            //System.out.println(pivot.toString());
         }
-        List<Dpattern> doublePivotPatternList=pivotHandle.findDPatterninPivots(pivotList);
+       // List<Dpattern> doublePivotPatternList=pivotHandle.findDPatterninPivots(pivotList);
 
         /*for(Dpattern dpattern:doublePivotPatternList){
             System.out.println(dpattern);
@@ -665,7 +665,7 @@ class MymodelApplicationTests {
         }
         System.out.println("Size of cleanedPivotList is:"+cleanedPivotList.size());*/
         List<Dpattern> finalDpatternList = pivotHandle.findallDpattern(pivotList);
-        finalDpatternList.addAll(doublePivotPatternList);
+        //finalDpatternList.addAll(doublePivotPatternList);
         /*for(Dpattern dpattern:finalDpatternList){
             System.out.println(dpattern);
         }*/

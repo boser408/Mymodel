@@ -88,30 +88,38 @@ public class PivotHandleImpl implements PivotHandle {
                 if(factor>=1/controlFactor){break;}
                 if(pivot.getPivotType()>=1){
                     if((factor>controlFactor && factor<1/controlFactor) && pivot.getScratches().get(i).getLow()<=pivot.getScratches().get(n).getHigh()){
+                        //System.out.println("i="+i+","+"n="+n+","+"factor="+factor);
                         for(int t=i+1;t<pivot.getScratches().size();t++){
                             double factor2=(double) pivot.getScratches().get(t).getLength()/pivot.getScratches().get(n).getLength();
                             double factor3=(double) pivot.getScratches().get(t).getLength()/pivot.getScratches().get(i).getLength();
-                            if(factor2>=controlFactor||factor3>=controlFactor){break;}
+
+                            if(factor2>=1/controlFactor||factor3>=1/controlFactor){break;}
+                            //System.out.println("factor2= "+factor2+" factor3="+factor3);
                             boolean criteria=(factor2>controlFactor && factor2<1/controlFactor)&&(factor3>controlFactor && factor3<1/controlFactor);
                             if(criteria && pivot.getScratches().get(t).getLow()<=pivot.getScratches().get(n).getHigh() ){
+                                //System.out.println("found-------------------111111");
                                 Pivot tmppivot=new Pivot(scratch);
                                 tmppivot.setPivotType(pivot.getPivotType());
                                 tmppivot.getScratches().add(pivot.getScratches().get(n));
                                 tmppivot.getScratches().add(pivot.getScratches().get(i));
                                 tmppivot.getScratches().add(pivot.getScratches().get(t));
                                 returnTpattern.getFeaturePivots().add(tmppivot);
-
+                                //System.out.println("found Tpattern ="+returnTpattern.toString());
                             }
                         }
                     }
                 }else if(pivot.getPivotType()<=-1){
                     if((factor>controlFactor && factor<1/controlFactor) && pivot.getScratches().get(n).getLow()<=pivot.getScratches().get(i).getHigh()){
+                        //System.out.println("i="+i+","+"n="+n+","+"factor="+factor);
                         for(int t=i+1;t<pivot.getScratches().size();t++){
                             double factor2=(double) pivot.getScratches().get(t).getLength()/pivot.getScratches().get(n).getLength();
                             double factor3=(double) pivot.getScratches().get(t).getLength()/pivot.getScratches().get(i).getLength();
-                            if(factor2>=controlFactor||factor3>=controlFactor){break;}
+
+                            if(factor2>=1/controlFactor||factor3>=1/controlFactor){break;}
+                            //System.out.println("factor2="+factor2+" factor3="+factor3);
                             boolean criteria=(factor2>controlFactor && factor2<1/controlFactor)&&(factor3>controlFactor && factor3<1/controlFactor);
                             if(criteria && pivot.getScratches().get(n).getLow()<=pivot.getScratches().get(t).getHigh() ){
+                                //System.out.println("found-------------------222222222");
                                 Pivot tmppivot=new Pivot(scratch);
                                 tmppivot.setPivotType(pivot.getPivotType());
                                 tmppivot.getScratches().add(pivot.getScratches().get(n));
@@ -126,7 +134,9 @@ public class PivotHandleImpl implements PivotHandle {
             }
         }
         if(returnTpattern.getFeaturePivots().size()>=1){ // Mark the pivot as Tripple-Pivots pattern;
-            pivot.setPivotType(33*pivot.getPivotType());
+
+            returnTpattern.setPivotDirection(returnTpattern.getPivotDirection()*33);
+           // System.out.println("Final--------------------Returned Tpattern ="+returnTpattern.toString());
         }
         return returnTpattern;
     }
@@ -180,7 +190,6 @@ public class PivotHandleImpl implements PivotHandle {
                         subpivot.getScratches().sort(Comparator.comparingInt(Scratch::getStartId));
                     }
         returnPivotList.add(1,subpivot);
-        Pivot returnpivot=new Pivot(subpivot);
         return returnPivotList;
     }
     @Override
@@ -230,7 +239,6 @@ public class PivotHandleImpl implements PivotHandle {
             subpivot.getScratches().sort(Comparator.comparingInt(Scratch::getStartId));
         }
         returnPivotList.add(1,subpivot);
-        Pivot returnpivot=new Pivot(subpivot);
         return returnPivotList;
     }
     @Override
@@ -1000,10 +1008,14 @@ public class PivotHandleImpl implements PivotHandle {
 
                 }else {
                     if(subpivot.getPivotType()<=-5 && cleanedPivotList.get(n+1).getLow()<subpivot.getLow()){//Scenario 2
-
+                        /*System.out.println("Entering---12");
+                        System.out.println("mainpivot before handle="+mainpivot.toString());
+                        System.out.println("subpivot before handle="+subpivot.toString());*/
                         List<Pivot> returnPivotList=dwsubpivotHandle(cleanedPivotList,subpivot,n,endNumberofsubpivot);
                         magaPivotList.add(returnPivotList.get(0));
                         subpivot=new Pivot(returnPivotList.get(1));
+                        /*System.out.println("returned tmppivot="+returnPivotList.get(0).toString());
+                        System.out.println("returned subpivot="+returnPivotList.get(1).toString());*/
                         endNumberofsubpivot=n+1;
                     }else {
                         if(mainpivot.getPivotType()<5 && cleanedPivotList.get(n+1).getPivotType()==-1){
@@ -1011,12 +1023,9 @@ public class PivotHandleImpl implements PivotHandle {
                         }
                     }
                     if(cleanedPivotList.get(n+2).getHigh()>mainpivot.getHigh()) {//Scenario 3
-                        System.out.println("Entering---13");
+                        /*System.out.println("Entering---13");
                         System.out.println("mainpivot before handle="+mainpivot.toString());
-                        System.out.println("subpivot before handle="+subpivot.toString());
-                       /* if(subpivot.getPivotType()<-5){
-                            magaPivotList.add(subpivot);
-                        }*/
+                        System.out.println("subpivot before handle="+subpivot.toString());*/
                         magaPivotList.add(subpivot);
                         mainpivot.setLength(cleanedPivotList.get(n+2).getStartId()-mainpivot.getStartId()
                                 +cleanedPivotList.get(n+2).getLength());
@@ -1024,42 +1033,34 @@ public class PivotHandleImpl implements PivotHandle {
                         mainpivot.setPivotType(6);
                         Scratch scratch=new Scratch(subpivot);
                         mainpivot.getScratches().add(scratch);
+                        //System.out.println("stage 13----2222222222222");
                         if(endNumberofsubpivot<n+1){
                             for(int i=endNumberofsubpivot+2;i<=n+1;i=i+2){
+                                magaPivotList.add(cleanedPivotList.get(i));
                                 Scratch scratch1=new Scratch(cleanedPivotList.get(i));
                                 mainpivot.getScratches().add(scratch1);
                             }
                         }
-
                         for(Scratch scratch2:cleanedPivotList.get(n+2).getScratches()){
                             mainpivot.getScratches().add(scratch2);
                         }
 
-                        Dpattern returndpattern=findDpattern(mainpivot);
-                        if(returndpattern.getFeaturePivots().size()>=1){
-                            //System.out.println("returndpattern---13:"+returndpattern.toString());
-                            finalDpatternList.add(returndpattern);
-                        }
-
+                        //System.out.println("stage 13----33333333333");
                         if(mainpivot.getScratches().size()>1){
                             mainpivot.getScratches().sort(Comparator.comparingInt(Scratch::getStartId));
-                            //mainpivot=cleanPivot(mainpivot);
                         }
 
-                        if (mainpivot.getScratches().size()>2){
-                            Dpattern tripattern=findTpattern(mainpivot);
-                            if(tripattern.getPivotDirection()>30 || tripattern.getPivotDirection()<-30){
-                               // System.out.println("Tripattern---13:"+returndpattern.toString());
-                                finalDpatternList.add(tripattern);
-                            }
-                        }
                         if(n<cleanedPivotList.size()-3){
                             subpivot=new Pivot(cleanedPivotList.get(n+3));
                             endNumberofsubpivot=n+3;
                         }
+                        /*System.out.println("stage 13----4444444444444444444");
                         System.out.println("Stage 13--mainpivot after handle="+mainpivot.toString());
-                        System.out.println("Stage 13--subpivot after handle="+subpivot.toString());
+                        System.out.println("Stage 13--subpivot after handle="+subpivot.toString());*/
                     }else {
+                        /*System.out.println("Entering---14");
+                        System.out.println("mainpivot before handle="+mainpivot.toString());
+                        System.out.println("subpivot before handle="+subpivot.toString());*/
                         if(subpivot.getPivotType()>-5 && cleanedPivotList.get(n+2).getPivotType()==1){
                             subpivot.setPivotType(-5);
                         }
@@ -1107,9 +1108,7 @@ public class PivotHandleImpl implements PivotHandle {
                         }
                     }
                     if(cleanedPivotList.get(n+2).getLow()<mainpivot.getLow()) {//3
-                        /*if(subpivot.getPivotType()>5){
-                            magaPivotList.add(subpivot);
-                        }*/
+
                         magaPivotList.add(subpivot);
                         mainpivot.setLength(cleanedPivotList.get(n+2).getStartId()-mainpivot.getStartId()
                                 +cleanedPivotList.get(n+2).getLength());
@@ -1119,6 +1118,7 @@ public class PivotHandleImpl implements PivotHandle {
                         mainpivot.getScratches().add(scratch);
                         if(endNumberofsubpivot<n+1){
                             for(int i=endNumberofsubpivot+2;i<=n+1;i=i+2){
+                                magaPivotList.add(cleanedPivotList.get(i));
                                 Scratch scratch1=new Scratch(cleanedPivotList.get(i));
                                 mainpivot.getScratches().add(scratch1);
                             }
@@ -1128,22 +1128,10 @@ public class PivotHandleImpl implements PivotHandle {
                             mainpivot.getScratches().add(scratch2);
                         }
 
-                        Dpattern returndpattern=findDpattern(mainpivot);
-                        if(returndpattern.getFeaturePivots().size()>=1){
-                           // System.out.println("returndpattern---23:"+returndpattern.toString());
-                            finalDpatternList.add(returndpattern);
-                        }
                         if(mainpivot.getScratches().size()>1){
                             mainpivot.getScratches().sort(Comparator.comparingInt(Scratch::getStartId));
-                            //mainpivot=cleanPivot(mainpivot);
                         }
-                        if (mainpivot.getScratches().size()>2){
-                            Dpattern tripattern=findTpattern(mainpivot);
-                            if(tripattern.getPivotDirection()>30 || tripattern.getPivotDirection()<-30){
-                              //  System.out.println("Tripattern---23:"+returndpattern.toString());
-                                finalDpatternList.add(tripattern);
-                            }
-                        }
+
                         if(n<cleanedPivotList.size()-3){
                             subpivot=new Pivot(cleanedPivotList.get(n+3));
                             endNumberofsubpivot=n+3;
@@ -1163,13 +1151,58 @@ public class PivotHandleImpl implements PivotHandle {
             }
 
         }
-        /*System.out.println("mainpivot final:"+mainpivot.toString());
-        System.out.println("subpivot:"+subpivot.toString());*/
+        List<Dpattern> finalTpatternList=new ArrayList<>();
+        magaPivotList.sort(Comparator.comparingInt(Pivot::getStartId));
         for(Pivot pivot:magaPivotList){
-            System.out.println("pivot in magaPivotList:"+pivot.toString());
+            //System.out.println("pivot in magaPivotList:"+pivot.toString());
+            /*if(pivot.getScratches().size()>1){
+                Dpattern returndpattern=findDpattern(pivot);
+                if(returndpattern.getFeaturePivots().size()>=1){
+                    finalDpatternList.add(returndpattern);
+                }
+            }*/
+
+            if (mainpivot.getScratches().size()>2){
+                Dpattern tripattern=findTpattern(pivot);
+                if(tripattern.getPivotDirection()>30 || tripattern.getPivotDirection()<-30){
+                   finalTpatternList.add(tripattern);
+                }
+            }
         }
+        //System.out.println("Size of current finalDpatternList="+finalDpatternList.size());
+        System.out.println("Size of current finalTpatternList="+finalTpatternList.size());
+       /* Dpattern returndpattern=findDpattern(mainpivot);
+        if(returndpattern.getFeaturePivots().size()>=1){
+            finalDpatternList.add(returndpattern);
+        }
+        System.out.println("Size of fianl finalDpatternList="+finalDpatternList.size());*/
+
+        Dpattern tripattern=findTpattern(mainpivot);
+        if(tripattern.getPivotDirection()>30 || tripattern.getPivotDirection()<-30){
+            finalTpatternList.add(tripattern);
+        }
+        System.out.println("Size of final finalTpatternList="+finalTpatternList.size());
+        int nt=0;
         for(Scratch scratch:mainpivot.getScratches()){
-            System.out.println("Scratch in mainpivot:"+scratch.toString());
+            System.out.println("Scratch in mainpivot index n:"+nt+"---"+scratch.toString());
+            nt=nt+1;
+        }
+        int nn=1;
+        /*for(Dpattern dpattern:finalDpatternList){
+
+            System.out.println("Pivots in "+nn+"th dpattern is");
+            for(Pivot pivot:dpattern.getFeaturePivots()){
+                System.out.println("Pivot="+pivot.toString());
+            }
+            nn=nn+1;
+        }*/
+        nn=1;
+        for(Dpattern tpattern:finalTpatternList){
+            System.out.println("Pivots in "+nn+"th tpattern is");
+            for(Pivot pivot:tpattern.getFeaturePivots()){
+                System.out.println("Pivot="+pivot.toString());
+            }
+            nn=nn+1;
         }
         return finalDpatternList;
     }
