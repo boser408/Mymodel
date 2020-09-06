@@ -654,23 +654,47 @@ class MymodelApplicationTests {
             }
             //System.out.println(pivot.toString());
         }
-       // List<Dpattern> doublePivotPatternList=pivotHandle.findDPatterninPivots(pivotList);
-
-        /*for(Dpattern dpattern:doublePivotPatternList){
-            System.out.println(dpattern);
-        }*/
-        /*List<Pivot> cleanedPivotList=pivotHandle.scratchClean(pivotList);
-        for(Pivot pivot:cleanedPivotList){
-            System.out.println(pivot.toString());
+        List<Pivot> magaPivotList = pivotHandle.findMagaPivotList(pivotList);
+        List<Dpattern> finalDpatternList=new ArrayList<>();
+        for(Pivot pivot:magaPivotList){
+            if(pivot.getScratches().size()>1){
+                Dpattern returndpattern=pivotHandle.findDpattern(pivot);
+                if(returndpattern.getFeaturePivots().size()>=1){
+                    finalDpatternList.add(returndpattern);
+                }
+            }
         }
-        System.out.println("Size of cleanedPivotList is:"+cleanedPivotList.size());*/
-        List<Dpattern> finalDpatternList = pivotHandle.findallDpattern(pivotList);
-        //finalDpatternList.addAll(doublePivotPatternList);
-        /*for(Dpattern dpattern:finalDpatternList){
-            System.out.println(dpattern);
+
+        System.out.println("Size of finalDpatternList="+finalDpatternList.size());
+        int nn=1;
+        for(Dpattern dpattern:finalDpatternList){
+            System.out.println("Pivots in "+nn+"th dpattern is");
+            for(Pivot pivot:dpattern.getFeaturePivots()){
+                System.out.println("Pivot="+pivot.toString());
+                for(Scratch scratch:pivot.getScratches()){
+                    System.out.println("Pair of Dpattern in Pivot= "+scratch.toString());
+                }
+            }
+            nn=nn+1;
+        }
+        /*List<Dpattern> finalTpatternList=new ArrayList<>();
+        for(Pivot pivot:magaPivotList){
+            if (pivot.getScratches().size()>2){
+                Dpattern tripattern=pivotHandle.findTpattern(pivot);
+                if(tripattern.getPivotDirection()>30 || tripattern.getPivotDirection()<-30){
+                    finalTpatternList.add(tripattern);
+                }
+            }
+        }
+        nn=1;
+        for(Dpattern tpattern:finalTpatternList){
+            System.out.println("Pivots in "+nn+"th tpattern is");
+            for(Pivot pivot:tpattern.getFeaturePivots()){
+                System.out.println("Pivot="+pivot.toString());
+            }
+            nn=nn+1;
         }*/
     }
-
 }
 
 

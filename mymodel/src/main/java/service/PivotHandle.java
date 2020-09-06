@@ -19,5 +19,5 @@ public interface PivotHandle {
     List<Pivot> pivotExtension(List<Scratch> scratches,Pivot pivot,int startId);
     List<Pivot> scratchClean(List<Pivot> basicPivotList);// Create cleaned pivot lists that only contain effective scratches, which could potentially produce D-pattern;
     List<Dpattern> findDPatterninPivots(List<Pivot> basicPivotList);//Find small D-patterns within basic Pivots;
-    List<Dpattern> findallDpattern(List<Pivot> cleanedPivotList);
+    List<Pivot> findMagaPivotList(List<Pivot> cleanedPivotList);
 }

@@ -975,8 +975,8 @@ public class PivotHandleImpl implements PivotHandle {
         return doublePivotPatternList;
     }
     @Override
-    public List<Dpattern> findallDpattern(List<Pivot> cleanedPivotList) {
-        List<Dpattern> finalDpatternList=new ArrayList<>();
+    public List<Pivot> findMagaPivotList(List<Pivot> cleanedPivotList) {
+
         List<Pivot> magaPivotList=new ArrayList<>();
         int n=0;
 
@@ -1123,15 +1123,12 @@ public class PivotHandleImpl implements PivotHandle {
                                 mainpivot.getScratches().add(scratch1);
                             }
                         }
-
                         for(Scratch scratch2:cleanedPivotList.get(n+2).getScratches()){
                             mainpivot.getScratches().add(scratch2);
                         }
-
                         if(mainpivot.getScratches().size()>1){
                             mainpivot.getScratches().sort(Comparator.comparingInt(Scratch::getStartId));
                         }
-
                         if(n<cleanedPivotList.size()-3){
                             subpivot=new Pivot(cleanedPivotList.get(n+3));
                             endNumberofsubpivot=n+3;
@@ -1141,7 +1138,6 @@ public class PivotHandleImpl implements PivotHandle {
                             subpivot.setPivotType(5);
                         }
                     }
-
                 }
                 if(mainpivot.getPivotType()<=0){
                     n=n+2;
@@ -1149,62 +1145,11 @@ public class PivotHandleImpl implements PivotHandle {
                     n=n+1;
                 }
             }
-
         }
-        List<Dpattern> finalTpatternList=new ArrayList<>();
         magaPivotList.sort(Comparator.comparingInt(Pivot::getStartId));
-        for(Pivot pivot:magaPivotList){
-            //System.out.println("pivot in magaPivotList:"+pivot.toString());
-            /*if(pivot.getScratches().size()>1){
-                Dpattern returndpattern=findDpattern(pivot);
-                if(returndpattern.getFeaturePivots().size()>=1){
-                    finalDpatternList.add(returndpattern);
-                }
-            }*/
-
-            if (mainpivot.getScratches().size()>2){
-                Dpattern tripattern=findTpattern(pivot);
-                if(tripattern.getPivotDirection()>30 || tripattern.getPivotDirection()<-30){
-                   finalTpatternList.add(tripattern);
-                }
-            }
-        }
-        //System.out.println("Size of current finalDpatternList="+finalDpatternList.size());
-        System.out.println("Size of current finalTpatternList="+finalTpatternList.size());
-       /* Dpattern returndpattern=findDpattern(mainpivot);
-        if(returndpattern.getFeaturePivots().size()>=1){
-            finalDpatternList.add(returndpattern);
-        }
-        System.out.println("Size of fianl finalDpatternList="+finalDpatternList.size());*/
-
-        Dpattern tripattern=findTpattern(mainpivot);
-        if(tripattern.getPivotDirection()>30 || tripattern.getPivotDirection()<-30){
-            finalTpatternList.add(tripattern);
-        }
-        System.out.println("Size of final finalTpatternList="+finalTpatternList.size());
-        int nt=0;
-        for(Scratch scratch:mainpivot.getScratches()){
-            System.out.println("Scratch in mainpivot index n:"+nt+"---"+scratch.toString());
-            nt=nt+1;
-        }
-        int nn=1;
-        /*for(Dpattern dpattern:finalDpatternList){
-
-            System.out.println("Pivots in "+nn+"th dpattern is");
-            for(Pivot pivot:dpattern.getFeaturePivots()){
-                System.out.println("Pivot="+pivot.toString());
-            }
-            nn=nn+1;
-        }*/
-        nn=1;
-        for(Dpattern tpattern:finalTpatternList){
-            System.out.println("Pivots in "+nn+"th tpattern is");
-            for(Pivot pivot:tpattern.getFeaturePivots()){
-                System.out.println("Pivot="+pivot.toString());
-            }
-            nn=nn+1;
-        }
-        return finalDpatternList;
+        mainpivot.getScratches().sort(Comparator.comparingInt(Scratch::getStartId));
+        magaPivotList.add(mainpivot);
+        return magaPivotList;
     }
 
 }
