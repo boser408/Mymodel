@@ -664,19 +664,7 @@ class MymodelApplicationTests {
                 }
             }
         }
-
-        System.out.println("Size of finalDpatternList="+finalDpatternList.size());
-        int nn=1;
-        for(Dpattern dpattern:finalDpatternList){
-            System.out.println("Pivots in "+nn+"th dpattern is");
-            for(Pivot pivot:dpattern.getFeaturePivots()){
-                System.out.println("Pivot="+pivot.toString());
-                for(Scratch scratch:pivot.getScratches()){
-                    System.out.println("Pair of Dpattern in Pivot= "+scratch.toString());
-                }
-            }
-            nn=nn+1;
-        }
+      //  System.out.println("Size of finalDpatternList="+finalDpatternList.size());
         /*List<Dpattern> finalTpatternList=new ArrayList<>();
         for(Pivot pivot:magaPivotList){
             if (pivot.getScratches().size()>2){
@@ -694,6 +682,25 @@ class MymodelApplicationTests {
             }
             nn=nn+1;
         }*/
+        List<Pivot> dpatternPivotList=new ArrayList<>();
+        for(Dpattern dpattern:finalDpatternList){
+            for(Pivot pivot:dpattern.getFeaturePivots()){
+                dpatternPivotList.add(pivot);
+            }
+        }
+        for(Pivot pivot:dpatternPivotList){
+            int nloop=0;
+            while (nloop<listofsmall.size()){
+                boolean criteria=listofsmall.get(nloop).getStatus()*pivot.getScratches().get(1).getStatus()>0;
+                double factor=(double) listofsmall.get(nloop).getLength()/pivot.getScratches().get(1).getLength();
+                if(listofsmall.get(nloop).getStartId()>pivot.getScratches().get(1).getStartId()
+                        && factor>=pivotHandle.getControlFactor()&&criteria){
+                    pivot.getScratches().add(2,listofsmall.get(nloop));
+                    break;
+                }else {n++;}
+            }
+
+        }
     }
 }
 

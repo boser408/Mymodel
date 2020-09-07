@@ -9,6 +9,7 @@ import java.util.List;
 
 public interface PivotHandle {
     int getNumberofLoop();
+    double getControlFactor();
     Pivot cleanPivot (Pivot pivot);
     Dpattern findDpattern (Pivot pivot);
     Dpattern findTpattern(Pivot pivot);
@@ -20,4 +21,6 @@ public interface PivotHandle {
     List<Pivot> scratchClean(List<Pivot> basicPivotList);// Create cleaned pivot lists that only contain effective scratches, which could potentially produce D-pattern;
     List<Dpattern> findDPatterninPivots(List<Pivot> basicPivotList);//Find small D-patterns within basic Pivots;
     List<Pivot> findMagaPivotList(List<Pivot> cleanedPivotList);
+
+
 }

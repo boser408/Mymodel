@@ -16,6 +16,7 @@ public class PivotHandleImpl implements PivotHandle {
     public int getNumberofLoop() {
         return numberofLoop;
     }
+    public double getControlFactor(){return controlFactor;}
 
     @Override
     public Pivot cleanPivot(Pivot pivot) {
