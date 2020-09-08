@@ -26,12 +26,12 @@ public class Scratch {
         this.low = pivot.getLow();
         this.status = pivot.getPivotType();
     }
-    public Scratch(int length, int startId, float high, float low, int status) {
-        this.length = length;
-        this.startId = startId;
-        this.high = high;
-        this.low = low;
-        this.status = status;
+    public Scratch(HighLowPrice highLowPrice) {
+        this.length = 1;
+        this.startId = highLowPrice.getId();
+        this.high = highLowPrice.getHigh();
+        this.low = highLowPrice.getLow();
+        this.status = 0;
     }
 
     public Scratch(Properties props) {
