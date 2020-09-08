@@ -10,7 +10,7 @@ import java.util.List;
 public interface PivotHandle {
     int getNumberofLoop();
     double getControlFactor();
-    Scratch checkHiddenScratch(List<HighLowPrice> highLowPrices);
+    Scratch checkHiddenScratch(List<HighLowPrice> highLowPrices,int scratchdirection);
     Pivot cleanPivot (Pivot pivot);
     Dpattern findDpattern (Pivot pivot);
     Dpattern findTpattern(Pivot pivot);
