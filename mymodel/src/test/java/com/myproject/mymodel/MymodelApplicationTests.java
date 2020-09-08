@@ -50,18 +50,6 @@ class MymodelApplicationTests {
     @Test
     void findScratches(){ // Create the table of "findscratch"
         List<HighLowPrice> highLowPrices = highLowPriceMapper.selectHighLow();
-        int pivotLength=6; // Definition of the length of shortest bar pivot;
-        int bottom = highLowPrices.size()-(pivotLength-1);
-        for(int n=0;n<bottom;n++){
-            int i=n+1;
-            Optional<HighLowPrice> max = highLowPrices.stream().filter(highLowPrice -> highLowPrice.getId()>=i && highLowPrice.getId() <=i+(pivotLength-1))
-                    .max(Comparator.comparingDouble(HighLowPrice::getHigh));
-            Optional<HighLowPrice> min = highLowPrices.stream().filter(highLowPrice -> highLowPrice.getId()>=i && highLowPrice.getId() <=i+(pivotLength-1))
-                    .min(Comparator.comparingDouble(HighLowPrice::getLow));
-            highLowPrices.get(n).setNdhigh(max.get().getHigh());
-            highLowPrices.get(n).setNdlow(min.get().getLow());
-
-        }
         PivotHandle pivotHandle=new PivotHandleImpl();
         List<Scratch> scratches = pivotHandle.findScratches(highLowPrices, 1, highLowPrices.size(), 6);
         System.out.println(scratches.size());

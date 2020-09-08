@@ -9,14 +9,33 @@ import service.PivotHandle;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 public class PivotHandleImpl implements PivotHandle {
     public static final double controlFactor=0.7;
+    public static final int pivotLength=6;
     public int numberofLoop;
     public int getNumberofLoop() {
         return numberofLoop;
     }
     public double getControlFactor(){return controlFactor;}
+
+    @Override
+    public Scratch checkHiddenScratch(List<HighLowPrice> highLowPrices) {
+        
+        int bottom = highLowPrices.size()-(pivotLength-1);
+        for(int n=0;n<bottom;n++){
+            int i=n+1;
+            Optional<HighLowPrice> max = highLowPrices.stream().filter(highLowPrice -> highLowPrice.getId()>=i && highLowPrice.getId() <=i+(pivotLength-1))
+                    .max(Comparator.comparingDouble(HighLowPrice::getHigh));
+            Optional<HighLowPrice> min = highLowPrices.stream().filter(highLowPrice -> highLowPrice.getId()>=i && highLowPrice.getId() <=i+(pivotLength-1))
+                    .min(Comparator.comparingDouble(HighLowPrice::getLow));
+            highLowPrices.get(n).setNdhigh(max.get().getHigh());
+            highLowPrices.get(n).setNdlow(min.get().getLow());
+
+        }
+        return null;
+    }
 
     @Override
     public Pivot cleanPivot(Pivot pivot) {
@@ -331,15 +350,15 @@ public class PivotHandleImpl implements PivotHandle {
                         upscratch.setLength(upscratch.getLength()+1);
 
                     }else {
-                        if(highLowPrices.get(n-5).getNdlow()==highLowPrices.get(n).getLow() &&
-                                highLowPrices.get(n-5).getNdhigh()==highLowPrices.get(n-5).getHigh()){
+                        if(n-nofdwscratch>=pivotLength-1){
+                            List<HighLowPrice> partialHighLowPrice=highLowPrices.subList(nofdwscratch,n);
                             upscratch.setLength(highLowPrices.get(nofupscratch).getId()-upscratch.getStartId()+1);
                             Scratch scratch=new Scratch(upscratch);
                             scratches.add(scratch);
                             dwscratch.setLength(highLowPrices.get(nofdwscratch).getId()-dwscratch.getStartId()+1);
                             Scratch dscratch=new Scratch(dwscratch);
                             scratches.add(dscratch);
-                           
+
                         }else {
                             upscratch.setLength(upscratch.getLength()+1);
                             dwscratch.setLength(dwscratch.getLength()+1);
