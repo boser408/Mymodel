@@ -248,44 +248,46 @@ public class PivotHandleImpl implements PivotHandle {
         List<Scratch> scratches = new ArrayList<>();
         Scratch upscratch=new Scratch(1,startindex,highLowPrices.get(startindex-1).getHigh(),highLowPrices.get(startindex-1).getLow(),0);
         Scratch dwscratch=new Scratch(1,startindex,highLowPrices.get(startindex-1).getHigh(),highLowPrices.get(startindex-1).getLow(),0);
-
+        int nofupscratch=0; //number when upscratch ended;
+        int nofdwscratch=0; //number when dwscratch ended;
         for(int n=startindex;n<startindex+length-1;n++){
             if (upscratch.getStatus()==1) { //Scenario 1: A formed up trend scratch exists;
 
-                if(highLowPrices.get(n).getHigh()>=upscratch.getHigh()
+                if(highLowPrices.get(n).getHigh()>=upscratch.getHigh()     // 1.1: uptrend creates a new high;
                         && highLowPrices.get(n).getLow()>=upscratch.getLow() ){
 
                     upscratch.setLength(upscratch.getLength()+1);
                     upscratch.setHigh(highLowPrices.get(n).getHigh());
-
+                    nofupscratch=n;
                     dwscratch.setLength(1);
                     dwscratch.setStartId(n+1);
                     dwscratch.setHigh(highLowPrices.get(n).getHigh());
                     dwscratch.setLow(highLowPrices.get(n).getLow());
                     dwscratch.setStatus(0);
+                    nofdwscratch=n+1;
 
-                }else if(highLowPrices.get(n).getHigh() >upscratch.getHigh()
+                }else if(highLowPrices.get(n).getHigh() >upscratch.getHigh()  //1.2: a bar breaks both high and low of this uptrend scrach;
                         && highLowPrices.get(n).getLow()<upscratch.getLow()){
 
                     if(highLowPrices.get(n).getOpen()>highLowPrices.get(n).getClose()){
                         upscratch.setLength(upscratch.getLength()+1);
                         upscratch.setHigh(highLowPrices.get(n).getHigh());
-                        Scratch scratch=new Scratch(upscratch.getLength(),upscratch.getStartId(),upscratch.getHigh(),upscratch.getLow(),upscratch.getStatus());
+                        Scratch scratch=new Scratch(upscratch);
                         scratches.add(scratch);
-                        //scratchMapper.save(upscratch);
 
                         upscratch.setLength(1);
                         upscratch.setStartId(n+1);
                         upscratch.setHigh(highLowPrices.get(n).getHigh());
                         upscratch.setLow(highLowPrices.get(n).getLow());
                         upscratch.setStatus(0);
+                        nofupscratch=n+1;
 
                         dwscratch.setLength(1);
                         dwscratch.setStartId(n+1);
                         dwscratch.setHigh(highLowPrices.get(n).getHigh());
                         dwscratch.setLow(highLowPrices.get(n).getLow());
                         dwscratch.setStatus(0);
-
+                        nofdwscratch=n+1;
 
                     }else {
                         dwscratch.setLength(dwscratch.getLength()+1);
@@ -296,40 +298,37 @@ public class PivotHandleImpl implements PivotHandle {
 
                         Scratch dscratch=new Scratch(dwscratch); // amended because new constructor is added;
                         scratches.add(dscratch);
-                        //scratchMapper.save(dwscratch);
 
                         dwscratch.setLength(1);
                         dwscratch.setStartId(n+1);
                         dwscratch.setHigh(highLowPrices.get(n).getHigh());
                         dwscratch.setLow(highLowPrices.get(n).getLow());
                         dwscratch.setStatus(0);
-
+                        nofdwscratch=n+1;
                         Scratch scratch=new Scratch(upscratch);// amended because new constructor is added;
                         scratches.add(scratch);
-                        //scratchMapper.save(upscratch);
 
                         upscratch.setLength(1);
                         upscratch.setStartId(n+1);
                         upscratch.setHigh(highLowPrices.get(n).getHigh());
                         upscratch.setLow(highLowPrices.get(n).getLow());
                         upscratch.setStatus(0);
-
+                        nofupscratch=n+1;
                     }
 
-                }else if(highLowPrices.get(n).getHigh()<=dwscratch.getHigh()
+                }else if(highLowPrices.get(n).getHigh()<=dwscratch.getHigh()  // 1.3: a downtrend scratch formed in a uptrend;
                         && highLowPrices.get(n).getLow()<=dwscratch.getLow()
                         && n-dwscratch.getStartId()>=pivotLength-2){
 
                     dwscratch.setLength(dwscratch.getLength()+1);
                     dwscratch.setLow(highLowPrices.get(n).getLow());
                     dwscratch.setStatus(-1);
-
+                    nofdwscratch=n;
                     if(upscratch.getStartId()<dwscratch.getStartId()){
                         upscratch.setLength(dwscratch.getStartId()-upscratch.getStartId()+1);
 
-                        Scratch scratch=new Scratch(upscratch.getLength(),upscratch.getStartId(),upscratch.getHigh(),upscratch.getLow(),upscratch.getStatus());
+                        Scratch scratch=new Scratch(upscratch);
                         scratches.add(scratch);
-                        //scratchMapper.save(upscratch);
 
                     }
                     upscratch.setLength(1);
@@ -337,10 +336,11 @@ public class PivotHandleImpl implements PivotHandle {
                     upscratch.setHigh(highLowPrices.get(n).getHigh());
                     upscratch.setLow(highLowPrices.get(n).getLow());
                     upscratch.setStatus(0);
-                }else {
-                    if(highLowPrices.get(n).getLow()<upscratch.getLow()){
+                    nofupscratch=n+1;
+                }else {                                                            // 1.4
+                    if(highLowPrices.get(n).getLow()<upscratch.getLow()){          // 1.4.1: uptrend scratch ended by a broken of low;
                         upscratch.setLength(dwscratch.getStartId()-upscratch.getStartId()+1);
-                        Scratch scratch=new Scratch(upscratch.getLength(),upscratch.getStartId(),upscratch.getHigh(),upscratch.getLow(),upscratch.getStatus());
+                        Scratch scratch=new Scratch(upscratch);
                         scratches.add(scratch);
 
                         upscratch.setLength(1);
@@ -348,16 +348,32 @@ public class PivotHandleImpl implements PivotHandle {
                         upscratch.setHigh(highLowPrices.get(n).getHigh());
                         upscratch.setLow(highLowPrices.get(n).getLow());
                         upscratch.setStatus(0);
+                        nofupscratch=n+1;
+                        dwscratch.setLength(dwscratch.getLength()+1);
+                        dwscratch.setLow(highLowPrices.get(n).getLow());
+                        nofdwscratch=n;
+                    }else if(highLowPrices.get(n).getLow()<dwscratch.getLow()){    //1.4.2: dwscratch extended by a new low;
+                        dwscratch.setLow(highLowPrices.get(n).getLow());
+                        dwscratch.setLength(dwscratch.getLength()+1);
+                        nofdwscratch=n;
+                        upscratch.setLength(upscratch.getLength()+1);
 
-                        dwscratch.setLength(dwscratch.getLength()+1);
-                        dwscratch.setLow(highLowPrices.get(n).getLow());
-                    }else if(highLowPrices.get(n).getLow()<dwscratch.getLow()){
-                        dwscratch.setLow(highLowPrices.get(n).getLow());
-                        dwscratch.setLength(dwscratch.getLength()+1);
-                        upscratch.setLength(upscratch.getLength()+1);
                     }else {
-                        upscratch.setLength(upscratch.getLength()+1);
-                        dwscratch.setLength(dwscratch.getLength()+1);
+                        if(highLowPrices.get(n-5).getNdlow()==highLowPrices.get(n).getLow() &&
+                                highLowPrices.get(n-5).getNdhigh()==highLowPrices.get(n-5).getHigh()){
+                            upscratch.setLength(highLowPrices.get(nofupscratch).getId()-upscratch.getStartId()+1);
+                            Scratch scratch=new Scratch(upscratch);
+                            scratches.add(scratch);
+                            dwscratch.setLength(highLowPrices.get(nofdwscratch).getId()-dwscratch.getStartId()+1);
+                            Scratch dscratch=new Scratch(dwscratch);
+                            scratches.add(dscratch);
+                            
+                        }else {
+                            upscratch.setLength(upscratch.getLength()+1);
+                            dwscratch.setLength(dwscratch.getLength()+1);
+                        }
+
+
                     }
                 }
 
@@ -365,12 +381,13 @@ public class PivotHandleImpl implements PivotHandle {
                 if(highLowPrices.get(n).getLow()<=dwscratch.getLow()&&highLowPrices.get(n).getHigh()<=dwscratch.getHigh()){
                     dwscratch.setLength(dwscratch.getLength()+1);
                     dwscratch.setLow(highLowPrices.get(n).getLow());
-
+                    nofdwscratch=n;
                     upscratch.setLength(1);
                     upscratch.setStartId(n+1);
                     upscratch.setHigh(highLowPrices.get(n).getHigh());
                     upscratch.setLow(highLowPrices.get(n).getLow());
                     upscratch.setStatus(0);
+                    nofupscratch=n+1;
 
                 }else if(highLowPrices.get(n).getLow()<dwscratch.getLow()&&highLowPrices.get(n).getHigh()>dwscratch.getHigh()){
 
@@ -381,45 +398,44 @@ public class PivotHandleImpl implements PivotHandle {
                             upscratch.setStatus(1);
                         }
 
-                        Scratch scratch=new Scratch(upscratch.getLength(),upscratch.getStartId(),upscratch.getHigh(),upscratch.getLow(),upscratch.getStatus());
+                        Scratch scratch=new Scratch(upscratch);
                         scratches.add(scratch);
-                        //scratchMapper.save(upscratch);
+
                         upscratch.setLength(1);
                         upscratch.setStartId(n+1);
                         upscratch.setHigh(highLowPrices.get(n).getHigh());
                         upscratch.setLow(highLowPrices.get(n).getLow());
                         upscratch.setStatus(0);
-
-                        Scratch dscratch=new Scratch(dwscratch.getLength(),dwscratch.getStartId(),dwscratch.getHigh(),dwscratch.getLow(),dwscratch.getStatus());
+                        nofupscratch=n+1;
+                        Scratch dscratch=new Scratch(dwscratch);
                         scratches.add(dscratch);
-                        //scratchMapper.save(dwscratch);
 
                         dwscratch.setLength(1);
                         dwscratch.setStartId(n+1);
                         dwscratch.setHigh(highLowPrices.get(n).getHigh());
                         dwscratch.setLow(highLowPrices.get(n).getLow());
                         dwscratch.setStatus(0);
-
+                        nofdwscratch=n+1;
                     }else {
                         dwscratch.setLength(dwscratch.getLength()+1);
                         dwscratch.setLow(highLowPrices.get(n).getLow());
 
-                        Scratch dscratch=new Scratch(dwscratch.getLength(),dwscratch.getStartId(),dwscratch.getHigh(),dwscratch.getLow(),dwscratch.getStatus());
+                        Scratch dscratch=new Scratch(dwscratch);
                         scratches.add(dscratch);
-                        //scratchMapper.save(dwscratch);
 
                         dwscratch.setLength(1);
                         dwscratch.setStartId(n+1);
                         dwscratch.setHigh(highLowPrices.get(n).getHigh());
                         dwscratch.setLow(highLowPrices.get(n).getLow());
                         dwscratch.setStatus(0);
+                        nofdwscratch=n+1;
 
                         upscratch.setLength(1);
                         upscratch.setStartId(n+1);
                         upscratch.setHigh(highLowPrices.get(n).getHigh());
                         upscratch.setLow(highLowPrices.get(n).getLow());
                         upscratch.setStatus(0);
-
+                        nofupscratch=n+1;
                     }
 
                 }else if(highLowPrices.get(n).getHigh()>=upscratch.getHigh()
@@ -429,12 +445,12 @@ public class PivotHandleImpl implements PivotHandle {
                     upscratch.setLength(upscratch.getLength()+1);
                     upscratch.setHigh(highLowPrices.get(n).getHigh());
                     upscratch.setStatus(1);
+                    nofupscratch=n;
                     if(dwscratch.getStartId()<upscratch.getStartId()){
                         dwscratch.setLength(upscratch.getStartId()-dwscratch.getStartId()+1);
 
-                        Scratch dscratch=new Scratch(dwscratch.getLength(),dwscratch.getStartId(),dwscratch.getHigh(),dwscratch.getLow(),dwscratch.getStatus());
+                        Scratch dscratch=new Scratch(dwscratch);
                         scratches.add(dscratch);
-                        //scratchMapper.save(dwscratch);
 
                     }
 
@@ -443,11 +459,11 @@ public class PivotHandleImpl implements PivotHandle {
                     dwscratch.setHigh(highLowPrices.get(n).getHigh());
                     dwscratch.setLow(highLowPrices.get(n).getLow());
                     dwscratch.setStatus(0);
-
+                    nofdwscratch=n+1;
                 }else {
                     if(highLowPrices.get(n).getHigh()>dwscratch.getHigh()){
                         dwscratch.setLength(upscratch.getStartId()-dwscratch.getStartId()+1);
-                        Scratch dscratch=new Scratch(dwscratch.getLength(),dwscratch.getStartId(),dwscratch.getHigh(),dwscratch.getLow(),dwscratch.getStatus());
+                        Scratch dscratch=new Scratch(dwscratch);
                         scratches.add(dscratch);
 
                         dwscratch.setLength(1);
@@ -455,16 +471,19 @@ public class PivotHandleImpl implements PivotHandle {
                         dwscratch.setHigh(highLowPrices.get(n).getHigh());
                         dwscratch.setLow(highLowPrices.get(n).getLow());
                         dwscratch.setStatus(0);
-
+                        nofdwscratch=n+1;
                         upscratch.setHigh(highLowPrices.get(n).getHigh());
                         upscratch.setLength(upscratch.getLength()+1);
+                        nofupscratch=n;
                     }else if(highLowPrices.get(n).getHigh()>upscratch.getHigh()){
                         upscratch.setHigh(highLowPrices.get(n).getHigh());
                         upscratch.setLength(upscratch.getLength()+1);
                         dwscratch.setLength(dwscratch.getLength()+1);
+                        nofupscratch=n+1;
                     }else {
                         upscratch.setLength(upscratch.getLength()+1);
                         dwscratch.setLength(dwscratch.getLength()+1);
+
                     }
 
                 }
@@ -474,13 +493,12 @@ public class PivotHandleImpl implements PivotHandle {
                         && highLowPrices.get(n).getLow()>=upscratch.getLow()){
                     upscratch.setLength(upscratch.getLength()+1);
                     upscratch.setHigh(highLowPrices.get(n).getHigh());
-
+                    nofupscratch=n;
                     if(dwscratch.getStartId()<upscratch.getStartId()){
                         dwscratch.setLength(upscratch.getStartId()-dwscratch.getStartId()+1);
 
                         Scratch dscratch=new Scratch(dwscratch);//amended because new constructor is added;
                         scratches.add(dscratch);
-                        // scratchMapper.save(dwscratch);
 
                     }
                     dwscratch.setLength(1);
@@ -488,7 +506,7 @@ public class PivotHandleImpl implements PivotHandle {
                     dwscratch.setHigh(highLowPrices.get(n).getHigh());
                     dwscratch.setLow(highLowPrices.get(n).getLow());
                     dwscratch.setStatus(0);
-
+                    nofdwscratch=n+1;
                     if(n-upscratch.getStartId()>=pivotLength-2){ // An up trend scratch formed
                         upscratch.setStatus(1);
                     }
@@ -496,13 +514,12 @@ public class PivotHandleImpl implements PivotHandle {
                         && highLowPrices.get(n).getHigh()<=dwscratch.getHigh()){
                     dwscratch.setLength(dwscratch.getLength()+1);
                     dwscratch.setLow(highLowPrices.get(n).getLow());
-
+                    nofdwscratch=n;
                     if(upscratch.getStartId()<dwscratch.getStartId()){
                         upscratch.setLength(dwscratch.getStartId()-upscratch.getStartId()+1);
 
                         Scratch scratch=new Scratch(upscratch);//amended because new constructor is added;
                         scratches.add(scratch);
-                        //scratchMapper.save(upscratch);
 
                     }
                     upscratch.setLength(1);
@@ -510,7 +527,7 @@ public class PivotHandleImpl implements PivotHandle {
                     upscratch.setHigh(highLowPrices.get(n).getHigh());
                     upscratch.setLow(highLowPrices.get(n).getLow());
                     upscratch.setStatus(0);
-
+                    nofupscratch=n+1;
                     if(n-dwscratch.getStartId()>=pivotLength-2){ // A down trend scratch formed
                         dwscratch.setStatus(-1);
                     }
@@ -519,12 +536,12 @@ public class PivotHandleImpl implements PivotHandle {
                     upscratch.setLength(upscratch.getLength()+1);
                     upscratch.setHigh(highLowPrices.get(n).getHigh());
                     upscratch.setStatus(1);
+                    nofupscratch=n;
                     if(dwscratch.getStartId()<upscratch.getStartId()){
                         dwscratch.setLength(upscratch.getStartId()-dwscratch.getStartId()+1);
 
-                        Scratch dscratch=new Scratch(dwscratch.getLength(),dwscratch.getStartId(),dwscratch.getHigh(),dwscratch.getLow(),dwscratch.getStatus());
+                        Scratch dscratch=new Scratch(dwscratch);
                         scratches.add(dscratch);
-                        //scratchMapper.save(dwscratch);
 
                     }
 
@@ -533,17 +550,17 @@ public class PivotHandleImpl implements PivotHandle {
                     dwscratch.setHigh(highLowPrices.get(n).getHigh());
                     dwscratch.setLow(highLowPrices.get(n).getLow());
                     dwscratch.setStatus(0);
+                    nofdwscratch=n+1;
                 }else if(highLowPrices.get(n).getLow()<dwscratch.getLow() && n-dwscratch.getStartId()>=pivotLength-2){
                     dwscratch.setLength(dwscratch.getLength()+1);
                     dwscratch.setLow(highLowPrices.get(n).getLow());
                     dwscratch.setStatus(-1);
-
+                    nofdwscratch=n;
                     if(upscratch.getStartId()<dwscratch.getStartId()){
                         upscratch.setLength(dwscratch.getStartId()-upscratch.getStartId()+1);
 
-                        Scratch scratch=new Scratch(upscratch.getLength(),upscratch.getStartId(),upscratch.getHigh(),upscratch.getLow(),upscratch.getStatus());
+                        Scratch scratch=new Scratch(upscratch);
                         scratches.add(scratch);
-                        //scratchMapper.save(upscratch);
 
                     }
                     upscratch.setLength(1);
@@ -551,6 +568,7 @@ public class PivotHandleImpl implements PivotHandle {
                     upscratch.setHigh(highLowPrices.get(n).getHigh());
                     upscratch.setLow(highLowPrices.get(n).getLow());
                     upscratch.setStatus(0);
+                    nofupscratch=n+1;
                 }else if(highLowPrices.get(n).getHigh()>upscratch.getHigh() && highLowPrices.get(n).getHigh()>dwscratch.getHigh()
                         && highLowPrices.get(n).getLow()<upscratch.getLow() && highLowPrices.get(n).getLow()<dwscratch.getLow()){
                     if(highLowPrices.get(n).getOpen()>highLowPrices.get(n).getClose()){
@@ -560,24 +578,20 @@ public class PivotHandleImpl implements PivotHandle {
                             upscratch.setStatus(1);
                         }
 
-                        Scratch scratch=new Scratch(upscratch.getLength(),upscratch.getStartId(),upscratch.getHigh(),upscratch.getLow(),upscratch.getStatus());
+                        Scratch scratch=new Scratch(upscratch);
                         scratches.add(scratch);
-                        // scratchMapper.save(upscratch);
-
 
                         upscratch.setLength(1);
                         upscratch.setStartId(n+1);
                         upscratch.setHigh(highLowPrices.get(n).getHigh());
                         upscratch.setLow(highLowPrices.get(n).getLow());
                         upscratch.setStatus(0);
-
+                        nofupscratch=n+1;
                         if(dwscratch.getStartId()<=upscratch.getStartId()){
                             dwscratch.setLength(upscratch.getStartId()-dwscratch.getStartId()+1);
 
-                            Scratch dscratch=new Scratch(dwscratch.getLength(),dwscratch.getStartId(),dwscratch.getHigh(),dwscratch.getLow(),dwscratch.getStatus());
+                            Scratch dscratch=new Scratch(dwscratch);
                             scratches.add(dscratch);
-                            //scratchMapper.save(dwscratch);
-
 
                         }
                         dwscratch.setLength(1);
@@ -585,7 +599,7 @@ public class PivotHandleImpl implements PivotHandle {
                         dwscratch.setHigh(highLowPrices.get(n).getHigh());
                         dwscratch.setLow(highLowPrices.get(n).getLow());
                         dwscratch.setStatus(0);
-
+                        nofdwscratch=n+1;
 
                     }else {
                         dwscratch.setLength(dwscratch.getLength()+1);
@@ -594,21 +608,20 @@ public class PivotHandleImpl implements PivotHandle {
                             dwscratch.setStatus(-1);
                         }
 
-                        Scratch dscratch=new Scratch(dwscratch.getLength(),dwscratch.getStartId(),dwscratch.getHigh(),dwscratch.getLow(),dwscratch.getStatus());
+                        Scratch dscratch=new Scratch(dwscratch);
                         scratches.add(dscratch);
-                        //scratchMapper.save(dwscratch);
 
                         dwscratch.setLength(1);
                         dwscratch.setStartId(n+1);
                         dwscratch.setHigh(highLowPrices.get(n).getHigh());
                         dwscratch.setLow(highLowPrices.get(n).getLow());
                         dwscratch.setStatus(0);
+                        nofdwscratch=n+1;
                         if(upscratch.getStartId()<dwscratch.getStartId()){
                             upscratch.setLength(dwscratch.getStartId()-upscratch.getStartId()+1);
 
-                            Scratch scratch=new Scratch(upscratch.getLength(),upscratch.getStartId(),upscratch.getHigh(),upscratch.getLow(),upscratch.getStatus());
+                            Scratch scratch=new Scratch(upscratch);
                             scratches.add(scratch);
-                            //scratchMapper.save(upscratch);
 
                         }
                         upscratch.setLength(1);
@@ -616,19 +629,20 @@ public class PivotHandleImpl implements PivotHandle {
                         upscratch.setHigh(highLowPrices.get(n).getHigh());
                         upscratch.setLow(highLowPrices.get(n).getLow());
                         upscratch.setStatus(0);
-
+                        nofupscratch=n+1;
                     }
 
                 }else if(highLowPrices.get(n).getHigh()>upscratch.getHigh()){
                     upscratch.setHigh(highLowPrices.get(n).getHigh());
                     upscratch.setLength(upscratch.getLength()+1);
+                    nofupscratch=n;
                     dwscratch.setLength(dwscratch.getLength()+1);
 
                 }else if(highLowPrices.get(n).getLow()<dwscratch.getLow()){
                     dwscratch.setLow(highLowPrices.get(n).getLow());
                     dwscratch.setLength(dwscratch.getLength()+1);
+                    nofdwscratch=n;
                     upscratch.setLength(upscratch.getLength()+1);
-
 
                 }else {
                     upscratch.setLength(upscratch.getLength()+1);

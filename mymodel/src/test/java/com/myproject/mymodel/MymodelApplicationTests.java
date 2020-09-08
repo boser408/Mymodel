@@ -22,54 +22,6 @@ class MymodelApplicationTests {
     private ScratchMapper scratchMapper;
 
     @Test
-    void contextLoads() {
-
-        List<HighLowPrice> highLowPrices = highLowPriceMapper.selectHighLow();
-        float high=highLowPrices.get(0).getHigh();
-        float low=highLowPrices.get(0).getLow();
-        highLowPriceMapper.save(highLowPrices.get(0));
-        int bottom = highLowPrices.size();
-
-        for(int i=1;i<bottom;i++){
-            float hi=highLowPrices.get(i).getHigh();
-            float li=highLowPrices.get(i).getLow();
-
-        /* if(hi>high && li>=low ){
-                highLowPrices.get(i).setRelation(1);
-            }else if(hi>high && li<low){
-                highLowPrices.get(i).setRelation(2);
-            }else if(hi<high && li>=low){
-                highLowPrices.get(i).setRelation(3);
-            }else {
-                highLowPrices.get(i).setRelation(4);
-            }
-
-            if(scratch.getDirection()==0){
-                if(hi>scratch.getHigh() && li>=scratch.getLow() ){
-                    scratch.setDirection(1);
-                    scratch.setLength(scratch.getLength()+1);
-                    scratch.setEndId(i+1);
-                    scratch.setHigh(hi);
-
-                }else if(hi>scratch.getHigh() && li<scratch.getLow()){
-
-                }else if(hi<scratch.getHigh() && li>=scratch.getLow()){
-
-                }else {
-
-                }
-            }else if(scratch.getDirection()==1){
-
-            }else {
-
-            }*/
-
-        }
-
-        highLowPriceMapper.batchinsert(highLowPrices);
-
-    }
-    @Test
     void trySummaryStats(){
         List<HighLowPrice> highLowPrices = highLowPriceMapper.selectHighLow();
         /* DoubleSummaryStatistics priceMax= highLowPrices.stream().collect(Collectors.summarizingDouble(HighLowPrice::getHigh));
@@ -94,409 +46,22 @@ class MymodelApplicationTests {
        // System.out.println(highLowPrices.get(0).toString());
         highLowPriceMapper.batchinsert(highLowPrices);
     }
+
     @Test
-    void findScratches(){
-
+    void findScratches(){ // Create the table of "findscratch"
         List<HighLowPrice> highLowPrices = highLowPriceMapper.selectHighLow();
-        List<Scratch> scratches = new ArrayList<>();
-        Scratch upscratch=new Scratch(1,1,highLowPrices.get(0).getHigh(),highLowPrices.get(0).getLow(),0);
-        Scratch dwscratch=new Scratch(1,1,highLowPrices.get(0).getHigh(),highLowPrices.get(0).getLow(),0);
         int pivotLength=6; // Definition of the length of shortest bar pivot;
-        int bottom = highLowPrices.size()-1;
-
-        for(int n=1;n<bottom;n++){
-            if (upscratch.getStatus()==1) { //Scenario 1: A formed up trend scratch exists;
-
-                if(highLowPrices.get(n).getHigh()>=upscratch.getHigh()
-                        && highLowPrices.get(n).getLow()>=upscratch.getLow() ){
-
-                    upscratch.setLength(upscratch.getLength()+1);
-                    upscratch.setHigh(highLowPrices.get(n).getHigh());
-
-                    dwscratch.setLength(1);
-                    dwscratch.setStartId(n+1);
-                    dwscratch.setHigh(highLowPrices.get(n).getHigh());
-                    dwscratch.setLow(highLowPrices.get(n).getLow());
-                    dwscratch.setStatus(0);
-
-                }else if(highLowPrices.get(n).getHigh() >upscratch.getHigh()
-                        && highLowPrices.get(n).getLow()<upscratch.getLow()){
-
-                    if(highLowPrices.get(n).getOpen()>highLowPrices.get(n).getClose()){
-                        upscratch.setLength(upscratch.getLength()+1);
-                        upscratch.setHigh(highLowPrices.get(n).getHigh());
-                        Scratch scratch=new Scratch(upscratch.getLength(),upscratch.getStartId(),upscratch.getHigh(),upscratch.getLow(),upscratch.getStatus());
-                        scratches.add(scratch);
-                       //scratchMapper.save(upscratch);
-
-                        upscratch.setLength(1);
-                        upscratch.setStartId(n+1);
-                        upscratch.setHigh(highLowPrices.get(n).getHigh());
-                        upscratch.setLow(highLowPrices.get(n).getLow());
-                        upscratch.setStatus(0);
-
-                        dwscratch.setLength(1);
-                        dwscratch.setStartId(n+1);
-                        dwscratch.setHigh(highLowPrices.get(n).getHigh());
-                        dwscratch.setLow(highLowPrices.get(n).getLow());
-                        dwscratch.setStatus(0);
-
-
-                    }else {
-                        dwscratch.setLength(dwscratch.getLength()+1);
-                        dwscratch.setLow(highLowPrices.get(n).getLow());
-                        if(n-dwscratch.getStartId()>=pivotLength-2){ // A down trend scratch formed
-                            dwscratch.setStatus(-1);
-                        }
-
-                        Scratch dscratch=new Scratch(dwscratch.getLength(),dwscratch.getStartId(),dwscratch.getHigh(),dwscratch.getLow(),dwscratch.getStatus());
-                        scratches.add(dscratch);
-                        //scratchMapper.save(dwscratch);
-
-                        dwscratch.setLength(1);
-                        dwscratch.setStartId(n+1);
-                        dwscratch.setHigh(highLowPrices.get(n).getHigh());
-                        dwscratch.setLow(highLowPrices.get(n).getLow());
-                        dwscratch.setStatus(0);
-
-                        Scratch scratch=new Scratch(upscratch.getLength(),upscratch.getStartId(),upscratch.getHigh(),upscratch.getLow(),upscratch.getStatus());
-                        scratches.add(scratch);
-                        //scratchMapper.save(upscratch);
-
-                        upscratch.setLength(1);
-                        upscratch.setStartId(n+1);
-                        upscratch.setHigh(highLowPrices.get(n).getHigh());
-                        upscratch.setLow(highLowPrices.get(n).getLow());
-                        upscratch.setStatus(0);
-
-                    }
-
-                }else if(highLowPrices.get(n).getHigh()<=dwscratch.getHigh()
-                        && highLowPrices.get(n).getLow()<=dwscratch.getLow()
-                        && n-dwscratch.getStartId()>=pivotLength-2){
-
-                    dwscratch.setLength(dwscratch.getLength()+1);
-                    dwscratch.setLow(highLowPrices.get(n).getLow());
-                    dwscratch.setStatus(-1);
-
-                    if(upscratch.getStartId()<dwscratch.getStartId()){
-                        upscratch.setLength(dwscratch.getStartId()-upscratch.getStartId()+1);
-
-                        Scratch scratch=new Scratch(upscratch.getLength(),upscratch.getStartId(),upscratch.getHigh(),upscratch.getLow(),upscratch.getStatus());
-                        scratches.add(scratch);
-                        //scratchMapper.save(upscratch);
-
-                    }
-                    upscratch.setLength(1);
-                    upscratch.setStartId(n+1);
-                    upscratch.setHigh(highLowPrices.get(n).getHigh());
-                    upscratch.setLow(highLowPrices.get(n).getLow());
-                    upscratch.setStatus(0);
-                }else {
-                    if(highLowPrices.get(n).getLow()<upscratch.getLow()){
-                        upscratch.setLength(dwscratch.getStartId()-upscratch.getStartId()+1);
-                        Scratch scratch=new Scratch(upscratch.getLength(),upscratch.getStartId(),upscratch.getHigh(),upscratch.getLow(),upscratch.getStatus());
-                        scratches.add(scratch);
-
-                        upscratch.setLength(1);
-                        upscratch.setStartId(n+1);
-                        upscratch.setHigh(highLowPrices.get(n).getHigh());
-                        upscratch.setLow(highLowPrices.get(n).getLow());
-                        upscratch.setStatus(0);
-
-                        dwscratch.setLength(dwscratch.getLength()+1);
-                        dwscratch.setLow(highLowPrices.get(n).getLow());
-                    }else if(highLowPrices.get(n).getLow()<dwscratch.getLow()){
-                        dwscratch.setLow(highLowPrices.get(n).getLow());
-                        upscratch.setLength(upscratch.getLength()+1);
-                    }else {
-                        upscratch.setLength(upscratch.getLength()+1);
-                        dwscratch.setLength(dwscratch.getLength()+1);
-                    }
-                }
-
-            }else if (dwscratch.getStatus()==-1){ //Scenario 2: A formed down trend scratch exists;
-                if(highLowPrices.get(n).getLow()<=dwscratch.getLow()&&highLowPrices.get(n).getHigh()<=dwscratch.getHigh()){
-                    dwscratch.setLength(dwscratch.getLength()+1);
-                    dwscratch.setLow(highLowPrices.get(n).getLow());
-
-                    upscratch.setLength(1);
-                    upscratch.setStartId(n+1);
-                    upscratch.setHigh(highLowPrices.get(n).getHigh());
-                    upscratch.setLow(highLowPrices.get(n).getLow());
-                    upscratch.setStatus(0);
-
-                }else if(highLowPrices.get(n).getLow()<dwscratch.getLow()&&highLowPrices.get(n).getHigh()>dwscratch.getHigh()){
-
-                    if(highLowPrices.get(n).getOpen()>highLowPrices.get(n).getClose()){
-                        upscratch.setLength(upscratch.getLength()+1);
-                        upscratch.setHigh(highLowPrices.get(n).getHigh());
-                        if(n-upscratch.getStartId()>=pivotLength-2){ // A up trend scratch formed
-                            upscratch.setStatus(1);
-                        }
-
-                        Scratch scratch=new Scratch(upscratch.getLength(),upscratch.getStartId(),upscratch.getHigh(),upscratch.getLow(),upscratch.getStatus());
-                        scratches.add(scratch);
-                        //scratchMapper.save(upscratch);
-                        upscratch.setLength(1);
-                        upscratch.setStartId(n+1);
-                        upscratch.setHigh(highLowPrices.get(n).getHigh());
-                        upscratch.setLow(highLowPrices.get(n).getLow());
-                        upscratch.setStatus(0);
-
-                        Scratch dscratch=new Scratch(dwscratch.getLength(),dwscratch.getStartId(),dwscratch.getHigh(),dwscratch.getLow(),dwscratch.getStatus());
-                        scratches.add(dscratch);
-                        //scratchMapper.save(dwscratch);
-
-                        dwscratch.setLength(1);
-                        dwscratch.setStartId(n+1);
-                        dwscratch.setHigh(highLowPrices.get(n).getHigh());
-                        dwscratch.setLow(highLowPrices.get(n).getLow());
-                        dwscratch.setStatus(0);
-
-                    }else {
-                        dwscratch.setLength(dwscratch.getLength()+1);
-                        dwscratch.setLow(highLowPrices.get(n).getLow());
-
-                        Scratch dscratch=new Scratch(dwscratch.getLength(),dwscratch.getStartId(),dwscratch.getHigh(),dwscratch.getLow(),dwscratch.getStatus());
-                        scratches.add(dscratch);
-                        //scratchMapper.save(dwscratch);
-
-                        dwscratch.setLength(1);
-                        dwscratch.setStartId(n+1);
-                        dwscratch.setHigh(highLowPrices.get(n).getHigh());
-                        dwscratch.setLow(highLowPrices.get(n).getLow());
-                        dwscratch.setStatus(0);
-
-                        upscratch.setLength(1);
-                        upscratch.setStartId(n+1);
-                        upscratch.setHigh(highLowPrices.get(n).getHigh());
-                        upscratch.setLow(highLowPrices.get(n).getLow());
-                        upscratch.setStatus(0);
-
-                    }
-
-                }else if(highLowPrices.get(n).getHigh()>=upscratch.getHigh()
-                        && highLowPrices.get(n).getLow()>=upscratch.getLow()
-                        && n-upscratch.getStartId()>=pivotLength-2){
-
-                    upscratch.setLength(upscratch.getLength()+1);
-                    upscratch.setHigh(highLowPrices.get(n).getHigh());
-                    upscratch.setStatus(1);
-                    if(dwscratch.getStartId()<upscratch.getStartId()){
-                        dwscratch.setLength(upscratch.getStartId()-dwscratch.getStartId()+1);
-
-                        Scratch dscratch=new Scratch(dwscratch.getLength(),dwscratch.getStartId(),dwscratch.getHigh(),dwscratch.getLow(),dwscratch.getStatus());
-                        scratches.add(dscratch);
-                        //scratchMapper.save(dwscratch);
-
-                    }
-
-                    dwscratch.setLength(1);
-                    dwscratch.setStartId(n+1);
-                    dwscratch.setHigh(highLowPrices.get(n).getHigh());
-                    dwscratch.setLow(highLowPrices.get(n).getLow());
-                    dwscratch.setStatus(0);
-
-                }else {
-                    if(highLowPrices.get(n).getHigh()>dwscratch.getHigh()){
-                        dwscratch.setLength(upscratch.getStartId()-dwscratch.getStartId()+1);
-                        Scratch dscratch=new Scratch(dwscratch.getLength(),dwscratch.getStartId(),dwscratch.getHigh(),dwscratch.getLow(),dwscratch.getStatus());
-                        scratches.add(dscratch);
-
-                        dwscratch.setLength(1);
-                        dwscratch.setStartId(n+1);
-                        dwscratch.setHigh(highLowPrices.get(n).getHigh());
-                        dwscratch.setLow(highLowPrices.get(n).getLow());
-                        dwscratch.setStatus(0);
-
-                        upscratch.setHigh(highLowPrices.get(n).getHigh());
-                        upscratch.setLength(upscratch.getLength()+1);
-                    }else if(highLowPrices.get(n).getHigh()>upscratch.getHigh()){
-                        upscratch.setHigh(highLowPrices.get(n).getHigh());
-                        upscratch.setLength(upscratch.getLength()+1);
-                        dwscratch.setLength(dwscratch.getLength()+1);
-                    }else {
-                        upscratch.setLength(upscratch.getLength()+1);
-                        dwscratch.setLength(dwscratch.getLength()+1);
-                    }
-                }
-
-            }else {     // Scenario 3:  no direction
-                if(highLowPrices.get(n).getHigh()>upscratch.getHigh() && highLowPrices.get(n).getHigh()>dwscratch.getHigh()
-                        && highLowPrices.get(n).getLow()>=upscratch.getLow()){
-                    upscratch.setLength(upscratch.getLength()+1);
-                    upscratch.setHigh(highLowPrices.get(n).getHigh());
-
-                    if(dwscratch.getStartId()<upscratch.getStartId()){
-                        dwscratch.setLength(upscratch.getStartId()-dwscratch.getStartId()+1);
-
-                        Scratch dscratch=new Scratch(dwscratch.getLength(),dwscratch.getStartId(),dwscratch.getHigh(),dwscratch.getLow(),dwscratch.getStatus());
-                        scratches.add(dscratch);
-                       // scratchMapper.save(dwscratch);
-
-                    }
-                    dwscratch.setLength(1);
-                    dwscratch.setStartId(n+1);
-                    dwscratch.setHigh(highLowPrices.get(n).getHigh());
-                    dwscratch.setLow(highLowPrices.get(n).getLow());
-                    dwscratch.setStatus(0);
-
-                    if(n-upscratch.getStartId()>=pivotLength-2){ // An up trend scratch formed
-                        upscratch.setStatus(1);
-                    }
-                }else if(highLowPrices.get(n).getLow()<dwscratch.getLow() && highLowPrices.get(n).getLow()< upscratch.getLow()
-                        && highLowPrices.get(n).getHigh()<=dwscratch.getHigh()){
-                    dwscratch.setLength(dwscratch.getLength()+1);
-                    dwscratch.setLow(highLowPrices.get(n).getLow());
-
-                    if(upscratch.getStartId()<dwscratch.getStartId()){
-                        upscratch.setLength(dwscratch.getStartId()-upscratch.getStartId()+1);
-
-                        Scratch scratch=new Scratch(upscratch.getLength(),upscratch.getStartId(),upscratch.getHigh(),upscratch.getLow(),upscratch.getStatus());
-                        scratches.add(scratch);
-                        //scratchMapper.save(upscratch);
-
-                    }
-                    upscratch.setLength(1);
-                    upscratch.setStartId(n+1);
-                    upscratch.setHigh(highLowPrices.get(n).getHigh());
-                    upscratch.setLow(highLowPrices.get(n).getLow());
-                    upscratch.setStatus(0);
-
-                    if(n-dwscratch.getStartId()>=pivotLength-2){ // A down trend scratch formed
-                        dwscratch.setStatus(-1);
-                    }
-
-                }else if(highLowPrices.get(n).getHigh()>=upscratch.getHigh() && n-upscratch.getStartId()>=pivotLength-2){
-                    upscratch.setLength(upscratch.getLength()+1);
-                    upscratch.setHigh(highLowPrices.get(n).getHigh());
-                    upscratch.setStatus(1);
-                    if(dwscratch.getStartId()<upscratch.getStartId()){
-                        dwscratch.setLength(upscratch.getStartId()-dwscratch.getStartId()+1);
-
-                        Scratch dscratch=new Scratch(dwscratch.getLength(),dwscratch.getStartId(),dwscratch.getHigh(),dwscratch.getLow(),dwscratch.getStatus());
-                        scratches.add(dscratch);
-                        //scratchMapper.save(dwscratch);
-
-                    }
-
-                    dwscratch.setLength(1);
-                    dwscratch.setStartId(n+1);
-                    dwscratch.setHigh(highLowPrices.get(n).getHigh());
-                    dwscratch.setLow(highLowPrices.get(n).getLow());
-                    dwscratch.setStatus(0);
-                }else if(highLowPrices.get(n).getLow()<dwscratch.getLow() && n-dwscratch.getStartId()>=pivotLength-2){
-                    dwscratch.setLength(dwscratch.getLength()+1);
-                    dwscratch.setLow(highLowPrices.get(n).getLow());
-                    dwscratch.setStatus(-1);
-
-                    if(upscratch.getStartId()<dwscratch.getStartId()){
-                        upscratch.setLength(dwscratch.getStartId()-upscratch.getStartId()+1);
-
-                        Scratch scratch=new Scratch(upscratch.getLength(),upscratch.getStartId(),upscratch.getHigh(),upscratch.getLow(),upscratch.getStatus());
-                        scratches.add(scratch);
-                        //scratchMapper.save(upscratch);
-
-                    }
-                    upscratch.setLength(1);
-                    upscratch.setStartId(n+1);
-                    upscratch.setHigh(highLowPrices.get(n).getHigh());
-                    upscratch.setLow(highLowPrices.get(n).getLow());
-                    upscratch.setStatus(0);
-                }else if(highLowPrices.get(n).getHigh()>upscratch.getHigh() && highLowPrices.get(n).getHigh()>dwscratch.getHigh()
-                        && highLowPrices.get(n).getLow()<upscratch.getLow() && highLowPrices.get(n).getLow()<dwscratch.getLow()){
-                    if(highLowPrices.get(n).getOpen()>highLowPrices.get(n).getClose()){
-                        upscratch.setLength(upscratch.getLength()+1);
-                        upscratch.setHigh(highLowPrices.get(n).getHigh());
-                        if(n-upscratch.getStartId()>=pivotLength-2){ // An up trend scratch formed
-                            upscratch.setStatus(1);
-                        }
-
-                        Scratch scratch=new Scratch(upscratch.getLength(),upscratch.getStartId(),upscratch.getHigh(),upscratch.getLow(),upscratch.getStatus());
-                        scratches.add(scratch);
-                       // scratchMapper.save(upscratch);
-
-
-                        upscratch.setLength(1);
-                        upscratch.setStartId(n+1);
-                        upscratch.setHigh(highLowPrices.get(n).getHigh());
-                        upscratch.setLow(highLowPrices.get(n).getLow());
-                        upscratch.setStatus(0);
-
-                        if(dwscratch.getStartId()<=upscratch.getStartId()){
-                            dwscratch.setLength(upscratch.getStartId()-dwscratch.getStartId()+1);
-
-                            Scratch dscratch=new Scratch(dwscratch.getLength(),dwscratch.getStartId(),dwscratch.getHigh(),dwscratch.getLow(),dwscratch.getStatus());
-                            scratches.add(dscratch);
-                            //scratchMapper.save(dwscratch);
-
-
-                        }
-                        dwscratch.setLength(1);
-                        dwscratch.setStartId(n+1);
-                        dwscratch.setHigh(highLowPrices.get(n).getHigh());
-                        dwscratch.setLow(highLowPrices.get(n).getLow());
-                        dwscratch.setStatus(0);
-
-
-                    }else {
-                        dwscratch.setLength(dwscratch.getLength()+1);
-                        dwscratch.setLow(highLowPrices.get(n).getLow());
-                        if(n-dwscratch.getStartId()>=pivotLength-2){ // A down trend scratch formed
-                            dwscratch.setStatus(-1);
-                        }
-
-                        Scratch dscratch=new Scratch(dwscratch.getLength(),dwscratch.getStartId(),dwscratch.getHigh(),dwscratch.getLow(),dwscratch.getStatus());
-                        scratches.add(dscratch);
-                        //scratchMapper.save(dwscratch);
-
-                        dwscratch.setLength(1);
-                        dwscratch.setStartId(n+1);
-                        dwscratch.setHigh(highLowPrices.get(n).getHigh());
-                        dwscratch.setLow(highLowPrices.get(n).getLow());
-                        dwscratch.setStatus(0);
-                        if(upscratch.getStartId()<dwscratch.getStartId()){
-                            upscratch.setLength(dwscratch.getStartId()-upscratch.getStartId()+1);
-
-                            Scratch scratch=new Scratch(upscratch.getLength(),upscratch.getStartId(),upscratch.getHigh(),upscratch.getLow(),upscratch.getStatus());
-                            scratches.add(scratch);
-                            //scratchMapper.save(upscratch);
-
-                        }
-                        upscratch.setLength(1);
-                        upscratch.setStartId(n+1);
-                        upscratch.setHigh(highLowPrices.get(n).getHigh());
-                        upscratch.setLow(highLowPrices.get(n).getLow());
-                        upscratch.setStatus(0);
-
-                    }
-
-                }else if(highLowPrices.get(n).getHigh()>upscratch.getHigh()){
-                    upscratch.setHigh(highLowPrices.get(n).getHigh());
-                    upscratch.setLength(upscratch.getLength()+1);
-                    dwscratch.setLength(dwscratch.getLength()+1);
-
-                }else if(highLowPrices.get(n).getLow()<dwscratch.getLow()){
-                    dwscratch.setLow(highLowPrices.get(n).getLow());
-                    upscratch.setLength(upscratch.getLength()+1);
-                    dwscratch.setLength(dwscratch.getLength()+1);
-
-                }else {
-                    upscratch.setLength(upscratch.getLength()+1);
-                    dwscratch.setLength(dwscratch.getLength()+1);
-                }
-
-            }
+        int bottom = highLowPrices.size()-(pivotLength-1);
+        for(int n=0;n<bottom;n++){
+            int i=n+1;
+            Optional<HighLowPrice> max = highLowPrices.stream().filter(highLowPrice -> highLowPrice.getId()>=i && highLowPrice.getId() <=i+(pivotLength-1))
+                    .max(Comparator.comparingDouble(HighLowPrice::getHigh));
+            Optional<HighLowPrice> min = highLowPrices.stream().filter(highLowPrice -> highLowPrice.getId()>=i && highLowPrice.getId() <=i+(pivotLength-1))
+                    .min(Comparator.comparingDouble(HighLowPrice::getLow));
+            highLowPrices.get(n).setNdhigh(max.get().getHigh());
+            highLowPrices.get(n).setNdlow(min.get().getLow());
 
         }
-        scratches.add(upscratch);
-        scratches.add(dwscratch);
-        scratchMapper.batchinsert(scratches);
-    }
-    @Test
-    void tryUseClass(){ // Create the table of "findscratch"
-        List<HighLowPrice> highLowPrices = highLowPriceMapper.selectHighLow();
         PivotHandle pivotHandle=new PivotHandleImpl();
         List<Scratch> scratches = pivotHandle.findScratches(highLowPrices, 1, highLowPrices.size(), 6);
         System.out.println(scratches.size());
@@ -652,10 +217,19 @@ class MymodelApplicationTests {
             if(!pivot.getScratches().isEmpty()){
                 pivot.getScratches().sort(Comparator.comparingInt(Scratch::getStartId));
             }
-            //System.out.println(pivot.toString());
+            System.out.println(pivot.toString());
         }
-        List<Pivot> magaPivotList = pivotHandle.findMagaPivotList(pivotList);
-        List<Dpattern> finalDpatternList=new ArrayList<>();
+       // List<Pivot> magaPivotList = pivotHandle.findMagaPivotList(pivotList);
+        /*List<Scratch> allExtendScratch=new ArrayList<>();
+        for(Pivot pivot:pivotList){
+            Scratch scratch=new Scratch(pivot);
+            if(pivot.getPivotType()==0){
+
+            }
+            allExtendScratch.add(scratch);
+        }*/
+
+        /*List<Dpattern> finalDpatternList=new ArrayList<>();
         for(Pivot pivot:magaPivotList){
             if(pivot.getScratches().size()>1){
                 Dpattern returndpattern=pivotHandle.findDpattern(pivot);
@@ -663,7 +237,7 @@ class MymodelApplicationTests {
                     finalDpatternList.add(returndpattern);
                 }
             }
-        }
+        }*/
       //  System.out.println("Size of finalDpatternList="+finalDpatternList.size());
         /*List<Dpattern> finalTpatternList=new ArrayList<>();
         for(Pivot pivot:magaPivotList){
@@ -682,13 +256,13 @@ class MymodelApplicationTests {
             }
             nn=nn+1;
         }*/
-        List<Pivot> dpatternPivotList=new ArrayList<>();
+        /*List<Pivot> dpatternPivotList=new ArrayList<>();
         for(Dpattern dpattern:finalDpatternList){
             for(Pivot pivot:dpattern.getFeaturePivots()){
                 dpatternPivotList.add(pivot);
             }
-        }
-        for(Pivot pivot:dpatternPivotList){
+        }*/
+        /*for(Pivot pivot:dpatternPivotList){
             int nloop=0;
             while (nloop<listofsmall.size()){
                 boolean criteria=listofsmall.get(nloop).getStatus()*pivot.getScratches().get(1).getStatus()>0;
@@ -700,7 +274,7 @@ class MymodelApplicationTests {
                 }else {n++;}
             }
 
-        }
+        }*/
     }
 }
 
