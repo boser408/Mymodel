@@ -136,6 +136,7 @@ class MymodelApplicationTests {
                             listofsmall.get(n).getStatus()==0){
                         Pivot tmppivot=new Pivot(currentpivot);
                         pivotList.add(tmppivot);
+                        System.out.println("pExtension stage tmppivot added:"+tmppivot.toString());
                         currentpivot.setLength(listofsmall.get(n).getLength());
                         currentpivot.setStartId(listofsmall.get(n).getStartId());
                         currentpivot.setHigh(listofsmall.get(n).getHigh());
@@ -148,9 +149,9 @@ class MymodelApplicationTests {
                 if(n==listofsmall.size()){
                     break;
                 }
-                /*System.out.println("pExtension: savpivot="+savepivot.toString());
+                System.out.println("pExtension: savpivot="+savepivot.toString());
                 System.out.println("pExtension: currentpivot="+currentpivot.toString());
-                System.out.println("pExtension: pivot of n="+listofsmall.get(n).toString());*/
+                System.out.println("pExtension: pivot of n="+listofsmall.get(n).toString());
             }else {
                 List<Pivot> simplepivots = pivotHandle.findPivots(listofsmall,n);
                 Pivot savepivot=new Pivot();
@@ -179,6 +180,7 @@ class MymodelApplicationTests {
                             listofsmall.get(n).getStatus()==0){
                         tmppivot=new Pivot(currentpivot);
                         pivotList.add(tmppivot);
+                        System.out.println("pFinding stage tmppivot added:"+tmppivot.toString());
                         currentpivot.setLength(listofsmall.get(n).getLength());
                         currentpivot.setStartId(listofsmall.get(n).getStartId());
                         currentpivot.setHigh(listofsmall.get(n).getHigh());
@@ -191,9 +193,9 @@ class MymodelApplicationTests {
                 if(n==listofsmall.size()){
                     break;
                 }
-                /*System.out.println("pFinding: savpivot="+savepivot.toString());
+                System.out.println("pFinding: savpivot="+savepivot.toString());
                 System.out.println("pFinding: tmppivot="+tmppivot.toString());
-                System.out.println("pFinding: currentpivot="+currentpivot.toString());*/
+                System.out.println("pFinding: currentpivot="+currentpivot.toString());
             }
         }
         for(Pivot pivot:pivotList){
