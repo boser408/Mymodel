@@ -53,6 +53,9 @@ class MymodelApplicationTests {
         PivotHandle pivotHandle=new PivotHandleImpl();
         List<Scratch> scratches = pivotHandle.findScratches(highLowPrices, 1, highLowPrices.size(), 6);
         System.out.println(scratches.size());
+        for(Scratch scratch:scratches){
+            System.out.println(scratch.toString());
+        }
         scratchMapper.batchinsert(scratches);
     }
     @Test
