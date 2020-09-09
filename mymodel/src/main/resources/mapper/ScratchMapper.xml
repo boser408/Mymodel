@@ -4,7 +4,7 @@
 <mapper namespace="com.myproject.mymodel.mapper.ScratchMapper">
 
     <select id="selectAllsmall" resultType="Scratch">
-        select * from smallscratch
+        select * from findscratch
     </select>
 
     <select id="selectAndSortAll" parameterType="int" resultType="Scratch" >

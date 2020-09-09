@@ -53,16 +53,7 @@ class MymodelApplicationTests {
         PivotHandle pivotHandle=new PivotHandleImpl();
         List<Scratch> scratches = pivotHandle.findScratches(highLowPrices, 1, highLowPrices.size(), 6);
         System.out.println(scratches.size());
-        /*for(int n=1;n<scratches.size();n++){
-            if(scratches.get(n-1).getStartId()==scratches.get(n).getStartId()){
-                if(scratches.get(n-1).getLength()<=scratches.get(n).getLength()){
-                    scratches.remove(n-1);
-                }else {
-                    scratches.remove(n);
-                }
 
-            }
-        }*/
         for(int n=1;n<scratches.size()-1;n++){
             boolean crite1=scratches.get(n).getHigh()==scratches.get(n+1).getHigh() && scratches.get(n).getLow()==scratches.get(n-1).getLow();
             boolean crite2=scratches.get(n).getHigh()==scratches.get(n-1).getHigh() && scratches.get(n).getLow()==scratches.get(n+1).getLow();
@@ -74,7 +65,7 @@ class MymodelApplicationTests {
         for(Scratch scratch:scratches){
             System.out.println(scratch.toString());
         }
-        //scratchMapper.batchinsert(scratches);
+        scratchMapper.batchinsert(scratches);
     }
     @Test
     void findSmallScratch(){ // Create the table of "smallscratch"
@@ -222,8 +213,15 @@ class MymodelApplicationTests {
             }
             //System.out.println(pivot.toString());
         }
-        /*System.out.println("Size of pivotList is:"+pivotList.size());
-        System.out.println("Sorted pivotList is:");*/
+        System.out.println("Size of pivotList is:"+pivotList.size());
+
+        for( n=1;n<pivotList.size()-1;n++){
+            boolean crite1=pivotList.get(n).getHigh()==pivotList.get(n+1).getHigh() && pivotList.get(n).getLow()==pivotList.get(n-1).getLow();
+            boolean crite2=pivotList.get(n).getHigh()==pivotList.get(n-1).getHigh() && pivotList.get(n).getLow()==pivotList.get(n+1).getLow();
+            if(!crite1 && !crite2) {
+                System.out.println("Check Data of this pivot : "+pivotList.get(n).toString());
+            }
+        }
         for(Pivot pivot:pivotList){
             if(!pivot.getScratches().isEmpty()){
                 pivot.getScratches().sort(Comparator.comparingInt(Scratch::getStartId));
