@@ -1104,6 +1104,7 @@ public class PivotHandleImpl implements PivotHandle {
     public List<Pivot> findMagaPivotList(List<Pivot> cleanedPivotList) {
 
         List<Pivot> magaPivotList=new ArrayList<>();
+        List<Pivot> growPivotList=new ArrayList<>();
         int n=0;
 
         while (cleanedPivotList.get(n).getPivotType()==0){

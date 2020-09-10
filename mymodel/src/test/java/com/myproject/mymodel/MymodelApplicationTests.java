@@ -228,7 +228,7 @@ class MymodelApplicationTests {
             }
             System.out.println(pivot.toString());
         }
-       // List<Pivot> magaPivotList = pivotHandle.findMagaPivotList(pivotList);
+        List<Pivot> magaPivotList = pivotHandle.findMagaPivotList(pivotList);
         /*List<Scratch> allExtendScratch=new ArrayList<>();
         for(Pivot pivot:pivotList){
             Scratch scratch=new Scratch(pivot);
