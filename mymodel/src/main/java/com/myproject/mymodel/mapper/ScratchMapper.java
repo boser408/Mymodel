@@ -9,7 +9,7 @@ import java.util.List;
 @Repository
 @Mapper
 public interface ScratchMapper {
-    List<Scratch> selectAllsmall();
+    List<Scratch> selectAllScratches();
     List<Scratch> selectAndSortAll(int length);
     List<Scratch> selectByLength(int length);
     List<Scratch> selectSmallerByLength(int length);

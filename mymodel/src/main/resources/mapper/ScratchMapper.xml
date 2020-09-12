@@ -3,7 +3,7 @@
 
 <mapper namespace="com.myproject.mymodel.mapper.ScratchMapper">
 
-    <select id="selectAllsmall" resultType="Scratch">
+    <select id="selectAllScratches" resultType="Scratch">
         select * from findscratch
     </select>
 

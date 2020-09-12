@@ -11,7 +11,6 @@ public interface PivotHandle {
     int getNumberofLoop();
     double getControlFactor();
     Scratch checkHiddenScratch(List<HighLowPrice> highLowPrices,int scratchdirection);
-    Pivot cleanPivot (Pivot pivot);
     Dpattern findDpattern (Pivot pivot);
     Dpattern findTpattern(Pivot pivot);
     List<Pivot> dwsubpivotHandle(List<Pivot> cleanedPivotList, Pivot subpivot, int nloop,int endNumberofsubpivot);
@@ -19,9 +18,7 @@ public interface PivotHandle {
     List<Scratch> findScratches(List<HighLowPrice> highLowPrices, int startindex, int length, int pivotLength);
     List<Pivot> findPivots(List<Scratch> scratches, int startId);
     List<Pivot> pivotExtension(List<Scratch> scratches,Pivot pivot,int startId);
-    List<Pivot> scratchClean(List<Pivot> basicPivotList);// Create cleaned pivot lists that only contain effective scratches, which could potentially produce D-pattern;
-    List<Dpattern> findDPatterninPivots(List<Pivot> basicPivotList);//Find small D-patterns within basic Pivots;
-    List<Pivot> findMagaPivotList(List<Pivot> cleanedPivotList);
-
+    List<Pivot> findMagaPivotList(List<Pivot> pivotList);
+    List<Pivot> findAllPivots(List<Scratch> scratchList);
 
 }

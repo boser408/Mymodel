@@ -26,6 +26,15 @@ public class Dpattern {
         this.featurePivots = new ArrayList<>();
     }
 
+    public Dpattern(Dpattern dpattern) {
+        this.startId = dpattern.getStartId();
+        this.length = dpattern.getLength();
+        this.high = dpattern.getHigh();
+        this.low = dpattern.getLow();
+        this.pivotDirection = dpattern.getPivotDirection();
+        this.featureScratches = dpattern.featureScratches;
+        this.featurePivots = dpattern.featurePivots;
+    }
     public int getStartId() {
         return startId;
     }
