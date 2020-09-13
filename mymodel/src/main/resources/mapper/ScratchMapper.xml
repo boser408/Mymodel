@@ -37,7 +37,7 @@
     </insert>
 
     <insert id="batchsmallinsert" parameterType="java.util.List">
-        insert into smallscratch (Length, StartId, High, Low, Status) values
+        insert into tmpscratch (Length, StartId, High, Low, Status) values
         <foreach collection="list" item="scratch" separator=",">
             (#{scratch.length, jdbcType=INTEGER},#{scratch.startId, jdbcType=INTEGER},
             #{scratch.high, jdbcType=FLOAT}, #{scratch.low, jdbcType=FLOAT},

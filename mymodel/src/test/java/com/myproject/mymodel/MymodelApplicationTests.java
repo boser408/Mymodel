@@ -68,138 +68,15 @@ class MymodelApplicationTests {
     }
     @Test
     void obtainAllPivots(){
-        List<Pivot> allPivotList=new ArrayList<>();
+        PivotHandle pivotHandle=new PivotHandleImpl();
         List<Scratch> listofsmall=scratchMapper.selectAllScratches();
-        int listSize=listofsmall.size();
-        int currentSize=100;
-        while (currentSize!=listSize && currentSize>3){ // Start of Loop Level 0
-            listSize=currentSize;
-            PivotHandle pivotHandle=new PivotHandleImpl();
-            List<Pivot> pivotList=new ArrayList<>();
-            Pivot currentpivot=new Pivot(listofsmall.get(0));
-
-            int n=1;
-            while (n<listofsmall.size()-2){
-                if(currentpivot.getPivotType()!=0){
-                    List<Pivot> extendedpivots=pivotHandle.pivotExtension(listofsmall,currentpivot,n);
-                    Pivot savepivot=new Pivot(extendedpivots.get(0));
-                    pivotList.add(savepivot);
-                    currentpivot=new Pivot(extendedpivots.get(1));
-                    n=pivotHandle.getNumberofLoop()+1;
-                    while (n<listofsmall.size()-2 && currentpivot.getScratches().size()==0){
-                        if((listofsmall.get(n).getStatus()==1 && listofsmall.get(n).getHigh()>currentpivot.getHigh()) ||
-                                (listofsmall.get(n).getStatus()==-1 && listofsmall.get(n).getLow()<currentpivot.getLow())||
-                                listofsmall.get(n).getStatus()==0){
-                            Pivot tmppivot=new Pivot(currentpivot);
-                            pivotList.add(tmppivot);
-                            //System.out.println("pExtension stage tmppivot added:"+tmppivot.toString());
-                            currentpivot.setLength(listofsmall.get(n).getLength());
-                            currentpivot.setStartId(listofsmall.get(n).getStartId());
-                            currentpivot.setHigh(listofsmall.get(n).getHigh());
-                            currentpivot.setLow(listofsmall.get(n).getLow());
-                            n=n+1;
-                        }else {
-                            break;
-                        }
-                    }
-                    if(n==listofsmall.size()){
-                        break;
-                    }
-                    /*System.out.println("pExtension: savpivot="+savepivot.toString());
-                    System.out.println("pExtension: currentpivot="+currentpivot.toString());
-                    System.out.println("pExtension: pivot of n="+listofsmall.get(n).toString());*/
-                }else {
-                    List<Pivot> simplepivots = pivotHandle.findPivots(listofsmall,n);
-                    Pivot savepivot=new Pivot();
-                    Pivot tmppivot=new Pivot();
-                    int i=0;
-                    if(simplepivots.size()==2){
-
-                        if(simplepivots.get(0).getStartId()<simplepivots.get(1).getStartId()){
-                            savepivot=new Pivot(simplepivots.get(i));
-                            pivotList.add(savepivot);
-                            i=1;
-                        }else {
-                            i=1;
-                            savepivot=new Pivot(simplepivots.get(i));
-                            pivotList.add(savepivot);
-                            i=0;
-                        }
-
-                    }
-                    n=pivotHandle.getNumberofLoop()+1;
-                    currentpivot=new Pivot(simplepivots.get(i));
-
-                    while (n<listofsmall.size()-2 && currentpivot.getScratches().size()==0){
-                        if((listofsmall.get(n).getStatus()==1 && listofsmall.get(n).getHigh()>currentpivot.getHigh()) ||
-                                (listofsmall.get(n).getStatus()==-1 && listofsmall.get(n).getLow()<currentpivot.getLow())||
-                                listofsmall.get(n).getStatus()==0){
-                            tmppivot=new Pivot(currentpivot);
-                            pivotList.add(tmppivot);
-                            //System.out.println("pFinding stage tmppivot added:"+tmppivot.toString());
-                            currentpivot.setLength(listofsmall.get(n).getLength());
-                            currentpivot.setStartId(listofsmall.get(n).getStartId());
-                            currentpivot.setHigh(listofsmall.get(n).getHigh());
-                            currentpivot.setLow(listofsmall.get(n).getLow());
-                            n=n+1;
-                        }else {
-                            break;
-                        }
-                    }
-                    if(n==listofsmall.size()){
-                        break;
-                    }
-                    /*System.out.println("pFinding: savpivot="+savepivot.toString());
-                    System.out.println("pFinding: tmppivot="+tmppivot.toString());
-                    System.out.println("pFinding: currentpivot="+currentpivot.toString());*/
-                }
-            }
-            System.out.println("listSize is "+listofsmall.size());
-            System.out.println("currentSize is "+currentSize);
-            for(Pivot pivot:pivotList){
-                if(pivot.getPivotType()==0 && pivot.getScratches().size()>0){
-                    pivot.getScratches().clear();
-                }
-                //System.out.println(pivot.toString());
-            }
-            //System.out.println("Size of pivotList is:"+pivotList.size());
-
-            for( n=1;n<pivotList.size()-1;n++){
-                boolean crite1=pivotList.get(n).getHigh()==pivotList.get(n+1).getHigh() && pivotList.get(n).getLow()==pivotList.get(n-1).getLow();
-                boolean crite2=pivotList.get(n).getHigh()==pivotList.get(n-1).getHigh() && pivotList.get(n).getLow()==pivotList.get(n+1).getLow();
-                if(!crite1 && !crite2) {
-                    System.out.println("Check Data of this pivot : "+pivotList.get(n).toString());
-                }
-            }
-            for( n=0;n<pivotList.size()-1;n++){          // Asign direction of pivots whose pivotType=0;
-                if(pivotList.get(n).getPivotType()==0){
-                    if(pivotList.get(n).getHigh()==pivotList.get(n+1).getHigh()){
-                        pivotList.get(n).setPivotType(1);
-                    }else {
-                        pivotList.get(n).setPivotType(-1);
-                    }
-                }
-            }
-            for(Pivot pivot:pivotList){
-                if(!pivot.getScratches().isEmpty()){
-                    pivot.getScratches().sort(Comparator.comparingInt(Scratch::getStartId));
-                }
-
-                //System.out.println(pivot.toString());
-            }
-            allPivotList.addAll(pivotList);
-            currentSize=pivotList.size();
-            listofsmall.clear();
-            for(Pivot pivot:pivotList){
-                Scratch scratch=new Scratch(pivot);
-                listofsmall.add(scratch);
-            }
-        }//End of Loop Level 0
-        System.out.println("Final listSize is "+listofsmall.size());
-        System.out.println("Final currentSize is "+currentSize);
+        List<Pivot> allPivotList=pivotHandle.findAllPivots(listofsmall);
+        int n=0;
         for(Pivot pivot:allPivotList){
-            System.out.println("Pivot in allPivotList "+pivot.toString());
+            n=n+pivot.getScratches().size();
+            System.out.println(pivot.toString());
         }
+        System.out.println("size of all pivot's scratches "+n);
     }
 
     @Test
@@ -300,7 +177,7 @@ class MymodelApplicationTests {
                 System.out.println("Check Data of this pivot : "+pivotList.get(n).toString());
             }
         }
-        for( n=0;n<pivotList.size()-1;n++){          // Asign direction of pivots whose pivotType=0;
+        /*for( n=0;n<pivotList.size()-1;n++){          // Asign direction of pivots whose pivotType=0;
             if(pivotList.get(n).getPivotType()==0){
                 if(pivotList.get(n).getHigh()==pivotList.get(n+1).getHigh()){
                     pivotList.get(n).setPivotType(1);
@@ -308,14 +185,20 @@ class MymodelApplicationTests {
                     pivotList.get(n).setPivotType(-1);
                 }
             }
-        }
+        }*/
+        List<Scratch> scratchList=new ArrayList<>();
         for(Pivot pivot:pivotList){
+            Scratch scratch=new Scratch(pivot);
+            scratchList.add(scratch);
+        }
+        scratchMapper.batchsmallinsert(scratchList);
+        /*for(Pivot pivot:pivotList){
             if(!pivot.getScratches().isEmpty()){
                 pivot.getScratches().sort(Comparator.comparingInt(Scratch::getStartId));
             }
 
             System.out.println(pivot.toString());
-        }
+        }*/
        // List<Pivot> magaPivotList = pivotHandle.findMagaPivotList(pivotList);
         /*List<Scratch> allExtendScratch=new ArrayList<>();
         for(Pivot pivot:pivotList){
