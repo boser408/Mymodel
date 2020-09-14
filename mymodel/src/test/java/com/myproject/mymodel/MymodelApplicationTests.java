@@ -80,7 +80,6 @@ class MymodelApplicationTests {
     }
     @Test
     void obtainAllPivotsByScratch(){
-
         PivotHandle pivotHandle=new PivotHandleImpl();
         List<Scratch> listofsmall=scratchMapper.selectAllScratches();
         /*scratchMapper.deleteAll("tmpscratch");
@@ -106,6 +105,7 @@ class MymodelApplicationTests {
     }
     @Test
     void obtainAllPivots(){
+        PivotHandle pivotHandle=new PivotHandleImpl();
         List<Pivot> allPivotList=new ArrayList<>();
         List<Pivot> pivotListforLoop=new ArrayList<>();
         List<Scratch> scratchList=scratchMapper.selectAllScratches();
@@ -114,6 +114,9 @@ class MymodelApplicationTests {
             pivotListforLoop.add(pivot);
         }
         allPivotList.addAll(pivotListforLoop);
+        List<Pivot> pivotList=pivotHandle.findAllPivots(pivotListforLoop);
+        allPivotList.addAll(pivotList);
+        System.out.println("size of allpivotlist is "+allPivotList.size());
 
     }
     @Test
