@@ -28,8 +28,9 @@ public class Pivot {
         this.startId = scratch.getStartId();
         this.high = scratch.getHigh();
         this.low = scratch.getLow();
-        this.pivotType = 0;
+        this.pivotType = scratch.getStatus();
         this.scratches = new ArrayList<>();
+        this.getScratches().add(scratch);
     }
 
     public int getLength() {

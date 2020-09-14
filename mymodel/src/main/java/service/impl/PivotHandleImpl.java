@@ -1243,7 +1243,7 @@ public class PivotHandleImpl implements PivotHandle {
         return magaPivotList;
     }
     @Override
-    public List<Scratch> findAllPivots(List<Scratch> scratchList) {
+    public List<Scratch> findAllPivotsByScratch(List<Scratch> scratchList) {
         List<Pivot> pivotList=new ArrayList<>();
         List<Scratch> scratchesforLoop=new ArrayList<>();
         int n=0;
@@ -1272,7 +1272,7 @@ public class PivotHandleImpl implements PivotHandle {
                 pivot.setLow(lowerLow);
                 int maxlevel=scratchList.subList(n,endofpivot).stream().mapToInt(Scratch::getStatus).max().getAsInt();
                 pivot.setPivotType(-(maxlevel+1));
-                for (int i=n;i<=endofpivot;i++){
+                for (int i=n+1;i<=endofpivot;i++){
                     pivot.getScratches().add(scratchList.get(i));
                 }
                 pivotList.add(pivot);
@@ -1300,7 +1300,7 @@ public class PivotHandleImpl implements PivotHandle {
                 pivot.setHigh(higherHigh);
                 int maxlevel=scratchList.subList(n,endofpivot).stream().mapToInt(Scratch::getStatus).min().getAsInt();
                 pivot.setPivotType(-(maxlevel-1));
-                for (int i=n;i<=endofpivot;i++){
+                for (int i=n+1;i<=endofpivot;i++){
                     pivot.getScratches().add(scratchList.get(i));
                 }
                 pivotList.add(pivot);
@@ -1311,6 +1311,8 @@ public class PivotHandleImpl implements PivotHandle {
                 /*System.out.println("Stage--222 n= "+n);
                 System.out.println("Stage--222 scratch next to be handled is "+scratchList.get(n).toString());*/
             }else {              // Scenarial #3: scratch n is not a start scratch of any pivot
+               /* Pivot pivot= new Pivot(scratchList.get(n));
+                pivotList.add(pivot);*/
                 Scratch scratch=new Scratch(scratchList.get(n));
                 scratchesforLoop.add(scratch);
                 //System.out.println("scratch added to List "+scratch.toString());
@@ -1331,10 +1333,94 @@ public class PivotHandleImpl implements PivotHandle {
                 System.out.println("Check Data with scratch id ="+scratchesforLoop.get(n).toString());
             }
         }
-        /*for(Scratch scratch:scratchesforLoop){
-            System.out.println(scratch.toString());
-        }*/
         return scratchesforLoop;
+    }
+
+    @Override
+    public List<Pivot> findAllPivots(List<Pivot> pivotListforLoop) {
+        List<Pivot> pivotList=new ArrayList<>();
+        int n=0;
+        while (n<pivotListforLoop.size()-2){
+            boolean crite1=true;
+            boolean crite2=pivotListforLoop.get(n+2).getHigh()>=pivotListforLoop.get(n).getHigh() &&
+                    pivotListforLoop.get(n).getLow()<=pivotListforLoop.get(n+2).getLow() &&
+                    pivotListforLoop.get(n).getPivotType()>0;
+            if(crite1){          // Scenarial #1: scratch n is a start scratch of downtrend pivot
+                int endofpivot=n+2;
+                float lowerLow=pivotListforLoop.get(n+2).getLow();
+                for(int i=4;n+i<pivotListforLoop.size();i=i+2){ // to check if current found pivot could extend further;
+                    boolean crite11=pivotListforLoop.get(n).getHigh()>=pivotListforLoop.get(n+i).getHigh() &&
+                            pivotListforLoop.get(n+i).getLow()<=lowerLow;
+                    if(crite11){
+                        lowerLow=pivotListforLoop.get(n+i).getLow();
+                        endofpivot=n+i;
+                    }else {
+                        break;
+                    }
+                }
+                Pivot pivot= new Pivot(pivotListforLoop.get(n));
+                pivot.setLength(pivotListforLoop.get(endofpivot).getStartId()-pivotListforLoop.get(n).getStartId()+pivotListforLoop.get(endofpivot).getLength());
+                pivot.setLow(lowerLow);
+                int maxlevel=pivotListforLoop.subList(n,endofpivot).stream().mapToInt(Pivot::getStartId).max().getAsInt();
+                pivot.setPivotType(-(maxlevel+1));
+                for (int i=n+1;i<=endofpivot;i++){
+                    pivot.getScratches().add(pivotListforLoop.get(i));
+                }
+                pivotList.add(pivot);
+                //System.out.println("scratch added to List "+scratch.toString());
+                n=endofpivot+1;
+                /*System.out.println("Stage--111 n= "+n);
+                System.out.println("Stage--111 scratch next to be handled is "+scratchList.get(n).toString());*/
+            }else if(crite2){    // Scenarial #2: scratch n is a start scratch of uptrend pivot
+                int endofpivot=n+2;
+                float higherHigh=pivotListforLoop.get(n+2).getHigh();
+                for(int i=4;n+i<pivotListforLoop.size();i=i+2){
+                    boolean crite21=pivotListforLoop.get(n+i).getHigh()>=higherHigh &&
+                            pivotListforLoop.get(n).getLow()<=pivotListforLoop.get(n+i).getLow();
+                    if(crite21){
+                        higherHigh=pivotListforLoop.get(n+i).getHigh();
+                        endofpivot=n+i;
+                    }else {
+                        break;
+                    }
+                }
+                Pivot pivot= new Pivot(pivotListforLoop.get(n));
+                pivot.setLength(pivotListforLoop.get(endofpivot).getStartId()-pivotListforLoop.get(n).getStartId()+pivotListforLoop.get(endofpivot).getLength());
+                pivot.setHigh(higherHigh);
+                int maxlevel=pivotListforLoop.subList(n,endofpivot).stream().mapToInt(Pivot::getStartId).min().getAsInt();
+                pivot.setPivotType(-(maxlevel-1));
+                for (int i=n+1;i<=endofpivot;i++){
+                    pivot.getScratches().add(pivotListforLoop.get(i));
+                }
+                pivotList.add(pivot);
+
+                //System.out.println("scratch added to List "+scratch.toString());
+                n=endofpivot+1;
+                /*System.out.println("Stage--222 n= "+n);
+                System.out.println("Stage--222 scratch next to be handled is "+scratchList.get(n).toString());*/
+            }else {              // Scenarial #3: scratch n is not a start scratch of any pivot
+                Pivot pivot= new Pivot(scratchList.get(n));
+                pivotList.add(pivot);
+
+                //System.out.println("scratch added to List "+scratch.toString());
+                n=n+1;
+                /*System.out.println("Stage--333 n= "+n);
+                System.out.println("Stage--333 scratch next to be handled is "+scratchList.get(n).toString());*/
+            }
+        }
+        for(int t=n;t<pivotListforLoop.size();t++){
+            pivotList.add(pivotListforLoop.get(t));
+        }
+
+        System.out.println("Size of final pivotList "+pivotList.size());
+        for( n=1;n<pivotList.size()-1;n++){
+            boolean crite1=pivotList.get(n).getHigh()==pivotList.get(n+1).getHigh() && pivotList.get(n).getLow()==pivotList.get(n-1).getLow();
+            boolean crite2=pivotList.get(n).getHigh()==pivotList.get(n-1).getHigh() && pivotList.get(n).getLow()==pivotList.get(n+1).getLow();
+            if(!crite1 && !crite2) {
+                System.out.println("Check Data with scratch id ="+pivotList.get(n).toString());
+            }
+        }
+        return pivotList;
     }
 
 }

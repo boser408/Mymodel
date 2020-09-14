@@ -79,7 +79,8 @@ class MymodelApplicationTests {
         scratchMapper.batchinsert(scratchList);
     }
     @Test
-    void obtainAllPivots(){
+    void obtainAllPivotsByScratch(){
+
         PivotHandle pivotHandle=new PivotHandleImpl();
         List<Scratch> listofsmall=scratchMapper.selectAllScratches();
         /*scratchMapper.deleteAll("tmpscratch");
@@ -88,7 +89,7 @@ class MymodelApplicationTests {
         int stablenumber=500;
         while (sizeoftable!=stablenumber ){
             stablenumber=sizeoftable;
-            listofsmall=pivotHandle.findAllPivots(listofsmall);
+            listofsmall=pivotHandle.findAllPivotsByScratch(listofsmall);
             /*scratchMapper.deleteAll("tmpscratch");
             scratchMapper.batchsmallinsert(listofsmall);*/
             sizeoftable=listofsmall.size();
@@ -104,8 +105,16 @@ class MymodelApplicationTests {
         System.out.println("size of all pivot's scratches "+n);*/
     }
     @Test
-    void tryDelete(){
-        scratchMapper.deleteAll("tmpscratch");
+    void obtainAllPivots(){
+        List<Pivot> allPivotList=new ArrayList<>();
+        List<Pivot> pivotListforLoop=new ArrayList<>();
+        List<Scratch> scratchList=scratchMapper.selectAllScratches();
+        for(Scratch scratch:scratchList){
+            Pivot pivot=new Pivot(scratch);
+            pivotListforLoop.add(pivot);
+        }
+        allPivotList.addAll(pivotListforLoop);
+
     }
     @Test
     void produceScratchTable(){ // find all the basic pivots combined by scratches
