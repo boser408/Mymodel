@@ -6,6 +6,9 @@
     <select id="selectAllScratches" resultType="Scratch">
         select * from findscratch
     </select>
+    <select id="selectfromTemp" resultType="Scratch">
+        select * from tmpscratch
+    </select>
 
     <select id="selectAndSortAll" parameterType="int" resultType="Scratch" >
         select * from smallscratch where Status <![CDATA[<>]]> 0 AND Length <![CDATA[>=]]> #{length} order by StartId
@@ -20,7 +23,7 @@
     </select>
 
     <delete id="deleteAll" parameterType="String">
-        delete from ${tableName}
+        delete from ${tablename}
     </delete>
 
     <insert id="save" parameterType="Scratch">

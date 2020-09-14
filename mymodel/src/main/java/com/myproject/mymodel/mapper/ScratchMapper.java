@@ -10,6 +10,7 @@ import java.util.List;
 @Mapper
 public interface ScratchMapper {
     List<Scratch> selectAllScratches();
+    List<Scratch> selectfromTemp();
     List<Scratch> selectAndSortAll(int length);
     List<Scratch> selectByLength(int length);
     List<Scratch> selectSmallerByLength(int length);

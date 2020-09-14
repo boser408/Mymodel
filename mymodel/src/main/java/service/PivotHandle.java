@@ -19,6 +19,6 @@ public interface PivotHandle {
     List<Pivot> findPivots(List<Scratch> scratches, int startId);
     List<Pivot> pivotExtension(List<Scratch> scratches,Pivot pivot,int startId);
     List<Pivot> findMagaPivotList(List<Pivot> pivotList);
-    List<Pivot> findAllPivots(List<Scratch> scratchList);
+    List<Scratch> findAllPivots(List<Scratch> scratchList);
 
 }

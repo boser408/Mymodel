@@ -50,35 +50,63 @@ class MymodelApplicationTests {
     void findScratches(){ // Create the table of "findscratch"
         List<HighLowPrice> highLowPrices = highLowPriceMapper.selectHighLow();
         PivotHandle pivotHandle=new PivotHandleImpl();
-        List<Scratch> scratches = pivotHandle.findScratches(highLowPrices, 1, highLowPrices.size(), 6);
-        System.out.println(scratches.size());
-
-        for(int n=1;n<scratches.size()-1;n++){
-            boolean crite1=scratches.get(n).getHigh()==scratches.get(n+1).getHigh() && scratches.get(n).getLow()==scratches.get(n-1).getLow();
-            boolean crite2=scratches.get(n).getHigh()==scratches.get(n-1).getHigh() && scratches.get(n).getLow()==scratches.get(n+1).getLow();
+        List<Scratch> scratchList = pivotHandle.findScratches(highLowPrices, 1, highLowPrices.size(), 6);
+        System.out.println(scratchList.size());
+        for(int n=0;n<scratchList.size()-1;n++){          // Asign direction to all scratches;
+            if(scratchList.get(n).getStatus()==1){
+                scratchList.get(n).setStatus(2);
+            }else if(scratchList.get(n).getStatus()==-1){
+                scratchList.get(n).setStatus(-2);
+            }else if(scratchList.get(n).getStatus()==0){
+                if(scratchList.get(n).getHigh()==scratchList.get(n+1).getHigh()){
+                    scratchList.get(n).setStatus(1);
+                }else {
+                    scratchList.get(n).setStatus(-1);
+                }
+            }
+        }
+        for(int n=1;n<scratchList.size()-1;n++){
+            boolean crite1=scratchList.get(n).getHigh()==scratchList.get(n+1).getHigh() && scratchList.get(n).getLow()==scratchList.get(n-1).getLow();
+            boolean crite2=scratchList.get(n).getHigh()==scratchList.get(n-1).getHigh() && scratchList.get(n).getLow()==scratchList.get(n+1).getLow();
             if(!crite1 && !crite2) {
-                System.out.println("Check Data with scratch id ="+scratches.get(n).toString());
+                System.out.println("Check Data with scratch id ="+scratchList.get(n).toString());
             }
         }
        // System.out.println("Data is Clean!");
-        for(Scratch scratch:scratches){
+        for(Scratch scratch:scratchList){
             System.out.println(scratch.toString());
         }
-        scratchMapper.batchinsert(scratches);
+        scratchMapper.batchinsert(scratchList);
     }
     @Test
     void obtainAllPivots(){
         PivotHandle pivotHandle=new PivotHandleImpl();
         List<Scratch> listofsmall=scratchMapper.selectAllScratches();
-        List<Pivot> allPivotList=pivotHandle.findAllPivots(listofsmall);
+        /*scratchMapper.deleteAll("tmpscratch");
+        scratchMapper.batchsmallinsert(listofsmall);*/
+        int sizeoftable=300;
+        int stablenumber=500;
+        while (sizeoftable!=stablenumber ){
+            stablenumber=sizeoftable;
+            listofsmall=pivotHandle.findAllPivots(listofsmall);
+            /*scratchMapper.deleteAll("tmpscratch");
+            scratchMapper.batchsmallinsert(listofsmall);*/
+            sizeoftable=listofsmall.size();
+            System.out.println("size of table "+sizeoftable);
+        }
+        System.out.println("final size of table = "+sizeoftable);
+        /*List<Pivot> allPivotList=pivotHandle.findAllPivots(listofsmall);
         int n=0;
         for(Pivot pivot:allPivotList){
             n=n+pivot.getScratches().size();
             System.out.println(pivot.toString());
         }
-        System.out.println("size of all pivot's scratches "+n);
+        System.out.println("size of all pivot's scratches "+n);*/
     }
-
+    @Test
+    void tryDelete(){
+        scratchMapper.deleteAll("tmpscratch");
+    }
     @Test
     void produceScratchTable(){ // find all the basic pivots combined by scratches
         List<Scratch> listofsmall=scratchMapper.selectAllScratches();
