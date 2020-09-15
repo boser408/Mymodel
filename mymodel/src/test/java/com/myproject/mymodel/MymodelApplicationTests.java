@@ -82,43 +82,13 @@ class MymodelApplicationTests {
     void obtainAllPivotsByScratch(){
         PivotHandle pivotHandle=new PivotHandleImpl();
         List<Scratch> listofsmall=scratchMapper.selectAllScratches();
-        /*scratchMapper.deleteAll("tmpscratch");
-        scratchMapper.batchsmallinsert(listofsmall);*/
-        int sizeoftable=300;
-        int stablenumber=500;
-        while (sizeoftable!=stablenumber ){
-            stablenumber=sizeoftable;
-            listofsmall=pivotHandle.findAllPivotsByScratch(listofsmall);
-            /*scratchMapper.deleteAll("tmpscratch");
-            scratchMapper.batchsmallinsert(listofsmall);*/
-            sizeoftable=listofsmall.size();
-            System.out.println("size of table "+sizeoftable);
-        }
-        System.out.println("final size of table = "+sizeoftable);
-        /*List<Pivot> allPivotList=pivotHandle.findAllPivots(listofsmall);
-        int n=0;
-        for(Pivot pivot:allPivotList){
-            n=n+pivot.getScratches().size();
+        List<Pivot> allPivotList=pivotHandle.findAllPivotsByScratch(listofsmall);
+        System.out.println("size of table "+allPivotList.size());
+        for(Pivot pivot: allPivotList){
             System.out.println(pivot.toString());
         }
-        System.out.println("size of all pivot's scratches "+n);*/
     }
-    @Test
-    void obtainAllPivots(){
-        PivotHandle pivotHandle=new PivotHandleImpl();
-        List<Pivot> allPivotList=new ArrayList<>();
-        List<Pivot> pivotListforLoop=new ArrayList<>();
-        List<Scratch> scratchList=scratchMapper.selectAllScratches();
-        for(Scratch scratch:scratchList){
-            Pivot pivot=new Pivot(scratch);
-            pivotListforLoop.add(pivot);
-        }
-        allPivotList.addAll(pivotListforLoop);
-        List<Pivot> pivotList=pivotHandle.findAllPivots(pivotListforLoop);
-        allPivotList.addAll(pivotList);
-        System.out.println("size of allpivotlist is "+allPivotList.size());
 
-    }
     @Test
     void produceScratchTable(){ // find all the basic pivots combined by scratches
         List<Scratch> listofsmall=scratchMapper.selectAllScratches();
