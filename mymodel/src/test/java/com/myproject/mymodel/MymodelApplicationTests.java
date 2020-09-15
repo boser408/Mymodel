@@ -85,31 +85,57 @@ class MymodelApplicationTests {
         List<Pivot> allPivotList=pivotHandle.findAllPivotsByScratch(listofsmall);
         System.out.println("size of table "+allPivotList.size());
         allPivotList.sort(Comparator.comparingInt(Pivot::getStartId));
-        for(int n=0;n<=allPivotList.size()-2;n++){
-           if (allPivotList.get(n).getStartId()==allPivotList.get(n+1).getStartId()){
-               if(allPivotList.get(n).getLength()>allPivotList.get(n+1).getLength()){
-                   allPivotList.get(n).getScratches().addAll(allPivotList.get(n+1).getScratches());
-                   allPivotList.remove(n+1);
-               }else {
-                   allPivotList.get(n+1).getScratches().addAll(allPivotList.get(n).getScratches());
-                   allPivotList.remove(n);
-               }
-           }
+        for(Pivot pivot: allPivotList){
+            pivot.getScratches().sort(Comparator.comparingInt(Scratch::getStartId));
+            System.out.println(pivot.toString());
         }
+
         for(int n=0;n<=allPivotList.size()-2;n++){
-            boolean c1=(allPivotList.get(n).getStartId()+allPivotList.get(n).getLength())>=(allPivotList.get(n+1).getStartId()+allPivotList.get(n+1).getLength());
-            boolean c2=allPivotList.get(n).getPivotType()*allPivotList.get(n+1).getPivotType()>0;
-            if(c1&&c2){
-                if(allPivotList.get(n).getLength()>allPivotList.get(n+1).getLength()){
-                    allPivotList.get(n).getScratches().addAll(allPivotList.get(n+1).getScratches());
-                    allPivotList.remove(n+1);
-                }else {
-                    allPivotList.get(n+1).getScratches().addAll(allPivotList.get(n).getScratches());
-                    allPivotList.remove(n);
+            for(int i=n+1;i<=allPivotList.size()-1;i++){
+                if(allPivotList.get(i).getStartId()>=allPivotList.get(n).getStartId()+allPivotList.get(n).getLength()){
+                    break;
+                }
+                if (allPivotList.get(n).getStartId()==allPivotList.get(i).getStartId()){
+                    if(allPivotList.get(n).getLength()>allPivotList.get(i).getLength()){
+                        for(Scratch scratch:allPivotList.get(n).getScratches()){
+                            if(scratch.getStartId()==allPivotList.get(i).getStartId()){
+                                allPivotList.get(n).getScratches().remove(scratch);
+                            }
+                        }
+                        allPivotList.get(n).getScratches().addAll(allPivotList.get(i).getScratches());
+
+                    }else {
+                        for(Scratch scratch:allPivotList.get(n).getScratches()){
+                            if(scratch.getStartId()==allPivotList.get(i).getStartId()){
+                                allPivotList.get(i).getScratches().remove(scratch);
+                            }
+                        }
+                        allPivotList.get(i).getScratches().addAll(allPivotList.get(n).getScratches());
+
+                    }
+                    continue;
+                }
+                boolean c1=(allPivotList.get(n).getStartId()+allPivotList.get(n).getLength())>(allPivotList.get(i).getStartId()+allPivotList.get(i).getLength());
+                boolean c2=allPivotList.get(n).getPivotType()*allPivotList.get(i).getPivotType()>0;
+                int startId=allPivotList.get(i).getStartId();
+                if(c1&&c2){
+                    Iterator<Scratch> iterator=allPivotList.get(n).getScratches().iterator();
+                    while (iterator.hasNext()){
+                        Scratch scratch=iterator.next();
+                        if(scratch.getStartId()==startId){
+                            iterator.remove();
+                        }
+                    }
+                    /*for(Scratch scratch:allPivotList.get(n).getScratches()){
+                        if(scratch.getStartId()==allPivotList.get(i).getStartId()){
+                            allPivotList.get(n).getScratches().remove(scratch);
+                        }
+                    }*/
+                    allPivotList.get(n).getScratches().addAll(allPivotList.get(i).getScratches());
+                    continue;
                 }
             }
         }
-        System.out.println("size of cutted table "+allPivotList.size());
         for(Pivot pivot: allPivotList){
             pivot.getScratches().sort(Comparator.comparingInt(Scratch::getStartId));
             System.out.println(pivot.toString());
