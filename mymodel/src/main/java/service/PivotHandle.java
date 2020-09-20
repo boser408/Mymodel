@@ -14,12 +14,7 @@ public interface PivotHandle {
     List<Scratch> removeRedundentScratch(List<Scratch> scratchList);
     Dpattern findDpattern (Pivot pivot);
     Dpattern findTpattern(Pivot pivot);
-    List<Pivot> dwsubpivotHandle(List<Pivot> cleanedPivotList, Pivot subpivot, int nloop,int endNumberofsubpivot);
-    List<Pivot> subpivotHandle(List<Pivot> cleanedPivotList, Pivot subpivot, int nloop,int endNumberofsubpivot);
     List<Scratch> findScratches(List<HighLowPrice> highLowPrices, int startindex, int length, int pivotLength);
-    List<Pivot> findPivots(List<Scratch> scratches, int startId);
-    List<Pivot> pivotExtension(List<Scratch> scratches,Pivot pivot,int startId);
-    List<Pivot> findMagaPivotList(List<Pivot> pivotList);
     List<Pivot> findAllPivotsByScratch(List<Scratch> scratchList);
     List<Pivot> obtainKeyPivots(List<Pivot> allPivotList);
 }
