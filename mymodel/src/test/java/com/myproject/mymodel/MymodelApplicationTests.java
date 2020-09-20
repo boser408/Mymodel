@@ -20,7 +20,6 @@ class MymodelApplicationTests {
     private HighLowPriceMapper highLowPriceMapper;
     @Autowired
     private ScratchMapper scratchMapper;
-
     @Test
     void trySummaryStats(){
         List<HighLowPrice> highLowPrices = highLowPriceMapper.selectHighLow();
@@ -79,69 +78,24 @@ class MymodelApplicationTests {
         scratchMapper.batchinsert(scratchList);
     }
     @Test
-    void obtainAllPivotsByScratch(){
+    void findAllPivotsByScratch(){
         PivotHandle pivotHandle=new PivotHandleImpl();
         List<Scratch> listofsmall=scratchMapper.selectAllScratches();
         List<Pivot> allPivotList=pivotHandle.findAllPivotsByScratch(listofsmall);
         System.out.println("size of table "+allPivotList.size());
         allPivotList.sort(Comparator.comparingInt(Pivot::getStartId));
-        for(Pivot pivot: allPivotList){
+        /*for(Pivot pivot: allPivotList){
             pivot.getScratches().sort(Comparator.comparingInt(Scratch::getStartId));
+        }*/
+        List<Pivot> keyPivotList=pivotHandle.obtainKeyPivots(allPivotList);
+        for(Pivot pivot:keyPivotList){
             System.out.println(pivot.toString());
+           /*for(Scratch scratch:pivot.getScratches()){
+               System.out.println(scratch.toString());
+           }*/
         }
 
-        for(int n=0;n<=allPivotList.size()-2;n++){
-            for(int i=n+1;i<=allPivotList.size()-1;i++){
-                if(allPivotList.get(i).getStartId()>=allPivotList.get(n).getStartId()+allPivotList.get(n).getLength()){
-                    break;
-                }
-                if (allPivotList.get(n).getStartId()==allPivotList.get(i).getStartId()){
-                    if(allPivotList.get(n).getLength()>allPivotList.get(i).getLength()){
-                        for(Scratch scratch:allPivotList.get(n).getScratches()){
-                            if(scratch.getStartId()==allPivotList.get(i).getStartId()){
-                                allPivotList.get(n).getScratches().remove(scratch);
-                            }
-                        }
-                        allPivotList.get(n).getScratches().addAll(allPivotList.get(i).getScratches());
-
-                    }else {
-                        for(Scratch scratch:allPivotList.get(n).getScratches()){
-                            if(scratch.getStartId()==allPivotList.get(i).getStartId()){
-                                allPivotList.get(i).getScratches().remove(scratch);
-                            }
-                        }
-                        allPivotList.get(i).getScratches().addAll(allPivotList.get(n).getScratches());
-
-                    }
-                    continue;
-                }
-                boolean c1=(allPivotList.get(n).getStartId()+allPivotList.get(n).getLength())>(allPivotList.get(i).getStartId()+allPivotList.get(i).getLength());
-                boolean c2=allPivotList.get(n).getPivotType()*allPivotList.get(i).getPivotType()>0;
-                int startId=allPivotList.get(i).getStartId();
-                if(c1&&c2){
-                    Iterator<Scratch> iterator=allPivotList.get(n).getScratches().iterator();
-                    while (iterator.hasNext()){
-                        Scratch scratch=iterator.next();
-                        if(scratch.getStartId()==startId){
-                            iterator.remove();
-                        }
-                    }
-                    /*for(Scratch scratch:allPivotList.get(n).getScratches()){
-                        if(scratch.getStartId()==allPivotList.get(i).getStartId()){
-                            allPivotList.get(n).getScratches().remove(scratch);
-                        }
-                    }*/
-                    allPivotList.get(n).getScratches().addAll(allPivotList.get(i).getScratches());
-                    continue;
-                }
-            }
-        }
-        for(Pivot pivot: allPivotList){
-            pivot.getScratches().sort(Comparator.comparingInt(Scratch::getStartId));
-            System.out.println(pivot.toString());
-        }
     }
-
     @Test
     void produceScratchTable(){ // find all the basic pivots combined by scratches
         List<Scratch> listofsmall=scratchMapper.selectAllScratches();

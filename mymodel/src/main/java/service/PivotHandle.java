@@ -11,6 +11,7 @@ public interface PivotHandle {
     int getNumberofLoop();
     double getControlFactor();
     Scratch checkHiddenScratch(List<HighLowPrice> highLowPrices,int scratchdirection);
+    List<Scratch> removeRedundentScratch(List<Scratch> scratchList);
     Dpattern findDpattern (Pivot pivot);
     Dpattern findTpattern(Pivot pivot);
     List<Pivot> dwsubpivotHandle(List<Pivot> cleanedPivotList, Pivot subpivot, int nloop,int endNumberofsubpivot);
@@ -20,4 +21,5 @@ public interface PivotHandle {
     List<Pivot> pivotExtension(List<Scratch> scratches,Pivot pivot,int startId);
     List<Pivot> findMagaPivotList(List<Pivot> pivotList);
     List<Pivot> findAllPivotsByScratch(List<Scratch> scratchList);
+    List<Pivot> obtainKeyPivots(List<Pivot> allPivotList);
 }

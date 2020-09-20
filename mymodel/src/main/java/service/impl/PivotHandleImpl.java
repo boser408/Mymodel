@@ -62,6 +62,29 @@ public class PivotHandleImpl implements PivotHandle {
         //System.out.println("Returned Scratch is "+scratch.toString());
         return scratch;
     }
+
+    @Override
+    public List<Scratch> removeRedundentScratch(List<Scratch> scratchList) {
+        List<Scratch> scratchesforReturn=new ArrayList<>();
+        scratchList.sort(Comparator.comparingInt(Scratch::getStartId));
+        for(int n=0;n<scratchList.size();n++){
+            Scratch maxscratch=new Scratch(scratchList.get(n));
+            for(int i=n+1;i<scratchList.size();i++){
+                if(scratchList.get(i).getStartId()>=maxscratch.getStartId()+maxscratch.getLength()-1){
+                    break;
+                }
+                boolean c=scratchList.get(i).getLength()>maxscratch.getLength();
+                if(c){
+                    maxscratch=new Scratch(scratchList.get(i));
+                }
+                scratchList.remove(i);
+                i=i-1;
+            }
+            scratchesforReturn.add(maxscratch);
+        }
+        return scratchesforReturn;
+    }
+
     @Override
     public Dpattern findDpattern(Pivot pivot) {
         Dpattern foundDpattern=new Dpattern(pivot);
@@ -1283,10 +1306,7 @@ public class PivotHandleImpl implements PivotHandle {
                     pivotList.add(pivot);
                     Scratch scratch=new Scratch(pivot);
                     scratchesforLoop.add(scratch);
-                    //System.out.println("scratch added to List "+scratch.toString());
                     n=endofpivot+1;
-                /*System.out.println("Stage--111 n= "+n);
-                System.out.println("Stage--111 scratch next to be handled is "+scratchList.get(n).toString());*/
                 }else if(crite2){    // Scenarial #2: scratch n is a start scratch of uptrend pivot
                     int endofpivot=n+2;
                     float higherHigh=scratchList.get(n+2).getHigh();
@@ -1311,25 +1331,16 @@ public class PivotHandleImpl implements PivotHandle {
                     pivotList.add(pivot);
                     Scratch scratch=new Scratch(pivot);
                     scratchesforLoop.add(scratch);
-                    //System.out.println("scratch added to List "+scratch.toString());
                     n=endofpivot+1;
-                /*System.out.println("Stage--222 n= "+n);
-                System.out.println("Stage--222 scratch next to be handled is "+scratchList.get(n).toString());*/
                 }else {              // Scenarial #3: scratch n is not a start scratch of any pivot
-               /* Pivot pivot= new Pivot(scratchList.get(n));
-                pivotList.add(pivot);*/
                     Scratch scratch=new Scratch(scratchList.get(n));
                     scratchesforLoop.add(scratch);
-                    //System.out.println("scratch added to List "+scratch.toString());
                     n=n+1;
-                /*System.out.println("Stage--333 n= "+n);
-                System.out.println("Stage--333 scratch next to be handled is "+scratchList.get(n).toString());*/
                 }
             }
             for(int t=n;t<scratchList.size();t++){
                 scratchesforLoop.add(scratchList.get(t));
             }
-
             System.out.println("Size of final pivotList "+pivotList.size());
             for( n=1;n<scratchesforLoop.size()-1;n++){
                 boolean crite1=scratchesforLoop.get(n).getHigh()==scratchesforLoop.get(n+1).getHigh() && scratchesforLoop.get(n).getLow()==scratchesforLoop.get(n-1).getLow();
@@ -1343,7 +1354,62 @@ public class PivotHandleImpl implements PivotHandle {
             scratchList.clear();
             scratchList.addAll(scratchesforLoop);
         }                                  // End Line of Complex method;
-
         return allPivotList;
+    }
+    @Override
+    public List<Pivot> obtainKeyPivots(List<Pivot> allPivotList) {
+        List<Pivot> keyPivotList=new ArrayList<>();
+        List<Scratch> allScratchList=new ArrayList<>();
+        for(Pivot pivot:allPivotList){
+            Scratch scratch=new Scratch(pivot);
+            allScratchList.add(scratch);
+        }
+        List<Scratch> scratchList=new ArrayList<>();
+        scratchList.addAll(allScratchList);
+        List<Scratch> scratchesforLoop=new ArrayList<>();
+        for(int n=0;n<scratchList.size();n++){
+            Scratch maxscratch=new Scratch(scratchList.get(n));
+            for(int i=n+1;i<scratchList.size();i++){
+                if(scratchList.get(i).getStartId()>=maxscratch.getStartId()+maxscratch.getLength()-1){
+                    break;
+                }
+                boolean c=scratchList.get(i).getLength()>maxscratch.getLength();
+                if(c){
+                    maxscratch=new Scratch(scratchList.get(i));
+                }
+                scratchList.remove(i);
+                i=i-1;
+            }
+            scratchesforLoop.add(maxscratch);
+        }
+        while (!scratchesforLoop.isEmpty()){
+            List<Scratch> scratchListforcontrol=new ArrayList<>();
+            for(Scratch basicscratch:scratchesforLoop){
+                List<Scratch> scratchListforHandle=new ArrayList<>();
+                Pivot pivot=new Pivot(basicscratch);
+                for(Scratch scratch:allScratchList){
+
+                    boolean c1=basicscratch.getStatus()*scratch.getStatus()<0;
+                    boolean c2=basicscratch.getStartId()+basicscratch.getLength()>scratch.getStartId()+scratch.getLength();
+                    boolean c3=basicscratch.getStartId()<scratch.getStartId();
+                    if(c1 && c2 && c3){
+                        scratchListforHandle.add(scratch);
+                    }
+                }
+                if(scratchListforHandle.size()>0){
+                    List<Scratch> cleanedscratchList=removeRedundentScratch(scratchListforHandle);
+                    scratchListforcontrol.addAll(cleanedscratchList);
+                    pivot.getScratches().clear();
+                    pivot.getScratches().addAll(cleanedscratchList);
+                }
+                keyPivotList.add(pivot);
+            }
+            scratchesforLoop.clear();
+            if(!scratchListforcontrol.isEmpty()){
+                scratchesforLoop.addAll(scratchListforcontrol);
+            }
+            System.out.println("Size of Loop List "+ scratchesforLoop.size());
+        }
+        return keyPivotList;
     }
 }
