@@ -94,9 +94,7 @@ class MymodelApplicationTests {
                System.out.println(scratch.toString());
            }*/
         }
-
     }
-
 }
 
 

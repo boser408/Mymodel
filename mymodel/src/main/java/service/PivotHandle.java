@@ -8,7 +8,6 @@ import com.myproject.mymodel.domain.Scratch;
 import java.util.List;
 
 public interface PivotHandle {
-    int getNumberofLoop();
     double getControlFactor();
     Scratch checkHiddenScratch(List<HighLowPrice> highLowPrices,int scratchdirection);
     List<Scratch> removeRedundentScratch(List<Scratch> scratchList);

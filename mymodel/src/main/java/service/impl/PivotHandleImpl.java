@@ -9,15 +9,11 @@ import service.PivotHandle;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 
 public class PivotHandleImpl implements PivotHandle {
     public static final double controlFactor=0.7;
     public static final int pivotLength=6;
     public int numberofLoop;
-    public int getNumberofLoop() {
-        return numberofLoop;
-    }
     public double getControlFactor(){return controlFactor;}
 
     @Override
