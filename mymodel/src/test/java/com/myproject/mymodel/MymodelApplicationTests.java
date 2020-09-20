@@ -87,10 +87,10 @@ class MymodelApplicationTests {
         allScratches=scratchMapper.selectAllScratches();
         System.out.println("Size of allScratches "+allScratches.size());
         List<Pivot> pivotsForPatternSearch=pivotHandle.addScratchtoPivot(allScratches,keyPivotList);
-        for(Pivot pivot:pivotsForPatternSearch){
-            System.out.println(pivot.toString());
-            for(Scratch scratch:pivot.getScratches()){
-                System.out.println(scratch.toString());
+        List<Dpattern> dpatternList=pivotHandle.findAllDpattern(pivotsForPatternSearch);
+        for(Dpattern dpattern:dpatternList){
+            for (Pivot pivot:dpattern.getFeaturePivots()){
+                System.out.println(pivot.toString());
             }
         }
     }

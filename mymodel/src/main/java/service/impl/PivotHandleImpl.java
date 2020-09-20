@@ -138,7 +138,6 @@ public class PivotHandleImpl implements PivotHandle {
     public Dpattern findDpattern(Pivot pivot) {
         Dpattern foundDpattern=new Dpattern(pivot);
         Scratch scratch=new Scratch(pivot);
-
         //System.out.println("pivot in findDpattern is XXXXXXXX:"+pivot.toString());
         for(int n=0;n<pivot.getScratches().size()-1;n++){
             for(int i=n+1;i<pivot.getScratches().size();i++){
@@ -180,6 +179,21 @@ public class PivotHandleImpl implements PivotHandle {
             //System.out.println(" returning foundDpattern is :"+foundDpattern.toString());
             return foundDpattern;
     }
+
+    @Override
+    public List<Dpattern> findAllDpattern(List<Pivot> pivotList) {
+        List<Dpattern> dpatternList=new ArrayList<>();
+        for(Pivot pivot:pivotList){
+            if(pivot.getScratches().size()>1){
+                Dpattern dpattern=findDpattern(pivot);
+                if(dpattern.getFeaturePivots().size()>0){
+                    dpatternList.add(dpattern);
+                }
+            }
+        }
+        return dpatternList;
+    }
+
     @Override
     public Dpattern findTpattern(Pivot pivot) {
         Dpattern returnTpattern=new Dpattern(pivot);
