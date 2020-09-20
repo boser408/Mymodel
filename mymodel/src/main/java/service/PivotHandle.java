@@ -11,6 +11,8 @@ public interface PivotHandle {
     double getControlFactor();
     Scratch checkHiddenScratch(List<HighLowPrice> highLowPrices,int scratchdirection);
     List<Scratch> removeRedundentScratch(List<Scratch> scratchList);
+    List<Scratch> findScratchtoAdd(List<Scratch> allScratches, int nofStart, int nofEnd);
+    List<Pivot> addScratchtoPivot(List<Scratch> allScratches, List<Pivot> keyPivotList);
     Dpattern findDpattern (Pivot pivot);
     Dpattern findTpattern(Pivot pivot);
     List<Scratch> findScratches(List<HighLowPrice> highLowPrices, int startindex, int length, int pivotLength);

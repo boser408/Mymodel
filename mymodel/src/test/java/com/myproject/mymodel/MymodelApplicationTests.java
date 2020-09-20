@@ -80,19 +80,18 @@ class MymodelApplicationTests {
     @Test
     void findAllPivotsByScratch(){
         PivotHandle pivotHandle=new PivotHandleImpl();
-        List<Scratch> listofsmall=scratchMapper.selectAllScratches();
-        List<Pivot> allPivotList=pivotHandle.findAllPivotsByScratch(listofsmall);
-        System.out.println("size of table "+allPivotList.size());
-        allPivotList.sort(Comparator.comparingInt(Pivot::getStartId));
-        /*for(Pivot pivot: allPivotList){
-            pivot.getScratches().sort(Comparator.comparingInt(Scratch::getStartId));
-        }*/
+        List<Scratch> allScratches=scratchMapper.selectAllScratches();
+        System.out.println("Size of allScratches "+allScratches.size());
+        List<Pivot> allPivotList=pivotHandle.findAllPivotsByScratch(allScratches);
         List<Pivot> keyPivotList=pivotHandle.obtainKeyPivots(allPivotList);
-        for(Pivot pivot:keyPivotList){
+        allScratches=scratchMapper.selectAllScratches();
+        System.out.println("Size of allScratches "+allScratches.size());
+        List<Pivot> pivotsForPatternSearch=pivotHandle.addScratchtoPivot(allScratches,keyPivotList);
+        for(Pivot pivot:pivotsForPatternSearch){
             System.out.println(pivot.toString());
-           /*for(Scratch scratch:pivot.getScratches()){
-               System.out.println(scratch.toString());
-           }*/
+            for(Scratch scratch:pivot.getScratches()){
+                System.out.println(scratch.toString());
+            }
         }
     }
 }

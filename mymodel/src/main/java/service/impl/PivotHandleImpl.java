@@ -79,6 +79,61 @@ public class PivotHandleImpl implements PivotHandle {
         }
         return scratchesforReturn;
     }
+
+    @Override
+    public List<Scratch> findScratchtoAdd(List<Scratch> allScratches, int nofStart, int nofEnd) {
+        List<Scratch> scratchestoReturn=new ArrayList<>();
+        for(int n=0;n<allScratches.size();n++){
+            if(allScratches.get(n).getStartId()==nofStart){
+                int i=n;
+                while (allScratches.get(i).getStartId()+allScratches.get(i).getLength()<=nofEnd){
+                    scratchestoReturn.add(allScratches.get(i));
+                    i++;
+                }
+                i=i-1;
+                break;
+            }
+        }
+        return scratchestoReturn;
+    }
+    @Override
+    public List<Pivot> addScratchtoPivot(List<Scratch> allScratches, List<Pivot> keyPivotList) {
+        List<Pivot> pivotsForPatternSearch=new ArrayList<>();
+        for(Pivot pivot:keyPivotList){
+            List<Scratch> scratchestoAdd=new ArrayList<>();
+            int nofStart,nofEnd;
+            if(pivot.getScratches().size()==1 && pivot.getScratches().get(0).getStatus()==pivot.getPivotType()){//No Feature Scratch in the Pivot;
+                pivot.getScratches().clear();
+                nofStart=pivot.getStartId();
+                nofEnd=pivot.getStartId()+pivot.getLength();
+                pivot.getScratches().addAll(findScratchtoAdd(allScratches,nofStart,nofEnd));
+            }else { // At least one Feature Scratch in the Pivot;
+                nofStart=pivot.getStartId();
+                for(int t=0;t<pivot.getScratches().size();t++){
+                    Scratch scratch=new Scratch(pivot.getScratches().get(t));
+                    nofEnd=scratch.getStartId()+1;
+                    scratchestoAdd.addAll(findScratchtoAdd(allScratches,nofStart,nofEnd));
+                    nofStart=scratch.getStartId()+scratch.getLength()-1;
+                }
+                Scratch scratch=new Scratch(pivot.getScratches().get(pivot.getScratches().size()-1));
+                nofStart=scratch.getStartId()+scratch.getLength()-1;
+                nofEnd=pivot.getStartId()+pivot.getLength();
+                scratchestoAdd.addAll(findScratchtoAdd(allScratches,nofStart,nofEnd));
+                pivot.getScratches().addAll(scratchestoAdd);
+            }
+            pivot.getScratches().sort(Comparator.comparingInt(Scratch::getStartId));
+            pivotsForPatternSearch.add(pivot);
+        }
+        for (Pivot pivot:pivotsForPatternSearch){
+            for(int n=0;n<pivot.getScratches().size();n++){
+                if(pivot.getScratches().get(n).getStatus()*pivot.getPivotType()>0){
+                    pivot.getScratches().remove(n);
+                    n=n-1;
+                }
+            }
+        }
+        return pivotsForPatternSearch;
+    }
     @Override
     public Dpattern findDpattern(Pivot pivot) {
         Dpattern foundDpattern=new Dpattern(pivot);
@@ -753,6 +808,7 @@ public class PivotHandleImpl implements PivotHandle {
             scratchList.clear();
             scratchList.addAll(scratchesforLoop);
         }                                  // End Line of Complex method;
+        allPivotList.sort(Comparator.comparingInt(Pivot::getStartId));
         return allPivotList;
     }
     @Override
