@@ -154,8 +154,28 @@ public class PivotHandleImpl implements PivotHandle {
                         tmppivot.setPivotType(pivot.getPivotType());
                         tmppivot.getScratches().add(pivot.getScratches().get(n));
                         tmppivot.getScratches().add(pivot.getScratches().get(i));
-                        foundDpattern.getFeaturePivots().add(tmppivot);
+                        for(int t=i+1;t<pivot.getScratches().size();t++){     //Start Line of Looking for the first matching consolidation after Dpattern appeared;
+                            double c=(double) pivot.getScratches().get(t).getLength()/pivot.getScratches().get(i).getLength();
+                            if(c>controlFactor){
+                                tmppivot.getScratches().add(pivot.getScratches().get(t));
+                                break;
+                            }
+                        }                                                    //End Line of Looking for the first matching consolidation after Dpattern appeared;
 
+                        if(tmppivot.getScratches().size()==4){               // Start Line of looking for the beginning point of currently found Dpatter;
+                            Scratch scratch1=new Scratch(pivot);
+                            if(n>0){
+                                for(int r=n-1;r>=0;r--){
+                                    double c=(double) pivot.getScratches().get(r).getLength()/pivot.getScratches().get(n).getLength();
+                                    if(c>controlFactor){
+                                        scratch1=new Scratch(pivot.getScratches().get(r));
+                                        break;
+                                    }
+                                }
+                            }
+                            tmppivot.getScratches().add(scratch1);
+                        }                                                   // End Line of looking for the beginning point of currently found Dpatter;
+                        foundDpattern.getFeaturePivots().add(tmppivot);
                     }
                 }else if(pivot.getPivotType()<=-1){
                   if((factor>controlFactor && factor<1/controlFactor) && pivot.getScratches().get(n).getLow()>pivot.getScratches().get(i).getHigh()){
@@ -166,34 +186,35 @@ public class PivotHandleImpl implements PivotHandle {
                       tmppivot.setPivotType(pivot.getPivotType());
                       tmppivot.getScratches().add(pivot.getScratches().get(n));
                       tmppivot.getScratches().add(pivot.getScratches().get(i));
-                      //System.out.println("tmppivot is "+tmppivot.toString());
-
+                      for(int t=i+1;t<pivot.getScratches().size();t++){      //Start Line of Looking for the first matching consolidation after Dpattern appeared;
+                          double c=(double) pivot.getScratches().get(t).getLength()/pivot.getScratches().get(i).getLength();
+                          if(c>controlFactor){
+                              tmppivot.getScratches().add(pivot.getScratches().get(t));
+                              break;
+                          }
+                      }                                                     //End Line of Looking for the first matching consolidation after Dpattern appeared;
+                      if(tmppivot.getScratches().size()==4){               // Start Line of looking for the beginning point of currently found Dpatter;
+                          Scratch scratch1=new Scratch(pivot);
+                          if(n>0){
+                              for(int r=n-1;r>=0;r--){
+                                  double c=(double) pivot.getScratches().get(r).getLength()/pivot.getScratches().get(n).getLength();
+                                  if(c>controlFactor){
+                                      scratch1=new Scratch(pivot.getScratches().get(r));
+                                      break;
+                                  }
+                              }
+                          }
+                          tmppivot.getScratches().add(scratch1);
+                      }                                                   // End Line of looking for the beginning point of currently found Dpatter;
                       foundDpattern.getFeaturePivots().add(tmppivot);
                       //System.out.println("foundDpattern is "+foundDpattern.toString());
-
                     }
                 }
             }
-
         }
             //System.out.println(" returning foundDpattern is :"+foundDpattern.toString());
             return foundDpattern;
     }
-
-    @Override
-    public List<Dpattern> findAllDpattern(List<Pivot> pivotList) {
-        List<Dpattern> dpatternList=new ArrayList<>();
-        for(Pivot pivot:pivotList){
-            if(pivot.getScratches().size()>1){
-                Dpattern dpattern=findDpattern(pivot);
-                if(dpattern.getFeaturePivots().size()>0){
-                    dpatternList.add(dpattern);
-                }
-            }
-        }
-        return dpatternList;
-    }
-
     @Override
     public Dpattern findTpattern(Pivot pivot) {
         Dpattern returnTpattern=new Dpattern(pivot);
@@ -253,9 +274,22 @@ public class PivotHandleImpl implements PivotHandle {
         if(returnTpattern.getFeaturePivots().size()>=1){ // Mark the pivot as Tripple-Pivots pattern;
 
             returnTpattern.setPivotDirection(returnTpattern.getPivotDirection()*33);
-           // System.out.println("Final--------------------Returned Tpattern ="+returnTpattern.toString());
+            // System.out.println("Final--------------------Returned Tpattern ="+returnTpattern.toString());
         }
         return returnTpattern;
+    }
+    @Override
+    public List<Dpattern> findAllDpattern(List<Pivot> pivotList) {
+        List<Dpattern> dpatternList=new ArrayList<>();
+        for(Pivot pivot:pivotList){
+            if(pivot.getScratches().size()>1){
+                Dpattern dpattern=findDpattern(pivot);
+                if(dpattern.getFeaturePivots().size()>0){
+                    dpatternList.add(dpattern);
+                }
+            }
+        }
+        return dpatternList;
     }
     @Override
     public List<Scratch> findScratches(List<HighLowPrice> highLowPrices, int startindex, int length, int pivotLength) {
