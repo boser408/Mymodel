@@ -152,6 +152,7 @@ public class PivotHandleImpl implements PivotHandle {
                         System.out.println("the 2nd Scratch is"+pivot.getScratches().get(i).toString());*/
                         Pivot tmppivot=new Pivot(scratch);
                         tmppivot.setPivotType(pivot.getPivotType());
+                        tmppivot.getScratches().clear();
                         tmppivot.getScratches().add(pivot.getScratches().get(n));
                         tmppivot.getScratches().add(pivot.getScratches().get(i));
                         for(int t=i+1;t<pivot.getScratches().size();t++){     //Start Line of Looking for the first matching consolidation after Dpattern appeared;
@@ -162,7 +163,7 @@ public class PivotHandleImpl implements PivotHandle {
                             }
                         }                                                    //End Line of Looking for the first matching consolidation after Dpattern appeared;
 
-                        if(tmppivot.getScratches().size()==4){               // Start Line of looking for the beginning point of currently found Dpatter;
+                        if(tmppivot.getScratches().size()==3){               // Start Line of looking for the beginning point of currently found Dpatter;
                             Scratch scratch1=new Scratch(pivot);
                             if(n>0){
                                 for(int r=n-1;r>=0;r--){

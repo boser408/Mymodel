@@ -1,9 +1,6 @@
 package com.myproject.mymodel;
 
-import com.myproject.mymodel.domain.Dpattern;
-import com.myproject.mymodel.domain.HighLowPrice;
-import com.myproject.mymodel.domain.Pivot;
-import com.myproject.mymodel.domain.Scratch;
+import com.myproject.mymodel.domain.*;
 import com.myproject.mymodel.mapper.HighLowPriceMapper;
 import com.myproject.mymodel.mapper.ScratchMapper;
 import org.junit.jupiter.api.Test;
@@ -88,9 +85,17 @@ class MymodelApplicationTests {
         System.out.println("Size of allScratches "+allScratches.size());
         List<Pivot> pivotsForPatternSearch=pivotHandle.addScratchtoPivot(allScratches,keyPivotList);
         List<Dpattern> dpatternList=pivotHandle.findAllDpattern(pivotsForPatternSearch);
+        List<PatternResult> firstResult=new ArrayList<>();
         for(Dpattern dpattern:dpatternList){
             for (Pivot pivot:dpattern.getFeaturePivots()){
-                System.out.println(pivot.toString());
+                if(pivot.getScratches().size()==4){
+                    PatternResult patternResult=new PatternResult(pivot.getScratches().get(3),pivot.getScratches().get(0),pivot.getScratches().get(1),pivot.getScratches().get(2));
+                    firstResult.add(patternResult);
+                    System.out.println(patternResult.toString());
+                    for(Scratch scratch:pivot.getScratches()){
+                        System.out.println(scratch.toString());
+                    }
+                }
             }
         }
     }
