@@ -92,9 +92,9 @@ class MymodelApplicationTests {
                     PatternResult patternResult=new PatternResult(pivot.getScratches().get(3),pivot.getScratches().get(0),pivot.getScratches().get(1),pivot.getScratches().get(2));
                     firstResult.add(patternResult);
                     System.out.println(patternResult.toString());
-                    for(Scratch scratch:pivot.getScratches()){
+                    /*for(Scratch scratch:pivot.getScratches()){
                         System.out.println(scratch.toString());
-                    }
+                    }*/
                 }
             }
         }

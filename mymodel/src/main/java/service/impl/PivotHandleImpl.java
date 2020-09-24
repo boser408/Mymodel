@@ -145,7 +145,14 @@ public class PivotHandleImpl implements PivotHandle {
                 if(factor>=1/controlFactor){break;}
                 //System.out.println("i="+i+","+"n="+n+","+"factor="+factor);
                 if(pivot.getPivotType()>=1){
-
+                    float c1=pivot.getScratches().get(n).getHigh()-pivot.getScratches().get(n).getLow();
+                    float c2=pivot.getScratches().get(i).getHigh()-pivot.getScratches().get(i).getLow();
+                    float c3=pivot.getScratches().get(i).getLow()-pivot.getScratches().get(n).getHigh();
+                    if(c3<(c1+c2)/2*controlFactor){
+                        pivot.getScratches().remove(i);
+                        i=i-1;
+                        continue;
+                    }
                     if((factor>controlFactor && factor<1/controlFactor) && pivot.getScratches().get(i).getLow()>pivot.getScratches().get(n).getHigh()){
                         /*System.out.println("Dpattern Found in"+pivot.toString());
                         System.out.println("the 1st Scratch is"+pivot.getScratches().get(n).toString());
@@ -179,6 +186,14 @@ public class PivotHandleImpl implements PivotHandle {
                         foundDpattern.getFeaturePivots().add(tmppivot);
                     }
                 }else if(pivot.getPivotType()<=-1){
+                    float c1=pivot.getScratches().get(n).getHigh()-pivot.getScratches().get(n).getLow();
+                    float c2=pivot.getScratches().get(i).getHigh()-pivot.getScratches().get(i).getLow();
+                    float c3=pivot.getScratches().get(n).getLow()-pivot.getScratches().get(i).getHigh();
+                    if(c3<(c1+c2)/2*controlFactor){
+                        pivot.getScratches().remove(i);
+                        i=i-1;
+                        continue;
+                    }
                   if((factor>controlFactor && factor<1/controlFactor) && pivot.getScratches().get(n).getLow()>pivot.getScratches().get(i).getHigh()){
                         /*System.out.println("Dpattern Found in"+pivot.toString());
                         System.out.println("the 1st Scratch is"+pivot.getScratches().get(n).toString());

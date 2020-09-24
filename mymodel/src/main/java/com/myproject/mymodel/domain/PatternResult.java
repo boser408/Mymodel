@@ -140,19 +140,17 @@ public class PatternResult {
 
     @Override
     public String toString() {
-        return "PatternResult{" +
-                "length1=" + length1 +
-                ", length2=" + length2 +
-                ", length3=" + length3 +
-                ", length4=" + length4 +
-                ", length5=" + length5 +
-                ", length6=" + length6 +
-                ", diff1=" + diff1 +
-                ", diff2=" + diff2 +
-                ", diff3=" + diff3 +
-                ", diff4=" + diff4 +
-                ", diff5=" + diff5 +
-                ", diff6=" + diff6 +
-                '}';
+        return length1 +
+                "," + length2 +
+                "," + length3 +
+                "," + length4 +
+                "," + length5 +
+                "," + length6 +
+                "," + diff1 +
+                "," + diff2 +
+                "," + diff3 +
+                "," + diff4 +
+                "," + diff5 +
+                "," + diff6 ;
     }
 }
