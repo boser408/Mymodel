@@ -86,7 +86,7 @@ public class PivotHandleImpl implements PivotHandle {
         for(int n=0;n<allScratches.size();n++){
             if(allScratches.get(n).getStartId()==nofStart){
                 int i=n;
-                while (allScratches.get(i).getStartId()+allScratches.get(i).getLength()<=nofEnd){
+                while (i<allScratches.size() && allScratches.get(i).getStartId()+allScratches.get(i).getLength()<=nofEnd){
                     scratchestoReturn.add(allScratches.get(i));
                     i++;
                 }

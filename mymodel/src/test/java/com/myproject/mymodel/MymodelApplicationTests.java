@@ -69,9 +69,9 @@ class MymodelApplicationTests {
             }
         }
        // System.out.println("Data is Clean!");
-        for(Scratch scratch:scratchList){
+        /*for(Scratch scratch:scratchList){
             System.out.println(scratch.toString());
-        }
+        }*/
         scratchMapper.batchinsert(scratchList);
     }
     @Test
@@ -84,20 +84,30 @@ class MymodelApplicationTests {
         allScratches=scratchMapper.selectAllScratches();
         System.out.println("Size of allScratches "+allScratches.size());
         List<Pivot> pivotsForPatternSearch=pivotHandle.addScratchtoPivot(allScratches,keyPivotList);
-        List<Dpattern> dpatternList=pivotHandle.findAllDpattern(pivotsForPatternSearch);
-        List<PatternResult> firstResult=new ArrayList<>();
-        for(Dpattern dpattern:dpatternList){
+        List<Scratch> scratchList=new ArrayList<>();
+        Scratch scratch000=new Scratch();
+        scratch000.setLength(0);
+        for(Pivot pivot:pivotsForPatternSearch){
+            Scratch scratch=new Scratch(pivot);
+            scratchList.add(scratch);
+            scratchList.addAll(pivot.getScratches());
+            scratchList.add(scratch000);
+        }
+        scratchMapper.batchsmallinsert(scratchList);
+        /*List<Dpattern> dpatternList=pivotHandle.findAllDpattern(pivotsForPatternSearch);
+        List<PatternResult> firstResult=new ArrayList<>();*/
+        /*for(Dpattern dpattern:dpatternList){
             for (Pivot pivot:dpattern.getFeaturePivots()){
                 if(pivot.getScratches().size()==4){
                     PatternResult patternResult=new PatternResult(pivot.getScratches().get(3),pivot.getScratches().get(0),pivot.getScratches().get(1),pivot.getScratches().get(2));
                     firstResult.add(patternResult);
                     System.out.println(patternResult.toString());
-                    /*for(Scratch scratch:pivot.getScratches()){
+                    for(Scratch scratch:pivot.getScratches()){
                         System.out.println(scratch.toString());
-                    }*/
+                    }
                 }
             }
-        }
+        }*/
     }
 }
 
