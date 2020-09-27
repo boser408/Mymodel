@@ -46,9 +46,10 @@ class MymodelApplicationTests {
     void findScratches(){ // Create the table of "findscratch"
         List<HighLowPrice> highLowPrices = highLowPriceMapper.selectHighLow();
         PivotHandle pivotHandle=new PivotHandleImpl();
-        List<Scratch> scratchList = pivotHandle.findScratches(highLowPrices, 1, highLowPrices.size(), 6);
+        List<Scratch> scratchList = pivotHandle.findScratches(highLowPrices, 1, highLowPrices.size());
         System.out.println(scratchList.size());
-        for(int n=0;n<scratchList.size()-1;n++){          // Asign direction to all scratches;
+        int endofList=scratchList.size()-1;
+        for(int n=0;n<endofList;n++){          // Asign direction to all scratches;
             if(scratchList.get(n).getStatus()==1){
                 scratchList.get(n).setStatus(2);
             }else if(scratchList.get(n).getStatus()==-1){
@@ -60,6 +61,11 @@ class MymodelApplicationTests {
                     scratchList.get(n).setStatus(-1);
                 }
             }
+        }
+        if(scratchList.get(endofList).getHigh()==scratchList.get(endofList-1).getHigh()){
+            scratchList.get(endofList).setStatus(-1);
+        }else {
+            scratchList.get(endofList).setStatus(1);
         }
         for(int n=1;n<scratchList.size()-1;n++){
             boolean crite1=scratchList.get(n).getHigh()==scratchList.get(n+1).getHigh() && scratchList.get(n).getLow()==scratchList.get(n-1).getLow();
@@ -77,14 +83,25 @@ class MymodelApplicationTests {
     @Test
     void findAllPivotsByScratch(){
         PivotHandle pivotHandle=new PivotHandleImpl();
-        List<Scratch> allScratches=scratchMapper.selectAllScratches();
-        System.out.println("Size of allScratches "+allScratches.size());
-        List<Pivot> allPivotList=pivotHandle.findAllPivotsByScratch(allScratches);
+        List<Pivot> allPivotList=pivotHandle.findAllPivotsByScratch(scratchMapper.selectAllScratches());
+        List<Scratch> allCompoundScratches=new ArrayList<>();
+        for(Pivot pivot:allPivotList){
+            Scratch scratch=new Scratch(pivot);
+            allCompoundScratches.add(scratch);
+        }
+        allCompoundScratches.addAll(scratchMapper.selectAllScratches());
+        allCompoundScratches.sort(Comparator.comparingInt(Scratch::getStartId).thenComparingInt(Scratch::getLength));
+        System.out.println("Size of allCompoundScratches is "+allCompoundScratches.size());
+        //scratchMapper.batchtmpinsert(allCompoundScratches);
         List<Pivot> keyPivotList=pivotHandle.obtainKeyPivots(allPivotList);
-        allScratches=scratchMapper.selectAllScratches();
-        System.out.println("Size of allScratches "+allScratches.size());
-        List<Pivot> pivotsForPatternSearch=pivotHandle.addScratchtoPivot(allScratches,keyPivotList);
-        List<Scratch> scratchList=new ArrayList<>();
+        List<Pivot> pivotsForPatternSearch=pivotHandle.addScratchtoPivot(scratchMapper.selectAllScratches(),keyPivotList);
+        List<Pivot> pivotsof3rdPattern=pivotHandle.find3rdPattern(pivotsForPatternSearch,allCompoundScratches);
+        System.out.println("Size of pivotsof3rdPattern is "+pivotsof3rdPattern.size());
+        for (Pivot pivot:pivotsof3rdPattern){
+            System.out.println(pivot.toString());
+        }
+
+        /*List<Scratch> scratchList=new ArrayList<>();
         Scratch scratch000=new Scratch();
         scratch000.setLength(0);
         for(Pivot pivot:pivotsForPatternSearch){
@@ -93,7 +110,7 @@ class MymodelApplicationTests {
             scratchList.addAll(pivot.getScratches());
             scratchList.add(scratch000);
         }
-        scratchMapper.batchsmallinsert(scratchList);
+        scratchMapper.batchsmallinsert(scratchList);*/
         /*List<Dpattern> dpatternList=pivotHandle.findAllDpattern(pivotsForPatternSearch);
         List<PatternResult> firstResult=new ArrayList<>();*/
         /*for(Dpattern dpattern:dpatternList){

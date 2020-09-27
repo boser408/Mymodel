@@ -34,15 +34,6 @@ public class Scratch {
         this.status = 0;
     }
 
-    public Scratch(Properties props) {
-        this.length = Integer.parseInt(props.getProperty("length"));
-        this.startId =Integer.parseInt(props.getProperty("startId"));
-        this.high = Float.parseFloat(props.getProperty("high"));
-        this.low = Float.parseFloat(props.getProperty("low"));
-        this.status = Integer.parseInt(props.getProperty("status"));
-
-    }
-
     public int getLength() {
         return length;
     }
@@ -73,6 +64,8 @@ public class Scratch {
     public void setStatus(int status) {
         this.status = status;
     }
+
+
     @Override
     public String toString() {
         return "Scratch{" +

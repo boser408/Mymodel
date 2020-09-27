@@ -16,7 +16,8 @@ public interface PivotHandle {
     Dpattern findDpattern (Pivot pivot);
     Dpattern findTpattern(Pivot pivot);
     List<Dpattern> findAllDpattern(List<Pivot> pivotList);
-    List<Scratch> findScratches(List<HighLowPrice> highLowPrices, int startindex, int length, int pivotLength);
+    List<Scratch> findScratches(List<HighLowPrice> highLowPrices, int startindex, int length);
     List<Pivot> findAllPivotsByScratch(List<Scratch> scratchList);
     List<Pivot> obtainKeyPivots(List<Pivot> allPivotList);
+    List<Pivot> find3rdPattern(List<Pivot> pivotsForPatternSearch, List<Scratch> allCompoundScratches);
 }

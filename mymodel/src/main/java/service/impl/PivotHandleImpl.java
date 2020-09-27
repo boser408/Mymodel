@@ -12,7 +12,7 @@ import java.util.List;
 
 public class PivotHandleImpl implements PivotHandle {
     public static final double controlFactor=0.7;
-    public static final int pivotLength=6;
+    public static final int pivotLength=5;
     public int numberofLoop;
     public double getControlFactor(){return controlFactor;}
 
@@ -79,7 +79,6 @@ public class PivotHandleImpl implements PivotHandle {
         }
         return scratchesforReturn;
     }
-
     @Override
     public List<Scratch> findScratchtoAdd(List<Scratch> allScratches, int nofStart, int nofEnd) {
         List<Scratch> scratchestoReturn=new ArrayList<>();
@@ -308,7 +307,7 @@ public class PivotHandleImpl implements PivotHandle {
         return dpatternList;
     }
     @Override
-    public List<Scratch> findScratches(List<HighLowPrice> highLowPrices, int startindex, int length, int pivotLength) {
+    public List<Scratch> findScratches(List<HighLowPrice> highLowPrices, int startindex, int length) {
 
         List<Scratch> scratches = new ArrayList<>();
         Scratch upscratch=new Scratch(highLowPrices.get(startindex-1));
@@ -930,5 +929,43 @@ public class PivotHandleImpl implements PivotHandle {
             System.out.println("Size of Loop List "+ scratchesforLoop.size());
         }
         return keyPivotList;
+    }
+
+    @Override
+    public List<Pivot> find3rdPattern(List<Pivot> pivotsForPatternSearch, List<Scratch> allCompoundScratches) {
+        List<Pivot> pivotsof3rdPattern=new ArrayList<>();
+        for(Pivot pivot:pivotsForPatternSearch){
+            for(Scratch scratch:pivot.getScratches()){
+                int nofStart=0;
+                for(int n=0;n<allCompoundScratches.size();n++){
+                    if(scratch.getStartId()==allCompoundScratches.get(n).getStartId()){
+                        nofStart=n;
+                        break;
+                    }
+                }
+                for(int n=nofStart;n<allCompoundScratches.size();n++){
+                    int c1=allCompoundScratches.get(n).getStatus()*scratch.getStatus();
+                    float c2=(float)allCompoundScratches.get(n).getLength()/scratch.getLength();
+                    /*System.out.println(scratch.toString());
+                    System.out.println(allCompoundScratches.get(n).toString());
+                    System.out.println("c2 = "+c2);*/
+                    if(allCompoundScratches.get(n).getStartId()>scratch.getStartId() && c1>0 && c2>0.67){
+                        Pivot pivot1=new Pivot(scratch);
+                        pivot1.getScratches().add(allCompoundScratches.get(n));
+                        int endof2ndScratch=allCompoundScratches.get(n).getStartId()+allCompoundScratches.get(n).getLength()-1;
+                        for(int i=n+1;i<allCompoundScratches.size();i++){
+                            boolean c3=allCompoundScratches.get(i).getStatus()*scratch.getStatus()<0;
+                            if(allCompoundScratches.get(i).getStartId()==endof2ndScratch && c3){
+                                pivot1.getScratches().add(allCompoundScratches.get(i));
+                                break;
+                            }
+                        }
+                        pivotsof3rdPattern.add(pivot1);
+                        break;
+                    }
+                }
+            }
+        }
+        return pivotsof3rdPattern;
     }
 }

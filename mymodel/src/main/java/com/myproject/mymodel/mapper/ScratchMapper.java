@@ -19,5 +19,5 @@ public interface ScratchMapper {
     void addDate();
     void batchinsert (List<Scratch> scratches);
     void batchsmallinsert (List<Scratch> scratches);
-
+    void batchtmpinsert (List<Scratch> scratches);
 }
