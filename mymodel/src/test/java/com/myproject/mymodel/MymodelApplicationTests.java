@@ -84,6 +84,8 @@ class MymodelApplicationTests {
     void findAllPivotsByScratch(){
         PivotHandle pivotHandle=new PivotHandleImpl();
         List<Pivot> allPivotList=pivotHandle.findAllPivotsByScratch(scratchMapper.selectAllScratches());
+        System.out.println("Size of allPivotList 111 is "+allPivotList.size());
+
         List<Scratch> allCompoundScratches=new ArrayList<>();
         for(Pivot pivot:allPivotList){
             Scratch scratch=new Scratch(pivot);
@@ -91,17 +93,17 @@ class MymodelApplicationTests {
         }
         allCompoundScratches.addAll(scratchMapper.selectAllScratches());
         allCompoundScratches.sort(Comparator.comparingInt(Scratch::getStartId).thenComparingInt(Scratch::getLength));
-        System.out.println("Size of allCompoundScratches is "+allCompoundScratches.size());
-        //scratchMapper.batchtmpinsert(allCompoundScratches);
+        System.out.println("Size of allCompoundScratches 111 is "+allCompoundScratches.size());
+        scratchMapper.batchtmpinsert(allCompoundScratches);
         List<Pivot> keyPivotList=pivotHandle.obtainKeyPivots(allPivotList);
-        List<Pivot> pivotsForPatternSearch=pivotHandle.addScratchtoPivot(scratchMapper.selectAllScratches(),keyPivotList);
-        List<Pivot> pivotsof3rdPattern=pivotHandle.find3rdPattern(pivotsForPatternSearch,allCompoundScratches);
-        System.out.println("Size of pivotsof3rdPattern is "+pivotsof3rdPattern.size());
-        for (Pivot pivot:pivotsof3rdPattern){
-            System.out.println(pivot.toString());
-        }
+        System.out.println("Size of keyPivotList is "+keyPivotList.size());
 
-        /*List<Scratch> scratchList=new ArrayList<>();
+        System.out.println("Size of allPivotList 222 is "+allPivotList.size());
+        List<Pivot> pivotsForPatternSearch=pivotHandle.addScratchtoPivot(scratchMapper.selectAllScratches(),keyPivotList);
+        System.out.println("Size of pivotsForPatternSearch is "+pivotsForPatternSearch.size());
+
+        System.out.println("Size of allCompoundScratches 222 is "+allCompoundScratches.size());
+        List<Scratch> scratchList=new ArrayList<>();
         Scratch scratch000=new Scratch();
         scratch000.setLength(0);
         for(Pivot pivot:pivotsForPatternSearch){
@@ -110,7 +112,15 @@ class MymodelApplicationTests {
             scratchList.addAll(pivot.getScratches());
             scratchList.add(scratch000);
         }
-        scratchMapper.batchsmallinsert(scratchList);*/
+        scratchMapper.batchsmallinsert(scratchList);
+
+        List<Pivot> pivotsof3rdPattern=pivotHandle.find3rdPattern(pivotsForPatternSearch,allCompoundScratches);
+        System.out.println("Size of pivotsof3rdPattern is "+pivotsof3rdPattern.size());
+        for (Pivot pivot:pivotsof3rdPattern){
+            System.out.println(pivot.toString());
+        }
+
+
         /*List<Dpattern> dpatternList=pivotHandle.findAllDpattern(pivotsForPatternSearch);
         List<PatternResult> firstResult=new ArrayList<>();*/
         /*for(Dpattern dpattern:dpatternList){
