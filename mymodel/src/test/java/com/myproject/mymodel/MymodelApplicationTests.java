@@ -94,15 +94,16 @@ class MymodelApplicationTests {
         allCompoundScratches.addAll(scratchMapper.selectAllScratches());
         allCompoundScratches.sort(Comparator.comparingInt(Scratch::getStartId).thenComparingInt(Scratch::getLength));
         System.out.println("Size of allCompoundScratches 111 is "+allCompoundScratches.size());
-        scratchMapper.batchtmpinsert(allCompoundScratches);
+        //scratchMapper.batchtmpinsert(allCompoundScratches);
         List<Pivot> keyPivotList=pivotHandle.obtainKeyPivots(allPivotList);
         System.out.println("Size of keyPivotList is "+keyPivotList.size());
 
         System.out.println("Size of allPivotList 222 is "+allPivotList.size());
         List<Pivot> pivotsForPatternSearch=pivotHandle.addScratchtoPivot(scratchMapper.selectAllScratches(),keyPivotList);
         System.out.println("Size of pivotsForPatternSearch is "+pivotsForPatternSearch.size());
+        List<Dpattern> dpatternList=pivotHandle.findAllDpattern(pivotsForPatternSearch);
 
-        System.out.println("Size of allCompoundScratches 222 is "+allCompoundScratches.size());
+       /* System.out.println("Size of allCompoundScratches 222 is "+allCompoundScratches.size());
         List<Scratch> scratchList=new ArrayList<>();
         Scratch scratch000=new Scratch();
         scratch000.setLength(0);
@@ -112,7 +113,7 @@ class MymodelApplicationTests {
             scratchList.addAll(pivot.getScratches());
             scratchList.add(scratch000);
         }
-        scratchMapper.batchsmallinsert(scratchList);
+        scratchMapper.batchsmallinsert(scratchList);*/
 
         List<Pivot> pivotsof3rdPattern=pivotHandle.find3rdPattern(pivotsForPatternSearch,allCompoundScratches);
         System.out.println("Size of pivotsof3rdPattern is "+pivotsof3rdPattern.size());
@@ -121,9 +122,12 @@ class MymodelApplicationTests {
         }
 
 
-        /*List<Dpattern> dpatternList=pivotHandle.findAllDpattern(pivotsForPatternSearch);
-        List<PatternResult> firstResult=new ArrayList<>();*/
-        /*for(Dpattern dpattern:dpatternList){
+
+       /* for(Pivot pivot:pivotsForPatternSearch){
+            System.out.println(pivot.toString());
+        }*/
+        /*List<PatternResult> firstResult=new ArrayList<>();
+        for(Dpattern dpattern:dpatternList){
             for (Pivot pivot:dpattern.getFeaturePivots()){
                 if(pivot.getScratches().size()==4){
                     PatternResult patternResult=new PatternResult(pivot.getScratches().get(3),pivot.getScratches().get(0),pivot.getScratches().get(1),pivot.getScratches().get(2));

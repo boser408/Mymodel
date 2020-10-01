@@ -145,18 +145,21 @@ public class PivotHandleImpl implements PivotHandle {
                 if(factor>=1/controlFactor){break;}
                 //System.out.println("i="+i+","+"n="+n+","+"factor="+factor);
                 if(pivot.getPivotType()>=1){
-                    float c1=pivot.getScratches().get(n).getHigh()-pivot.getScratches().get(n).getLow();
+                    /*float c1=pivot.getScratches().get(n).getHigh()-pivot.getScratches().get(n).getLow();
                     float c2=pivot.getScratches().get(i).getHigh()-pivot.getScratches().get(i).getLow();
                     float c3=pivot.getScratches().get(i).getLow()-pivot.getScratches().get(n).getHigh();
                     if(c3<(c1+c2)/2*controlFactor){
                         pivot.getScratches().remove(i);
                         i=i-1;
                         continue;
-                    }
+                    }*/
                     if((factor>controlFactor && factor<1/controlFactor) && pivot.getScratches().get(i).getLow()>pivot.getScratches().get(n).getHigh()){
                         /*System.out.println("Dpattern Found in"+pivot.toString());
                         System.out.println("the 1st Scratch is"+pivot.getScratches().get(n).toString());
                         System.out.println("the 2nd Scratch is"+pivot.getScratches().get(i).toString());*/
+                        if(pivot.getScratches().get(i).getStatus()>-100){
+                            pivot.getScratches().get(i).setStatus(pivot.getScratches().get(i).getStatus()*100);
+                        }
                         Pivot tmppivot=new Pivot(scratch);
                         tmppivot.setPivotType(pivot.getPivotType());
                         tmppivot.getScratches().clear();
@@ -186,18 +189,21 @@ public class PivotHandleImpl implements PivotHandle {
                         foundDpattern.getFeaturePivots().add(tmppivot);
                     }
                 }else if(pivot.getPivotType()<=-1){
-                    float c1=pivot.getScratches().get(n).getHigh()-pivot.getScratches().get(n).getLow();
+                    /*float c1=pivot.getScratches().get(n).getHigh()-pivot.getScratches().get(n).getLow();
                     float c2=pivot.getScratches().get(i).getHigh()-pivot.getScratches().get(i).getLow();
                     float c3=pivot.getScratches().get(n).getLow()-pivot.getScratches().get(i).getHigh();
                     if(c3<(c1+c2)/2*controlFactor){
                         pivot.getScratches().remove(i);
                         i=i-1;
                         continue;
-                    }
+                    }*/
                   if((factor>controlFactor && factor<1/controlFactor) && pivot.getScratches().get(n).getLow()>pivot.getScratches().get(i).getHigh()){
                         /*System.out.println("Dpattern Found in"+pivot.toString());
                         System.out.println("the 1st Scratch is"+pivot.getScratches().get(n).toString());
                         System.out.println("the 2nd Scratch is"+pivot.getScratches().get(i).toString());*/
+                      if(pivot.getScratches().get(i).getStatus()<100){
+                          pivot.getScratches().get(i).setStatus(pivot.getScratches().get(i).getStatus()*100);
+                      }
                       Pivot tmppivot=new Pivot(scratch);
                       tmppivot.setPivotType(pivot.getPivotType());
                       tmppivot.getScratches().add(pivot.getScratches().get(n));
@@ -936,6 +942,8 @@ public class PivotHandleImpl implements PivotHandle {
         List<Pivot> pivotsof3rdPattern=new ArrayList<>();
         int nofoutlier=0;
         int nofmatch=0;
+        int nofDPoutlier=0;
+        int nofDPmatch=0;
         for(Pivot pivot:pivotsForPatternSearch){
             for(Scratch scratch:pivot.getScratches()){
                 int nofStart=0;
@@ -989,6 +997,9 @@ public class PivotHandleImpl implements PivotHandle {
                                 pivot1.getScratches().add(allCompoundScratches.get(n));
                                 System.out.println("Outlier:"+pivot1.toString());
                                 nofoutlier=nofoutlier+1;
+                                if(scratch.getStatus()>=100 || scratch.getStatus()<=-100){
+                                    nofDPoutlier=nofDPoutlier+1;
+                                }
                                 int endof2ndScratch=allCompoundScratches.get(n).getStartId()+allCompoundScratches.get(n).getLength()-1;
                                 for( i=n+1;i<allCompoundScratches.size();i++){
                                     boolean c3=allCompoundScratches.get(i).getStatus()*scratch.getStatus()<0;
@@ -1014,6 +1025,9 @@ public class PivotHandleImpl implements PivotHandle {
                                         if(c4>=controlFactor){
                                             System.out.println("Match:"+pivot1.toString()+allCompoundScratches.get(t).toString());
                                             nofmatch=nofmatch+1;
+                                            if(scratch.getStatus()>=100 || scratch.getStatus()<=-100){
+                                                nofDPmatch=nofDPmatch+1;
+                                            }
                                             t++;
                                             break;
                                         }
@@ -1031,6 +1045,7 @@ public class PivotHandleImpl implements PivotHandle {
             }
         }
         System.out.println("nofoutlier= "+nofoutlier+" nofmatch= "+nofmatch);
+        System.out.println("nofDPoutlier= "+nofDPoutlier+" nofDPmatch= "+nofDPmatch);
         return pivotsof3rdPattern;
     }
 }
