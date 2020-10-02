@@ -114,14 +114,15 @@ class MymodelApplicationTests {
             scratchList.add(scratch000);
         }
         scratchMapper.batchsmallinsert(scratchList);*/
-
-        List<Pivot> pivotsof3rdPattern=pivotHandle.find3rdPattern(pivotsForPatternSearch,allCompoundScratches);
+        List<Pivot> pivotsof2ndPattern=pivotHandle.find2ndPattern(pivotsForPatternSearch,allCompoundScratches);
+        for (Pivot pivot:pivotsof2ndPattern){
+            System.out.println(pivot.toString());
+        }
+       /* List<Pivot> pivotsof3rdPattern=pivotHandle.find3rdPattern(pivotsForPatternSearch,allCompoundScratches);
         System.out.println("Size of pivotsof3rdPattern is "+pivotsof3rdPattern.size());
         for (Pivot pivot:pivotsof3rdPattern){
             System.out.println(pivot.toString());
-        }
-
-
+        }*/
 
        /* for(Pivot pivot:pivotsForPatternSearch){
             System.out.println(pivot.toString());
