@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Pivot {
+    private String startdate;
     private int length;
     private int startId;
     private float high;
@@ -15,6 +16,7 @@ public class Pivot {
     }
 
     public Pivot(Pivot pivot) {
+        this.startdate=pivot.getStartdate();
         this.length = pivot.getLength();
         this.startId = pivot.getStartId();
         this.high = pivot.getHigh();
@@ -24,6 +26,7 @@ public class Pivot {
     }
 
     public Pivot(Scratch scratch) {
+        this.startdate=scratch.getStartdate();
         this.length = scratch.getLength();
         this.startId = scratch.getStartId();
         this.high = scratch.getHigh();
@@ -31,6 +34,14 @@ public class Pivot {
         this.pivotType = scratch.getStatus();
         this.scratches = new ArrayList<>();
         this.getScratches().add(scratch);
+    }
+
+    public String getStartdate() {
+        return startdate;
+    }
+
+    public void setStartdate(String startdate) {
+        this.startdate = startdate;
     }
 
     public int getLength() {
@@ -84,7 +95,8 @@ public class Pivot {
     @Override
     public String toString() {
         return "Pivot{" +
-                "length=" + length +
+                "startdate='" + startdate + '\'' +
+                ", length=" + length +
                 ", startId=" + startId +
                 ", high=" + high +
                 ", low=" + low +

@@ -1,6 +1,7 @@
 package com.myproject.mymodel.domain;
 
 public class HighLowPrice {
+    private String date;
     private int id;
     private float open;
     private float high;
@@ -8,6 +9,14 @@ public class HighLowPrice {
     private float close;
     private float ndhigh;//Highest price in next n days
     private float ndlow;//Lowest price in next n days
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
 
     public int getId() {
         return id;
@@ -68,7 +77,8 @@ public class HighLowPrice {
     @Override
     public String toString() {
         return "HighLowPrice{" +
-                "id=" + id +
+                "date='" + date + '\'' +
+                ", id=" + id +
                 ", open=" + open +
                 ", high=" + high +
                 ", low=" + low +

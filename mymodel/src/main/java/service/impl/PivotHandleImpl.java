@@ -1053,31 +1053,36 @@ public class PivotHandleImpl implements PivotHandle {
         List<Pivot> pivotsof2ndPattern=new ArrayList<>();
         List<Scratch> scratchesofNomatch=new ArrayList<>();
         for(Pivot pivot:pivotsForPatternSearch){
+            System.out.println("Current Pivot is -------------------- "+pivot.toString());
             for(Scratch scratch:pivot.getScratches()){
                 int flag=0;
                 int startSearch=0;
-                for(int n=0;n<allCompoundScratches.size();n++){
-                    boolean b1=allCompoundScratches.get(n).getStatus()*scratch.getStatus()>0;
-                    boolean b2=(float)(allCompoundScratches.get(n).getLength()/scratch.getLength())>1/controlFactor;
-                    if(b1 && b2){
-                        scratchesofNomatch.add(scratch);
-                        flag=1;
-                        break;
-                    }
+                for(int n=0;n<allCompoundScratches.size();n++){ // Start Line of 2nd Pattern Searching;
                     startSearch=scratch.getStartId()+scratch.getLength()-1;
-                    boolean c1=allCompoundScratches.get(n).getStartId()>=startSearch;
+                    boolean c1=allCompoundScratches.get(n).getStartId()>startSearch;
                     boolean c2=allCompoundScratches.get(n).getStatus()*scratch.getStatus()<0;
                     boolean c3=(float)(allCompoundScratches.get(n).getLength()/scratch.getLength())>controlFactor;
-                    if(c1 && c2 && c3){
-                        System.out.println("Find a candidate"+allCompoundScratches.get(n).toString());
+                    boolean c4=true;
+                    if(pivot.getPivotType()>0){
+                        if(allCompoundScratches.get(n).getHigh()>pivot.getHigh()){
+                            c4=false;
+                        }
+                    }else {
+                        if(allCompoundScratches.get(n).getLow()<pivot.getLow()){
+                            c4=false;
+                        }
+                    }
+                    if(c1 && c2 && c3 && c4){
+                        System.out.println("Current Scratch is "+scratch.toString());
+                        System.out.println("Find a candidate "+allCompoundScratches.get(n).toString());
                         for(int i=n-1;allCompoundScratches.get(i).getStartId()>=startSearch;i--){
                             if(scratch.getStatus()>0){
                                 if(allCompoundScratches.get(i).getLow()<scratch.getLow()
                                         && allCompoundScratches.get(i).getLow()<allCompoundScratches.get(n).getLow()){
                                     Pivot pivot1=new Pivot(scratch);
-                                    pivot1.getScratches().add(scratch);
+
                                     pivot1.getScratches().add(allCompoundScratches.get(n));
-                                    pivotsForPatternSearch.add(pivot1);
+                                    pivotsof2ndPattern.add(pivot1);
                                     flag=2;
                                     System.out.println("flag=2 "+pivot1.toString());
                                     break;
@@ -1086,9 +1091,9 @@ public class PivotHandleImpl implements PivotHandle {
                                 if(allCompoundScratches.get(i).getHigh()>scratch.getHigh()
                                         && allCompoundScratches.get(i).getHigh()>allCompoundScratches.get(n).getHigh()){
                                     Pivot pivot1=new Pivot(scratch);
-                                    pivot1.getScratches().add(scratch);
+
                                     pivot1.getScratches().add(allCompoundScratches.get(n));
-                                    pivotsForPatternSearch.add(pivot1);
+                                    pivotsof2ndPattern.add(pivot1);
                                     flag=2;
                                     System.out.println("flag=2 "+pivot1.toString());
                                     break;
@@ -1099,7 +1104,7 @@ public class PivotHandleImpl implements PivotHandle {
                     if(flag==2){
                         break;
                     }
-                }
+                }                                                        // End Line of 2nd Pattern Searching;
                 if(flag==0){
                     scratchesofNomatch.add(scratch);
                 }
