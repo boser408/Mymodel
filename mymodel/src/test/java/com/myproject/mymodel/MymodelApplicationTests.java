@@ -42,7 +42,7 @@ class MymodelApplicationTests {
        // System.out.println(highLowPrices.get(0).toString());
         highLowPriceMapper.batchinsert(highLowPrices);
     }
-   
+
     @Test
     void findScratches(){ // Create the table of "findscratch"
         List<HighLowPrice> highLowPrices = highLowPriceMapper.selectHighLow();
@@ -101,6 +101,7 @@ class MymodelApplicationTests {
 
         System.out.println("Size of allPivotList 222 is "+allPivotList.size());
         List<Pivot> pivotsForPatternSearch=pivotHandle.addScratchtoPivot(scratchMapper.selectAllScratches(),keyPivotList);
+        pivotsForPatternSearch.sort(Comparator.comparingInt(Pivot::getStartId));
         System.out.println("Size of pivotsForPatternSearch is "+pivotsForPatternSearch.size());
         for(Pivot pivot:pivotsForPatternSearch){
             System.out.println(pivot.toString());

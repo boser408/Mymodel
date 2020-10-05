@@ -646,13 +646,13 @@ public class PivotHandleImpl implements PivotHandle {
                         }
                         Scratch scratch=new Scratch(upscratch);
                         scratches.add(scratch);
-                        System.out.println("scratch added"+scratch.toString());
+                       // System.out.println("scratch added"+scratch.toString());
 
                         if(dwscratch.getStartId()<upscratch.getStartId()){
                             dwscratch.setLength(upscratch.getStartId()-dwscratch.getStartId()+1);
                             Scratch dscratch=new Scratch(dwscratch);
                             scratches.add(dscratch);
-                            System.out.println("dscratch added"+dscratch.toString());
+                            //System.out.println("dscratch added"+dscratch.toString());
                         }
                         upscratch=new Scratch(highLowPrices.get(n));
                         nofupscratch=n;
@@ -1063,6 +1063,7 @@ public class PivotHandleImpl implements PivotHandle {
                     boolean c2=allCompoundScratches.get(n).getStatus()*scratch.getStatus()<0;
                     boolean c3=(float)(allCompoundScratches.get(n).getLength()/scratch.getLength())>controlFactor;
                     boolean c4=true;
+                    boolean c5=(float)(allCompoundScratches.get(n).getLength()/scratch.getLength())<(1/controlFactor);
                     if(pivot.getPivotType()>0){
                         if(allCompoundScratches.get(n).getHigh()>pivot.getHigh()){
                             c4=false;
@@ -1072,12 +1073,13 @@ public class PivotHandleImpl implements PivotHandle {
                             c4=false;
                         }
                     }
-                    if(c1 && c2 && c3 && c4){
+                    if(c1 && c2 && c3 && c4 && c5){
                         System.out.println("Current Scratch is "+scratch.toString());
                         System.out.println("Find a candidate "+allCompoundScratches.get(n).toString());
                         for(int i=n-1;allCompoundScratches.get(i).getStartId()>=startSearch;i--){
+                            boolean c6=allCompoundScratches.get(n).getStartId()>allCompoundScratches.get(i).getStartId()+allCompoundScratches.get(i).getLength();
                             if(scratch.getStatus()>0){
-                                if(allCompoundScratches.get(i).getLow()<scratch.getLow()
+                                if(c6 && allCompoundScratches.get(i).getLow()<scratch.getLow()
                                         && allCompoundScratches.get(i).getLow()<allCompoundScratches.get(n).getLow()){
                                     Pivot pivot1=new Pivot(scratch);
 
@@ -1085,10 +1087,11 @@ public class PivotHandleImpl implements PivotHandle {
                                     pivotsof2ndPattern.add(pivot1);
                                     flag=2;
                                     System.out.println("flag=2 "+pivot1.toString());
+                                    System.out.println("Common Lower Low is "+allCompoundScratches.get(i).toString());
                                     break;
                                 }
                             }else {
-                                if(allCompoundScratches.get(i).getHigh()>scratch.getHigh()
+                                if(c6 && allCompoundScratches.get(i).getHigh()>scratch.getHigh()
                                         && allCompoundScratches.get(i).getHigh()>allCompoundScratches.get(n).getHigh()){
                                     Pivot pivot1=new Pivot(scratch);
 
@@ -1096,6 +1099,7 @@ public class PivotHandleImpl implements PivotHandle {
                                     pivotsof2ndPattern.add(pivot1);
                                     flag=2;
                                     System.out.println("flag=2 "+pivot1.toString());
+                                    System.out.println("Common Higher High is "+allCompoundScratches.get(i).toString());
                                     break;
                                 }
                             }
@@ -1108,7 +1112,7 @@ public class PivotHandleImpl implements PivotHandle {
                 if(flag==0){
                     scratchesofNomatch.add(scratch);
                 }
-                break;
+
             }
         }
         System.out.println("Size of scratchesofNomatch is "+scratchesofNomatch.size());
