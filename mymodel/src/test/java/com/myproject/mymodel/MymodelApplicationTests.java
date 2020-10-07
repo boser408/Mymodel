@@ -79,6 +79,7 @@ class MymodelApplicationTests {
         /*for(Scratch scratch:scratchList){
             System.out.println(scratch.toString());
         }*/
+        scratchMapper.deleteAll("findscratch");
         scratchMapper.batchinsert(scratchList);
     }
     @Test
@@ -95,16 +96,32 @@ class MymodelApplicationTests {
         allCompoundScratches.addAll(scratchMapper.selectAllScratches());
         allCompoundScratches.sort(Comparator.comparingInt(Scratch::getStartId).thenComparingInt(Scratch::getLength));
         System.out.println("Size of allCompoundScratches 111 is "+allCompoundScratches.size());
-        //scratchMapper.batchtmpinsert(allCompoundScratches);
+        scratchMapper.deleteAll("tmpscratch");
+        scratchMapper.batchtmpinsert(allCompoundScratches);
         List<Pivot> keyPivotList=pivotHandle.obtainKeyPivots(allPivotList);
         System.out.println("Size of keyPivotList is "+keyPivotList.size());
 
+        for(Pivot pivot:keyPivotList){
+            System.out.println(pivot.toString());
+            if(pivot.getStartId()==232){
+                System.out.println("Size of Major Trend is "+pivot.getScratches().size());
+                for(Scratch scratch:pivot.getScratches()){
+                    System.out.println(scratch.toString());
+                }
+            }
+        }
         System.out.println("Size of allPivotList 222 is "+allPivotList.size());
         List<Pivot> pivotsForPatternSearch=pivotHandle.addScratchtoPivot(scratchMapper.selectAllScratches(),keyPivotList);
         pivotsForPatternSearch.sort(Comparator.comparingInt(Pivot::getStartId));
         System.out.println("Size of pivotsForPatternSearch is "+pivotsForPatternSearch.size());
         for(Pivot pivot:pivotsForPatternSearch){
             System.out.println(pivot.toString());
+            if(pivot.getStartId()==232){
+                System.out.println("Size of Major Trend is "+pivot.getScratches().size());
+                for(Scratch scratch:pivot.getScratches()){
+                    System.out.println(scratch.toString());
+                }
+            }
         }
         //List<Dpattern> dpatternList=pivotHandle.findAllDpattern(pivotsForPatternSearch);
 
@@ -119,10 +136,10 @@ class MymodelApplicationTests {
             scratchList.add(scratch000);
         }
         scratchMapper.batchsmallinsert(scratchList);*/
-        List<Pivot> pivotsof2ndPattern=pivotHandle.find2ndPattern(pivotsForPatternSearch,allCompoundScratches);
+        /*List<Pivot> pivotsof2ndPattern=pivotHandle.find2ndPattern(pivotsForPatternSearch,allCompoundScratches);
         for (Pivot pivot:pivotsof2ndPattern){
             System.out.println(pivot.toString());
-        }
+        }*/
        /* List<Pivot> pivotsof3rdPattern=pivotHandle.find3rdPattern(pivotsForPatternSearch,allCompoundScratches);
         System.out.println("Size of pivotsof3rdPattern is "+pivotsof3rdPattern.size());
         for (Pivot pivot:pivotsof3rdPattern){
