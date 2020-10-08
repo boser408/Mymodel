@@ -1063,9 +1063,11 @@ public class PivotHandleImpl implements PivotHandle {
                     startSearch=scratch.getStartId()+scratch.getLength()-1;
                     boolean c1=allCompoundScratches.get(n).getStartId()>startSearch;
                     boolean c2=allCompoundScratches.get(n).getStatus()*scratch.getStatus()<0;
-                    boolean c3=(float)(allCompoundScratches.get(n).getLength()/scratch.getLength())>controlFactor;
+                    float a=(float)allCompoundScratches.get(n).getLength()/scratch.getLength();
+                    float a1=(float)allCompoundScratches.get(n).getLength()/scratch.getLength();
+                    boolean c3=a>controlFactor;
                     boolean c4=true;
-                    boolean c5=(float)(allCompoundScratches.get(n).getLength()/scratch.getLength())<(1/controlFactor);
+                    boolean c5=a1<1/controlFactor;
                     if(pivot.getPivotType()>0){
                         if(allCompoundScratches.get(n).getHigh()>pivot.getHigh()){
                             c4=false;
@@ -1075,7 +1077,8 @@ public class PivotHandleImpl implements PivotHandle {
                             c4=false;
                         }
                     }
-                    if(c1 && c2 && c3 && c4 && c5){
+
+                    if(c1 && c2 && c3 && c4){
                         System.out.println("Current Scratch is "+scratch.toString());
                         System.out.println("Find a candidate "+allCompoundScratches.get(n).toString());
                         for(int i=n-1;allCompoundScratches.get(i).getStartId()>=startSearch;i--){
