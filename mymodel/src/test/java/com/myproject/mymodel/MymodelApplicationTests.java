@@ -99,6 +99,7 @@ class MymodelApplicationTests {
         List<Pivot> pivotsForPatternSearch=pivotHandle.addScratchtoPivot(scratchMapper.selectAllScratches(),keyPivotList);
         pivotsForPatternSearch.sort(Comparator.comparingInt(Pivot::getStartId));
         List<Pivot> pivotsof2ndPattern=pivotHandle.find2ndPattern(pivotsForPatternSearch,allCompoundScratches);
+        System.out.println("Size of pivotsof2ndPattern "+pivotsof2ndPattern.size());
         for (Pivot pivot:pivotsof2ndPattern){
             System.out.println(pivot.toString());
         }

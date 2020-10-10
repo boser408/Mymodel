@@ -1055,7 +1055,7 @@ public class PivotHandleImpl implements PivotHandle {
         List<Pivot> pivotsof2ndPattern=new ArrayList<>();
         List<Scratch> scratchesofNomatch=new ArrayList<>();
         for(Pivot pivot:pivotsForPatternSearch){
-            System.out.println("Current Pivot is -------------------- "+pivot.toString());
+           // System.out.println("Current Pivot is -------------------- "+pivot.toString());
             for(Scratch scratch:pivot.getScratches()){
                 int flag=0;
                 int startSearch=0;
@@ -1064,10 +1064,8 @@ public class PivotHandleImpl implements PivotHandle {
                     boolean c1=allCompoundScratches.get(n).getStartId()>startSearch;
                     boolean c2=allCompoundScratches.get(n).getStatus()*scratch.getStatus()<0;
                     float a=(float)allCompoundScratches.get(n).getLength()/scratch.getLength();
-                    float a1=(float)allCompoundScratches.get(n).getLength()/scratch.getLength();
                     boolean c3=a>controlFactor;
                     boolean c4=true;
-                    boolean c5=a1<1/controlFactor;
                     if(pivot.getPivotType()>0){
                         if(allCompoundScratches.get(n).getHigh()>pivot.getHigh()){
                             c4=false;
@@ -1079,8 +1077,8 @@ public class PivotHandleImpl implements PivotHandle {
                     }
 
                     if(c1 && c2 && c3 && c4){
-                        System.out.println("Current Scratch is "+scratch.toString());
-                        System.out.println("Find a candidate "+allCompoundScratches.get(n).toString());
+                        /*System.out.println("Current Scratch is "+scratch.toString());
+                        System.out.println("Find a candidate "+allCompoundScratches.get(n).toString());*/
                         for(int i=n-1;allCompoundScratches.get(i).getStartId()>=startSearch;i--){
                             boolean c6=allCompoundScratches.get(n).getStartId()>allCompoundScratches.get(i).getStartId()+allCompoundScratches.get(i).getLength();
                             if(scratch.getStatus()>0){
@@ -1091,8 +1089,8 @@ public class PivotHandleImpl implements PivotHandle {
                                     pivot1.getScratches().add(allCompoundScratches.get(n));
                                     pivotsof2ndPattern.add(pivot1);
                                     flag=2;
-                                    System.out.println("flag=2 "+pivot1.toString());
-                                    System.out.println("Common Lower Low is "+allCompoundScratches.get(i).toString());
+                                    /*System.out.println("flag=2 "+pivot1.toString());
+                                    System.out.println("Common Lower Low is "+allCompoundScratches.get(i).toString());*/
                                     break;
                                 }
                             }else {
@@ -1103,8 +1101,8 @@ public class PivotHandleImpl implements PivotHandle {
                                     pivot1.getScratches().add(allCompoundScratches.get(n));
                                     pivotsof2ndPattern.add(pivot1);
                                     flag=2;
-                                    System.out.println("flag=2 "+pivot1.toString());
-                                    System.out.println("Common Higher High is "+allCompoundScratches.get(i).toString());
+                                    /*System.out.println("flag=2 "+pivot1.toString());
+                                    System.out.println("Common Higher High is "+allCompoundScratches.get(i).toString());*/
                                     break;
                                 }
                             }
@@ -1122,8 +1120,33 @@ public class PivotHandleImpl implements PivotHandle {
         }
         System.out.println("Size of scratchesofNomatch is "+scratchesofNomatch.size());
         System.out.println("Size of pivotsof2ndPattern is "+pivotsof2ndPattern.size());
+        scratchesofNomatch.sort(Comparator.comparingInt(Scratch::getStartId));
         for(Scratch scratch:scratchesofNomatch){
             System.out.println(scratch.toString());
+        }
+        List<Pivot> pivotList=new ArrayList<>();
+        List<Pivot> pivots=new ArrayList<>();
+        pivotList.addAll(pivotsof2ndPattern);
+            for(int n=0;n<pivotList.size()-1;n++){
+                Pivot maxpivot=new Pivot(pivotList.get(n));
+                for(int i=n+1;i<pivotList.size();i++){
+                    if(pivotList.get(n).getScratches().get(1).equals(pivotList.get(i).getScratches().get(1))){
+                        /*System.out.println("pivot n is "+pivotList.get(n).toString());
+                        System.out.println("pivot i is "+pivotList.get(i).toString());*/
+                        if(pivotList.get(n).getLength()<pivotList.get(i).getLength()){
+                            maxpivot=new Pivot(pivotList.get(i));
+                        }
+                        pivotList.remove(i);
+                        i=i-1;
+                    }
+                }
+                pivots.add(maxpivot);
+                //System.out.println("pivot max is "+maxpivot.toString());
+            }
+        System.out.println("Size of pivots is "+pivotList.size());
+            pivots.sort(Comparator.comparingInt(Pivot::getStartId));
+        for(Pivot pivot:pivots){
+            System.out.println(pivot.toString());
         }
         return pivotsof2ndPattern;
     }
