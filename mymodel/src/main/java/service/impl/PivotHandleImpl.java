@@ -1059,7 +1059,34 @@ public class PivotHandleImpl implements PivotHandle {
             for(Scratch scratch:pivot.getScratches()){
                 int flag=0;
                 int startSearch=0;
-                for(int n=0;n<allCompoundScratches.size();n++){ // Start Line of 2nd Pattern Searching;
+                int endSearch=pivot.getStartId()+pivot.getLength()-1;
+                if(pivot.getScratches().size()>1){
+                    for(int e=1;e<pivot.getScratches().size()-1;e++){
+                        float compare=(float)pivot.getScratches().get(e).getLength()/scratch.getLength();
+                        boolean b1=compare>1/controlFactor;
+                        boolean b2=pivot.getScratches().get(e).getStartId()>scratch.getStartId();
+                        if(b1&&b2&&pivot.getPivotType()>0){
+                            for(int d=e+1;d<=pivot.getScratches().size()-1;d++){
+                                if(pivot.getScratches().get(d).getHigh()>pivot.getScratches().get(e).getHigh()){
+                                    endSearch=pivot.getScratches().get(d).getStartId();
+                                    break;
+                                }
+                            }
+                        }else if(b1&&b2&&pivot.getPivotType()<0){
+                            for(int d=e+1;d<=pivot.getScratches().size()-1;d++){
+                                if(pivot.getScratches().get(d).getLow()<pivot.getScratches().get(e).getLow()){
+                                    endSearch=pivot.getScratches().get(d).getStartId();
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                for(int n=0;n<=allCompoundScratches.size()-1;n++){ // Start Line of 2nd Pattern Searching;
+                    if(allCompoundScratches.get(n).getStartId()>endSearch){
+                        break;
+                    }
                     startSearch=scratch.getStartId()+scratch.getLength()-1;
                     boolean c1=allCompoundScratches.get(n).getStartId()>startSearch;
                     boolean c2=allCompoundScratches.get(n).getStatus()*scratch.getStatus()<0;
