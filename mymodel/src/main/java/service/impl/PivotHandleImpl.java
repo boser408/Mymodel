@@ -1196,4 +1196,75 @@ public class PivotHandleImpl implements PivotHandle {
         pivots.sort(Comparator.comparingInt(Pivot::getStartId));
         return pivots;
     }
+    @Override
+    public List<Pivot> findSubScratch(List<Pivot> pivotsof2ndPattern, List<HighLowPrice> allPrices) {
+        List<Pivot> returnPivotList=new ArrayList<>();
+        for(Pivot pivot:pivotsof2ndPattern){
+            float ratio=(float)pivot.getScratches().get(1).getLength()/pivot.getScratches().get(0).getLength();
+            if(ratio>1/controlFactor){
+               int startId=pivot.getScratches().get(1).getStartId()+(int)(pivot.getScratches().get(0).getLength()*controlFactor)-1;
+               int endId=pivot.getScratches().get(1).getStartId()+(int)(pivot.getScratches().get(0).getLength()/controlFactor)-1;
+               int n=0;
+               while (allPrices.get(n).getId()<startId){
+                   n++;
+               }
+               int cutpoint=n;
+               if(pivot.getPivotType()<0){
+                   float high=allPrices.get(n).getHigh();
+                   while (allPrices.get(n).getId()<endId){
+                       if(allPrices.get(n).getHigh()>high){
+                           high=allPrices.get(n).getHigh();
+                           cutpoint=n;
+                       }
+                       n++;
+                   }
+                   Scratch scratch=new Scratch(allPrices.get(cutpoint));
+                   float low=allPrices.get(cutpoint).getLow();
+                   int t=cutpoint;
+                   int endpoint=t;
+                   while (allPrices.get(t).getId()<pivot.getScratches().get(1).getStartId()+pivot.getScratches().get(1).getLength()-1){
+                       if(allPrices.get(t).getLow()<low){
+                           low=allPrices.get(t).getLow();
+                           endpoint=t;
+                       }
+                       t++;
+                   }
+                   scratch.setStatus(-1);
+                   scratch.setLength(allPrices.get(endpoint).getId()-scratch.getStartId()+1);
+                   scratch.setLow(low);
+                   Pivot pivot1=new Pivot(pivot);
+                   pivot1.getScratches().add(scratch);
+                   returnPivotList.add(pivot1);
+               }else {
+                   float low=allPrices.get(n).getLow();
+                   while (allPrices.get(n).getId()<endId){
+                       if(allPrices.get(n).getLow()<low){
+                           low=allPrices.get(n).getLow();
+                           cutpoint=n;
+                       }
+                       n++;
+                   }
+                   Scratch scratch=new Scratch(allPrices.get(cutpoint));
+                   float high=allPrices.get(cutpoint).getHigh();
+                   int t=cutpoint;
+                   int endpoint=t;
+                   while (allPrices.get(t).getId()<pivot.getScratches().get(1).getStartId()+pivot.getScratches().get(1).getLength()-1){
+                       if(allPrices.get(t).getHigh()>high){
+                           high=allPrices.get(t).getHigh();
+                           endpoint=t;
+                       }
+                       t++;
+                   }
+                   scratch.setStatus(1);
+                   scratch.setLength(allPrices.get(endpoint).getId()-scratch.getStartId()+1);
+                   scratch.setHigh(high);
+                   Pivot pivot1=new Pivot(pivot);
+                   pivot1.getScratches().add(scratch);
+                   returnPivotList.add(pivot1);
+               }
+
+            }
+        }
+        return returnPivotList;
+    }
 }
