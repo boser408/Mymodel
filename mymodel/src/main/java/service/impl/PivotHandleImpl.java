@@ -1160,8 +1160,10 @@ public class PivotHandleImpl implements PivotHandle {
                 }                                                        // End Line of 2nd Pattern Searching;
                 if(flag<2){
                     if(flag==1){
+                        System.out.println("NonMatch Case--111111111 "+scratch.toString());
                         case1++;
                     }else {
+                        System.out.println("NonMatch Case--000000000 "+scratch.toString());
                         case0++;
                     }
                     scratchesofNomatch.add(scratch);
@@ -1170,7 +1172,7 @@ public class PivotHandleImpl implements PivotHandle {
         }
         System.out.println("Size of scratchesofNomatch is "+scratchesofNomatch.size());
         System.out.println("case0 = "+case0 +" case1 = "+case1);
-        System.out.println("Size of pivotsof2ndPattern is "+pivotsof2ndPattern.size());
+        //System.out.println("Size of pivotsof2ndPattern is "+pivotsof2ndPattern.size());
         scratchesofNomatch.sort(Comparator.comparingInt(Scratch::getStartId));
 
         List<Pivot> pivotList=new ArrayList<>();
@@ -1192,7 +1194,7 @@ public class PivotHandleImpl implements PivotHandle {
                 pivots.add(maxpivot);
                 //System.out.println("pivot max is "+maxpivot.toString());
             }
-        System.out.println("Size of pivots is "+pivotList.size());
+        //System.out.println("Size of pivots is "+pivotList.size());
         pivots.sort(Comparator.comparingInt(Pivot::getStartId));
         return pivots;
     }
@@ -1222,6 +1224,13 @@ public class PivotHandleImpl implements PivotHandle {
                    float low=allPrices.get(cutpoint).getLow();
                    int t=cutpoint;
                    int endpoint=t;
+                   if(allPrices.get(cutpoint+1).getId()<pivot.getScratches().get(1).getStartId()+pivot.getScratches().get(1).getLength()-1
+                           &&allPrices.get(cutpoint+1).getHigh()<=allPrices.get(cutpoint).getHigh()){
+                       low=allPrices.get(cutpoint+1).getLow();
+                       t=cutpoint+1;
+                       endpoint=t+1;
+                   }
+
                    while (allPrices.get(t).getId()<pivot.getScratches().get(1).getStartId()+pivot.getScratches().get(1).getLength()-1){
                        if(allPrices.get(t).getLow()<low){
                            low=allPrices.get(t).getLow();
@@ -1248,6 +1257,13 @@ public class PivotHandleImpl implements PivotHandle {
                    float high=allPrices.get(cutpoint).getHigh();
                    int t=cutpoint;
                    int endpoint=t;
+                   if(allPrices.get(cutpoint+1).getId()<pivot.getScratches().get(1).getStartId()+pivot.getScratches().get(1).getLength()-1
+                           &&allPrices.get(cutpoint+1).getLow()>=allPrices.get(cutpoint).getLow() ){
+                        high=allPrices.get(cutpoint+1).getHigh();
+                        t=cutpoint+1;
+                        endpoint=t+1;
+                   }
+
                    while (allPrices.get(t).getId()<pivot.getScratches().get(1).getStartId()+pivot.getScratches().get(1).getLength()-1){
                        if(allPrices.get(t).getHigh()>high){
                            high=allPrices.get(t).getHigh();
