@@ -100,10 +100,21 @@ class MymodelApplicationTests {
         pivotsForPatternSearch.sort(Comparator.comparingInt(Pivot::getStartId));
         List<Pivot> pivotsof2ndPattern=pivotHandle.find2ndPattern(pivotsForPatternSearch,allCompoundScratches);
         System.out.println("Size of pivotsof2ndPattern "+pivotsof2ndPattern.size());
-        List<Pivot> pivotsforRegression=pivotHandle.findSubScratch(pivotsof2ndPattern,highLowPriceMapper.selectHighLow());
+        List<Pivot> pivotsforRegression=pivotHandle.findSubScratch(pivotsof2ndPattern,highLowPriceMapper.selectHighLow(),allCompoundScratches);
         System.out.println("Size of pivotsforRegression "+pivotsforRegression.size());
         for (Pivot pivot:pivotsforRegression){
-            System.out.println(pivot.toString());
+            int totalLength=0;
+            int maxLength=0;
+           for(int n=2;n<pivot.getScratches().size();n++){
+               totalLength=totalLength+pivot.getScratches().get(n).getLength();
+               if(pivot.getScratches().get(n).getLength()>maxLength){maxLength=pivot.getScratches().get(n).getLength();}
+           }
+           float ratio=(float)totalLength/(pivot.getScratches().size()-2)/pivot.getLength();
+           float maxratio=(float)maxLength/pivot.getLength();
+            System.out.println("Averageratio = "+ratio+" Maxratio ="+maxratio);
+            if(maxratio<=0.25){
+                System.out.println("Pivot should be studied is "+pivot.toString());
+            }
         }
         //List<Dpattern> dpatternList=pivotHandle.findAllDpattern(pivotsForPatternSearch);
        /* System.out.println("Size of allCompoundScratches 222 is "+allCompoundScratches.size());
