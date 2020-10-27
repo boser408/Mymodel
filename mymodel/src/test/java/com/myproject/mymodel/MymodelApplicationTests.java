@@ -100,6 +100,7 @@ class MymodelApplicationTests {
         pivotsForPatternSearch.sort(Comparator.comparingInt(Pivot::getStartId));
         List<Pivot> pivotsof2ndPattern=pivotHandle.find2ndPattern(pivotsForPatternSearch,allCompoundScratches);
         System.out.println("Size of pivotsof2ndPattern "+pivotsof2ndPattern.size());
+
         List<Pivot> pivotsforRegression=pivotHandle.findSubScratch(pivotsof2ndPattern,highLowPriceMapper.selectHighLow(),allCompoundScratches);
         System.out.println("Size of pivotsforRegression "+pivotsforRegression.size());
         for (Pivot pivot:pivotsforRegression){

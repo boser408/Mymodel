@@ -1154,6 +1154,7 @@ public class PivotHandleImpl implements PivotHandle {
                                     pivot1.getScratches().add(allCompoundScratches.get(n));
                                     if(flag<0){
                                         flag=3;
+                                        pivot1.setPivotType(pivot1.getPivotType()*100);
                                     }else {
                                         flag=2;
                                     }
@@ -1222,6 +1223,13 @@ public class PivotHandleImpl implements PivotHandle {
             }
         //System.out.println("Size of pivots is "+pivotList.size());
         pivots.sort(Comparator.comparingInt(Pivot::getStartId));
+            int nofbroken=0;
+            for(Pivot pivot:pivots){
+               if(pivot.getPivotType()>=100 || pivot.getPivotType()<=-100){
+                   nofbroken++;
+               }
+            }
+        System.out.println("nofbroker = "+nofbroken);
         return pivots;
     }
     @Override
