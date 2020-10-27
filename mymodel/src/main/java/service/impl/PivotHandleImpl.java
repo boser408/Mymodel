@@ -1057,6 +1057,9 @@ public class PivotHandleImpl implements PivotHandle {
         int case0=0;
         int case1=0;
         int case2=0;
+        int case3=0;
+        int case4=0;
+        int case5=0;
         for(Pivot pivot:pivotsForPatternSearch){
            // System.out.println("Current Pivot is -------------------- "+pivot.toString());
             for(Scratch scratch:pivot.getScratches()){
@@ -1123,61 +1126,78 @@ public class PivotHandleImpl implements PivotHandle {
                     }
 
                     if(c1 && c2 && c3 && c4){
-
-                        /*System.out.println("Current Scratch is "+scratch.toString());
-                        System.out.println("Find a candidate "+allCompoundScratches.get(n).toString());*/
                         for(int i=n-1;allCompoundScratches.get(i).getStartId()>=startSearch;i--){
                             boolean c6=allCompoundScratches.get(n).getStartId()>allCompoundScratches.get(i).getStartId()+allCompoundScratches.get(i).getLength();
                             if(scratch.getStatus()>0){
                                 if(c6 && allCompoundScratches.get(i).getLow()<scratch.getLow()
                                         && allCompoundScratches.get(i).getLow()<allCompoundScratches.get(n).getLow()){
-                                    /*if(pivot1.getScratches().size()==2){
-                                        pivot1.getScratches().remove(1);
-                                    }*/
                                     Pivot pivot1=new Pivot(scratch);
                                     pivot1.getScratches().add(allCompoundScratches.get(n));
-                                    flag=2;
-                                    /*System.out.println("flag=2 "+pivot1.toString());
-                                    System.out.println("Common Lower Low is "+allCompoundScratches.get(i).toString());*/
+                                    if(flag<0){
+                                       flag=3;
+                                    }else {
+                                        flag=2;
+                                    }
+
                                     pivotsof2ndPattern.add(pivot1);
+
                                     break;
+                                }else if(c6 && allCompoundScratches.get(i).getLow()<scratch.getLow()
+                                        && allCompoundScratches.get(i).getLow()>allCompoundScratches.get(n).getLow()){
+                                    flag=-2;
                                 }
+
                             }else {
                                 if(c6 && allCompoundScratches.get(i).getHigh()>scratch.getHigh()
                                         && allCompoundScratches.get(i).getHigh()>allCompoundScratches.get(n).getHigh()){
-                                    /*if(pivot1.getScratches().size()==2){
-                                        pivot1.getScratches().remove(1);
-                                    }*/
                                     Pivot pivot1=new Pivot(scratch);
                                     pivot1.getScratches().add(allCompoundScratches.get(n));
-                                    flag=2;
-                                    /*System.out.println("flag=2 "+pivot1.toString());
-                                    System.out.println("Common Higher High is "+allCompoundScratches.get(i).toString());*/
+                                    if(flag<0){
+                                        flag=3;
+                                    }else {
+                                        flag=2;
+                                    }
                                     pivotsof2ndPattern.add(pivot1);
                                     break;
+                                }else if(c6 && allCompoundScratches.get(i).getHigh()>scratch.getHigh()
+                                        && allCompoundScratches.get(i).getHigh()<allCompoundScratches.get(n).getHigh()){
+                                    flag=-2;
                                 }
                             }
                         }
-                        if(flag==2){
-                            case2++;
+                        if(flag>=2){
+                            if(flag==2){
+                                case2++;
+                            }else {
+                                case3++;
+                            }
                             break;
                         }
+                    }else if(c1 && c2 && c3){
+
+                        flag=-1;
                     }
                 }                                                        // End Line of 2nd Pattern Searching;
                 if(flag<2){
                     if(flag==1){
                         //System.out.println("NonMatch Case--111111111 "+scratch.toString());
                         case1++;
-                    }else {
+                    }else if(flag==0) {
                         //System.out.println("NonMatch Case--000000000 "+scratch.toString());
                         case0++;
+                    }else if(flag==-1){
+                        case4++;
+                        System.out.println("NonMatch Case flag=-1 "+scratch.toString());
+                    }else if(flag==-2){
+                        case5++;
+                        System.out.println("NonMatch Case flag=-2 "+scratch.toString());
                     }
                     scratchesofNomatch.add(scratch);
                 }
             }
         }
         System.out.println("Size of scratchesofNomatch is "+scratchesofNomatch.size());
-        System.out.println("case0 = "+case0 +" case1 = "+case1+" case2 = "+case2);
+        System.out.println("case0 = "+case0 +" case1 = "+case1+" case2 = "+case2+" case3 = "+case3+" case4 = "+case4+" case5 = "+case5);
         //System.out.println("Size of pivotsof2ndPattern is "+pivotsof2ndPattern.size());
         scratchesofNomatch.sort(Comparator.comparingInt(Scratch::getStartId));
 
