@@ -1188,10 +1188,10 @@ public class PivotHandleImpl implements PivotHandle {
                         case0++;
                     }else if(flag==-1){
                         case4++;
-                        System.out.println("NonMatch Case flag=-1 "+scratch.toString());
+                        //System.out.println("NonMatch Case flag=-1 "+scratch.toString());
                     }else if(flag==-2){
                         case5++;
-                        System.out.println("NonMatch Case flag=-2 "+scratch.toString());
+                        //System.out.println("NonMatch Case flag=-2 "+scratch.toString());
                     }
                     scratchesofNomatch.add(scratch);
                 }
@@ -1226,6 +1226,7 @@ public class PivotHandleImpl implements PivotHandle {
             int nofbroken=0;
             for(Pivot pivot:pivots){
                if(pivot.getPivotType()>=100 || pivot.getPivotType()<=-100){
+                   System.out.println("Noticable Pivot --- "+pivot.toString());
                    nofbroken++;
                }
             }
