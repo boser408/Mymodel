@@ -1226,7 +1226,7 @@ public class PivotHandleImpl implements PivotHandle {
             int nofbroken=0;
             for(Pivot pivot:pivots){
                if(pivot.getPivotType()>=100 || pivot.getPivotType()<=-100){
-                   System.out.println("Noticable Pivot --- "+pivot.toString());
+                  // System.out.println("Noticable Pivot --- "+pivot.toString());
                    nofbroken++;
                }
             }
