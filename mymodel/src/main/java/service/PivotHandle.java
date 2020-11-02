@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface PivotHandle {
     double getControlFactor();
-    Scratch checkHiddenScratch(List<HighLowPrice> highLowPrices,int scratchdirection);
+    Scratch checkHiddenScratch(List<HighLowPrice> highLowPrices);
     List<Scratch> removeRedundentScratch(List<Scratch> scratchList);
     List<Scratch> findScratchtoAdd(List<Scratch> allScratches, int nofStart, int nofEnd);
     List<Pivot> addScratchtoPivot(List<Scratch> allScratches, List<Pivot> keyPivotList);

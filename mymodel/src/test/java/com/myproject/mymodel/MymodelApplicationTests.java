@@ -63,7 +63,7 @@ class MymodelApplicationTests {
                 }
             }
         }
-        if(scratchList.get(endofList).getHigh()==scratchList.get(endofList-1).getHigh()){
+        if(scratchList.get(endofList).getHigh()==scratchList.get(endofList-1).getHigh()){ //Asign direction to scratches whose status is 0;
             scratchList.get(endofList).setStatus(-1);
         }else {
             scratchList.get(endofList).setStatus(1);
@@ -98,9 +98,15 @@ class MymodelApplicationTests {
         List<Pivot> keyPivotList=pivotHandle.obtainKeyPivots(allPivotList);
         List<Pivot> pivotsForPatternSearch=pivotHandle.addScratchtoPivot(scratchMapper.selectAllScratches(),keyPivotList);
         pivotsForPatternSearch.sort(Comparator.comparingInt(Pivot::getStartId));
-        List<Pivot> pivotsof2ndPattern=pivotHandle.find2ndPattern(pivotsForPatternSearch,allCompoundScratches);
+        /*for(Pivot pivot: pivotsForPatternSearch){
+            if(pivot.getStartId()==232){
+                for(Scratch scratch:pivot.getScratches()){
+                    System.out.println("Major Scratch "+scratch.toString());
+                }
+            }
+        }*/
+        /*List<Pivot> pivotsof2ndPattern=pivotHandle.find2ndPattern(pivotsForPatternSearch,allCompoundScratches);
         System.out.println("Size of pivotsof2ndPattern "+pivotsof2ndPattern.size());
-
         List<Pivot> pivotsforRegression=pivotHandle.findSubScratch(pivotsof2ndPattern,highLowPriceMapper.selectHighLow(),allCompoundScratches);
         System.out.println("Size of pivotsforRegression "+pivotsforRegression.size());
         int case25=0;
@@ -157,7 +163,7 @@ class MymodelApplicationTests {
 
         System.out.println("triggarRatio>=0.7 && triggarRatio<1 is: "+trigR70);
         System.out.println("triggarRatio>=1 && triggarRatio<1.4 is: "+trigR100);
-        System.out.println("triggarRatio>=1.4 is: "+trigR140);
+        System.out.println("triggarRatio>=1.4 is: "+trigR140);*/
         //List<Dpattern> dpatternList=pivotHandle.findAllDpattern(pivotsForPatternSearch);
        /* System.out.println("Size of allCompoundScratches 222 is "+allCompoundScratches.size());
         List<Scratch> scratchList=new ArrayList<>();
