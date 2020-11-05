@@ -92,7 +92,7 @@ class MymodelApplicationTests {
             allCompoundScratches.add(scratch);
         }
         allCompoundScratches.addAll(scratchMapper.selectAllScratches());
-        allCompoundScratches.sort(Comparator.comparingInt(Scratch::getStartId).thenComparingInt(Scratch::getLength));
+        allCompoundScratches.sort(Comparator.comparingInt(Scratch::getStartId).thenComparingInt(Scratch::getLength)); //Sorted by StartId and Length;
         scratchMapper.deleteAll("tmpscratch");
         scratchMapper.batchtmpinsert(allCompoundScratches);
         List<Pivot> keyPivotList=pivotHandle.obtainKeyPivots(allPivotList);
@@ -176,11 +176,11 @@ class MymodelApplicationTests {
             scratchList.add(scratch000);
         }
         scratchMapper.batchsmallinsert(scratchList);*/
-       /* List<Pivot> pivotsof3rdPattern=pivotHandle.find3rdPattern(pivotsForPatternSearch,allCompoundScratches);
+        List<Pivot> pivotsof3rdPattern=pivotHandle.find3rdPattern(pivotsForPatternSearch,allCompoundScratches);
         System.out.println("Size of pivotsof3rdPattern is "+pivotsof3rdPattern.size());
         for (Pivot pivot:pivotsof3rdPattern){
             System.out.println(pivot.toString());
-        }*/
+        }
         /*List<PatternResult> firstResult=new ArrayList<>();
         for(Dpattern dpattern:dpatternList){
             for (Pivot pivot:dpattern.getFeaturePivots()){
