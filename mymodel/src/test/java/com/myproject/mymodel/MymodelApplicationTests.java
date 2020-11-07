@@ -179,7 +179,7 @@ class MymodelApplicationTests {
         List<Pivot> pivotsof3rdPattern=pivotHandle.find3rdPattern(pivotsForPatternSearch,allCompoundScratches);
         System.out.println("Size of pivotsof3rdPattern is "+pivotsof3rdPattern.size());
         for (Pivot pivot:pivotsof3rdPattern){
-            System.out.println(pivot.toString());
+            System.out.println(pivot.getScratches().toString());
         }
         /*List<PatternResult> firstResult=new ArrayList<>();
         for(Dpattern dpattern:dpatternList){

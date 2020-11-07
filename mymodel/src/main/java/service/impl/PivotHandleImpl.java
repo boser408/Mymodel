@@ -1042,8 +1042,9 @@ public class PivotHandleImpl implements PivotHandle {
                         nofnonematch++;
                         break;
                     }
-                    if(c1 && c2 && c3 && c4 && !c5){
+                    if(c1 && c2 && c3 && c4 && c5){
                         nofreuse++;
+                        continue;
                     }
                     if(c1 && c2 && c3 && c4 && !c5){
                         nofmatch++;
@@ -1076,9 +1077,7 @@ public class PivotHandleImpl implements PivotHandle {
                             }else if(ratio>=1.4){
                                 rmax++;
                             }
-
                         }
-
                         break;
                     }
                 }    // End line of pattern search;
