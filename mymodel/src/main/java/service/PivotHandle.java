@@ -21,5 +21,7 @@ public interface PivotHandle {
     List<Pivot> obtainKeyPivots(List<Pivot> allPivotList);
     List<Pivot> find3rdPattern(List<Pivot> pivotsForPatternSearch, List<Scratch> allCompoundScratches);
     List<Pivot> find2ndPattern(List<Pivot> pivotsForPatternSearch, List<Scratch> allCompoundScratches);
+    List<Pivot> find4thPattern(List<Pivot> pivotsForPatternSearch, List<Scratch> allCompoundScratches);
     List<Pivot> findSubScratch(List<Pivot> pivotsof2ndPattern, List<HighLowPrice> allPrices,List<Scratch> allCompoundScratches);
+
 }

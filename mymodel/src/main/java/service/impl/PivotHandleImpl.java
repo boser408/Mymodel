@@ -1111,6 +1111,7 @@ public class PivotHandleImpl implements PivotHandle {
         int nofmatch=0; // Number of found 3rd pattern pair;
         int nofreuse=0; // Number of found 3rd pattern that was paired by previous scratch;
         int nofoutlier=0; // Number of found 3rd pattern bigger than expected length range, potential lose when trading;
+        int nofoutlier2=0;// Number of found 3rd pattern bigger than twice of expected length range, potential big lose when trading;
         int nofnonematch=0; // Number of scratches that have no 3rd pattern match;
 
         int r25=0;
@@ -1158,7 +1159,10 @@ public class PivotHandleImpl implements PivotHandle {
                         pivotsof3rdPattern.add(pivot1);
                         allCompoundScratches.get(n).setStatus(allCompoundScratches.get(n).getStatus()*100);
                         if(c6){
-                            nofoutlier++;
+                            if((float)allCompoundScratches.get(n).getLength()/scratch.getLength()>2){
+                                nofoutlier2++;
+                            }else {nofoutlier++;}
+
                         }else {
                             for(int t=n+1;t<allCompoundScratches.size()-1;t++){
                                 boolean b0=allCompoundScratches.get(t).getStartId()>allCompoundScratches.get(n).getStartId()+allCompoundScratches.get(n).getLength()-1;
@@ -1187,7 +1191,7 @@ public class PivotHandleImpl implements PivotHandle {
                 }    // End line of pattern search;
             }
         }
-        System.out.println("nofmatch= "+nofmatch+" nofreuse= "+nofreuse+" nofoutlier= "+nofoutlier+" nofnonematch "+nofnonematch);
+        System.out.println("nofmatch= "+nofmatch+" nofreuse= "+nofreuse+" nofoutlier= "+nofoutlier+" nofoutlier2= "+nofoutlier2+" nofnonematch "+nofnonematch);
         System.out.println("ratio<0.25: "+r25+" ratio>=0.25 && ratio<0.7: "+r70+" ratio>=0.7 && ratio<1.4: "+r140+" ratio>=1.4 "+rmax);
         return pivotsof3rdPattern;
     }
@@ -1374,6 +1378,108 @@ public class PivotHandleImpl implements PivotHandle {
         System.out.println("nofbroker = "+nofbroken);
         return pivots;
     }
+
+    @Override
+    public List<Pivot> find4thPattern(List<Pivot> pivotsForPatternSearch, List<Scratch> scratches) {
+        List<Scratch> allCompoundScratches=new ArrayList<>();
+        allCompoundScratches.addAll(scratches);
+        List<Pivot> pivotsof4thPattern=new ArrayList<>();
+        int nofmatch=0; // Number of found 4th pattern pair;
+        int nofreuse=0; // Number of found 4th pattern that was paired by previous scratch;
+        int nofoutlier=0; // Number of found 4th pattern bigger than expected length range, potential lose when trading;
+        int nofoutlier2=0;// Number of found 4th pattern bigger than twice expected length range, potential serious lose when trading;
+        int nofnonematch=0; // Number of scratches that have no 4th pattern match;
+
+        int r25=0;
+        int r70=0;
+        int r140=0;
+        int rmax=0;
+        for(Pivot pivot:pivotsForPatternSearch){
+            for(Scratch scratch:pivot.getScratches()){
+                int nofStart=0;
+                for(int n=0;n<allCompoundScratches.size();n++){
+                    if(scratch.getStartId()==allCompoundScratches.get(n).getStartId()){
+                        nofStart=n;
+                        break;
+                    }
+                }
+                for(int n=nofStart;n<allCompoundScratches.size();n++){ //Start line of pattern search;
+                    boolean c1=allCompoundScratches.get(n).getStatus()*scratch.getStatus()>0;
+                    boolean c2=(float)allCompoundScratches.get(n).getLength()/scratch.getLength()>controlFactor;
+                    boolean c3=allCompoundScratches.get(n).getStartId()>scratch.getStartId();
+                    boolean c4=false;
+                    boolean c7=false;
+                    if(pivot.getPivotType()>0){
+                       if(allCompoundScratches.get(n).getHigh()>scratch.getHigh()||allCompoundScratches.get(n).getLow()>scratch.getLow()){
+                           c4=true;
+                       }
+                       if(allCompoundScratches.get(n).getLow()<scratch.getHigh()){
+                           c7=true;
+                       }
+                    }else {
+                       if(allCompoundScratches.get(n).getLow()<scratch.getLow()||allCompoundScratches.get(n).getHigh()<scratch.getHigh()){
+                           c4=true;
+                       }
+                       if(allCompoundScratches.get(n).getHigh()>scratch.getLow()){
+                           c7=true;
+                       }
+                    }
+                    boolean c5=allCompoundScratches.get(n).getStatus()>=100 || allCompoundScratches.get(n).getStatus()<=-100;
+                    boolean c6=(float)allCompoundScratches.get(n).getLength()/scratch.getLength()>1/controlFactor;
+
+                    if(c1 && c3 && !(c4&&c7) && c6){
+                        nofnonematch++;
+                        break;
+                    }
+                    if(c1 && c2 && c3 && c4 && c5 && c7){
+                        nofreuse++;
+                        break;
+                    }
+                    if(c1 && c2 && c3 && c4 && !c5 && c7){
+                        nofmatch++;
+                        Pivot pivot1=new Pivot(scratch);
+                        Scratch scratch1=new Scratch(allCompoundScratches.get(n));
+                        pivot1.getScratches().add(scratch1);
+                        pivotsof4thPattern.add(pivot1);
+                        allCompoundScratches.get(n).setStatus(allCompoundScratches.get(n).getStatus()*100);
+                        if(c6){
+                            if((float)allCompoundScratches.get(n).getLength()/scratch.getLength()>2){
+                                nofoutlier2++;
+                            }else {nofoutlier++;}
+                        }else {
+                            for(int t=n+1;t<allCompoundScratches.size()-1;t++){
+                                boolean b0=allCompoundScratches.get(t).getStartId()>allCompoundScratches.get(n).getStartId()+allCompoundScratches.get(n).getLength()-1;
+                                if(b0){
+                                    break;
+                                }
+                                boolean b1=allCompoundScratches.get(t).getStatus()*scratch.getStatus()<0;
+                                boolean b2=allCompoundScratches.get(t).getStartId()==allCompoundScratches.get(n).getStartId()+allCompoundScratches.get(n).getLength()-1;
+                                if(b1 && b2){
+                                    pivot1.getScratches().add(allCompoundScratches.get(t));
+                                }
+                            }
+                            float ratio=(float)pivot1.getScratches().get(pivot1.getScratches().size()-1).getLength()/pivot1.getLength();
+                            if(ratio<0.25){
+                                r25++;
+                            }else if(ratio>=0.25 && ratio<0.7){
+                                r70++;
+                            }else if(ratio>=0.7 && ratio<1.4){
+                                r140++;
+                            }else if(ratio>=1.4){
+                                rmax++;
+                            }
+                        }
+                        break;
+                    }
+                }    // End line of pattern search;
+            }
+        }
+        System.out.println("nofmatch= "+nofmatch+" nofreuse= "+nofreuse+" nofoutlier= "+nofoutlier+" nofoutlier2= "+nofoutlier2+" nofnonematch "+nofnonematch);
+        System.out.println("ratio<0.25: "+r25+" ratio>=0.25 && ratio<0.7: "+r70+" ratio>=0.7 && ratio<1.4: "+r140+" ratio>=1.4 "+rmax);
+
+        return pivotsof4thPattern;
+    }
+
     @Override
     public List<Pivot> findSubScratch(List<Pivot> pivotsof2ndPattern, List<HighLowPrice> allPrices,List<Scratch> allCompoundScratches) {
         List<Pivot> returnPivotList=new ArrayList<>();
