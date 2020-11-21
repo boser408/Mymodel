@@ -1,6 +1,5 @@
 package service.impl;
 
-import com.myproject.mymodel.domain.Dpattern;
 import com.myproject.mymodel.domain.HighLowPrice;
 import com.myproject.mymodel.domain.Pivot;
 import com.myproject.mymodel.domain.Scratch;
@@ -13,8 +12,6 @@ import java.util.List;
 public class PivotHandleImpl implements PivotHandle {
     public static final double controlFactor=0.7;
     public static final int pivotLength=5;
-    public int numberofLoop;
-    public double getControlFactor(){return controlFactor;}
 
     @Override
     public Scratch checkHiddenScratch(List<HighLowPrice> highLowPrices) {
@@ -156,185 +153,6 @@ public class PivotHandleImpl implements PivotHandle {
             }
         }
         return pivotsForPatternSearch;
-    }
-    @Override
-    public Dpattern findDpattern(Pivot pivot) {
-        Dpattern foundDpattern=new Dpattern(pivot);
-        Scratch scratch=new Scratch(pivot);
-        //System.out.println("pivot in findDpattern is XXXXXXXX:"+pivot.toString());
-        for(int n=0;n<pivot.getScratches().size()-1;n++){
-            for(int i=n+1;i<pivot.getScratches().size();i++){
-                double factor=(double) pivot.getScratches().get(i).getLength()/pivot.getScratches().get(n).getLength();
-                if(factor>=1/controlFactor){break;}
-                //System.out.println("i="+i+","+"n="+n+","+"factor="+factor);
-                if(pivot.getPivotType()>=1){
-                    /*float c1=pivot.getScratches().get(n).getHigh()-pivot.getScratches().get(n).getLow();
-                    float c2=pivot.getScratches().get(i).getHigh()-pivot.getScratches().get(i).getLow();
-                    float c3=pivot.getScratches().get(i).getLow()-pivot.getScratches().get(n).getHigh();
-                    if(c3<(c1+c2)/2*controlFactor){
-                        pivot.getScratches().remove(i);
-                        i=i-1;
-                        continue;
-                    }*/
-                    if((factor>controlFactor && factor<1/controlFactor) && pivot.getScratches().get(i).getLow()>pivot.getScratches().get(n).getHigh()){
-                        /*System.out.println("Dpattern Found in"+pivot.toString());
-                        System.out.println("the 1st Scratch is"+pivot.getScratches().get(n).toString());
-                        System.out.println("the 2nd Scratch is"+pivot.getScratches().get(i).toString());*/
-                        if(pivot.getScratches().get(i).getStatus()>-100){
-                            pivot.getScratches().get(i).setStatus(pivot.getScratches().get(i).getStatus()*100);
-                        }
-                        Pivot tmppivot=new Pivot(scratch);
-                        tmppivot.setPivotType(pivot.getPivotType());
-                        tmppivot.getScratches().clear();
-                        tmppivot.getScratches().add(pivot.getScratches().get(n));
-                        tmppivot.getScratches().add(pivot.getScratches().get(i));
-                        for(int t=i+1;t<pivot.getScratches().size();t++){     //Start Line of Looking for the first matching consolidation after Dpattern appeared;
-                            double c=(double) pivot.getScratches().get(t).getLength()/pivot.getScratches().get(i).getLength();
-                            if(c>controlFactor){
-                                tmppivot.getScratches().add(pivot.getScratches().get(t));
-                                break;
-                            }
-                        }                                                    //End Line of Looking for the first matching consolidation after Dpattern appeared;
-
-                        if(tmppivot.getScratches().size()==3){               // Start Line of looking for the beginning point of currently found Dpatter;
-                            Scratch scratch1=new Scratch(pivot);
-                            if(n>0){
-                                for(int r=n-1;r>=0;r--){
-                                    double c=(double) pivot.getScratches().get(r).getLength()/pivot.getScratches().get(n).getLength();
-                                    if(c>controlFactor){
-                                        scratch1=new Scratch(pivot.getScratches().get(r));
-                                        break;
-                                    }
-                                }
-                            }
-                            tmppivot.getScratches().add(scratch1);
-                        }                                                   // End Line of looking for the beginning point of currently found Dpatter;
-                        foundDpattern.getFeaturePivots().add(tmppivot);
-                    }
-                }else if(pivot.getPivotType()<=-1){
-                    /*float c1=pivot.getScratches().get(n).getHigh()-pivot.getScratches().get(n).getLow();
-                    float c2=pivot.getScratches().get(i).getHigh()-pivot.getScratches().get(i).getLow();
-                    float c3=pivot.getScratches().get(n).getLow()-pivot.getScratches().get(i).getHigh();
-                    if(c3<(c1+c2)/2*controlFactor){
-                        pivot.getScratches().remove(i);
-                        i=i-1;
-                        continue;
-                    }*/
-                  if((factor>controlFactor && factor<1/controlFactor) && pivot.getScratches().get(n).getLow()>pivot.getScratches().get(i).getHigh()){
-                        /*System.out.println("Dpattern Found in"+pivot.toString());
-                        System.out.println("the 1st Scratch is"+pivot.getScratches().get(n).toString());
-                        System.out.println("the 2nd Scratch is"+pivot.getScratches().get(i).toString());*/
-                      if(pivot.getScratches().get(i).getStatus()<100){
-                          pivot.getScratches().get(i).setStatus(pivot.getScratches().get(i).getStatus()*100);
-                      }
-                      Pivot tmppivot=new Pivot(scratch);
-                      tmppivot.setPivotType(pivot.getPivotType());
-                      tmppivot.getScratches().add(pivot.getScratches().get(n));
-                      tmppivot.getScratches().add(pivot.getScratches().get(i));
-                      for(int t=i+1;t<pivot.getScratches().size();t++){      //Start Line of Looking for the first matching consolidation after Dpattern appeared;
-                          double c=(double) pivot.getScratches().get(t).getLength()/pivot.getScratches().get(i).getLength();
-                          if(c>controlFactor){
-                              tmppivot.getScratches().add(pivot.getScratches().get(t));
-                              break;
-                          }
-                      }                                                     //End Line of Looking for the first matching consolidation after Dpattern appeared;
-                      if(tmppivot.getScratches().size()==4){               // Start Line of looking for the beginning point of currently found Dpatter;
-                          Scratch scratch1=new Scratch(pivot);
-                          if(n>0){
-                              for(int r=n-1;r>=0;r--){
-                                  double c=(double) pivot.getScratches().get(r).getLength()/pivot.getScratches().get(n).getLength();
-                                  if(c>controlFactor){
-                                      scratch1=new Scratch(pivot.getScratches().get(r));
-                                      break;
-                                  }
-                              }
-                          }
-                          tmppivot.getScratches().add(scratch1);
-                      }                                                   // End Line of looking for the beginning point of currently found Dpatter;
-                      foundDpattern.getFeaturePivots().add(tmppivot);
-                      //System.out.println("foundDpattern is "+foundDpattern.toString());
-                    }
-                }
-            }
-        }
-            //System.out.println(" returning foundDpattern is :"+foundDpattern.toString());
-            return foundDpattern;
-    }
-    @Override
-    public Dpattern findTpattern(Pivot pivot) {
-        Dpattern returnTpattern=new Dpattern(pivot);
-        Scratch scratch=new Scratch(pivot);
-
-        for(int n=0;n<pivot.getScratches().size()-1;n++){
-            for(int i=n+1;i<pivot.getScratches().size();i++){
-                double factor=(double) pivot.getScratches().get(i).getLength()/pivot.getScratches().get(n).getLength();
-                if(factor>=1/controlFactor){break;}
-                if(pivot.getPivotType()>=1){
-                    if((factor>controlFactor && factor<1/controlFactor) && pivot.getScratches().get(i).getLow()<=pivot.getScratches().get(n).getHigh()){
-                        //System.out.println("i="+i+","+"n="+n+","+"factor="+factor);
-                        for(int t=i+1;t<pivot.getScratches().size();t++){
-                            double factor2=(double) pivot.getScratches().get(t).getLength()/pivot.getScratches().get(n).getLength();
-                            double factor3=(double) pivot.getScratches().get(t).getLength()/pivot.getScratches().get(i).getLength();
-
-                            if(factor2>=1/controlFactor||factor3>=1/controlFactor){break;}
-                            //System.out.println("factor2= "+factor2+" factor3="+factor3);
-                            boolean criteria=(factor2>controlFactor && factor2<1/controlFactor)&&(factor3>controlFactor && factor3<1/controlFactor);
-                            if(criteria && pivot.getScratches().get(t).getLow()<=pivot.getScratches().get(n).getHigh() ){
-                                //System.out.println("found-------------------111111");
-                                Pivot tmppivot=new Pivot(scratch);
-                                tmppivot.setPivotType(pivot.getPivotType());
-                                tmppivot.getScratches().add(pivot.getScratches().get(n));
-                                tmppivot.getScratches().add(pivot.getScratches().get(i));
-                                tmppivot.getScratches().add(pivot.getScratches().get(t));
-                                returnTpattern.getFeaturePivots().add(tmppivot);
-                                //System.out.println("found Tpattern ="+returnTpattern.toString());
-                            }
-                        }
-                    }
-                }else if(pivot.getPivotType()<=-1){
-                    if((factor>controlFactor && factor<1/controlFactor) && pivot.getScratches().get(n).getLow()<=pivot.getScratches().get(i).getHigh()){
-                        //System.out.println("i="+i+","+"n="+n+","+"factor="+factor);
-                        for(int t=i+1;t<pivot.getScratches().size();t++){
-                            double factor2=(double) pivot.getScratches().get(t).getLength()/pivot.getScratches().get(n).getLength();
-                            double factor3=(double) pivot.getScratches().get(t).getLength()/pivot.getScratches().get(i).getLength();
-
-                            if(factor2>=1/controlFactor||factor3>=1/controlFactor){break;}
-                            //System.out.println("factor2="+factor2+" factor3="+factor3);
-                            boolean criteria=(factor2>controlFactor && factor2<1/controlFactor)&&(factor3>controlFactor && factor3<1/controlFactor);
-                            if(criteria && pivot.getScratches().get(n).getLow()<=pivot.getScratches().get(t).getHigh() ){
-                                //System.out.println("found-------------------222222222");
-                                Pivot tmppivot=new Pivot(scratch);
-                                tmppivot.setPivotType(pivot.getPivotType());
-                                tmppivot.getScratches().add(pivot.getScratches().get(n));
-                                tmppivot.getScratches().add(pivot.getScratches().get(i));
-                                tmppivot.getScratches().add(pivot.getScratches().get(t));
-                                returnTpattern.getFeaturePivots().add(tmppivot);
-                            }
-                        }
-
-                    }
-                }
-            }
-        }
-        if(returnTpattern.getFeaturePivots().size()>=1){ // Mark the pivot as Tripple-Pivots pattern;
-
-            returnTpattern.setPivotDirection(returnTpattern.getPivotDirection()*33);
-            // System.out.println("Final--------------------Returned Tpattern ="+returnTpattern.toString());
-        }
-        return returnTpattern;
-    }
-    @Override
-    public List<Dpattern> findAllDpattern(List<Pivot> pivotList) {
-        List<Dpattern> dpatternList=new ArrayList<>();
-        for(Pivot pivot:pivotList){
-            if(pivot.getScratches().size()>1){
-                Dpattern dpattern=findDpattern(pivot);
-                if(dpattern.getFeaturePivots().size()>0){
-                    dpatternList.add(dpattern);
-                }
-            }
-        }
-        return dpatternList;
     }
     @Override
     public List<Scratch> findScratches(List<HighLowPrice> highLowPrices, int startindex, int length) {
@@ -1104,6 +922,189 @@ public class PivotHandleImpl implements PivotHandle {
         return keyPivotList;
     }
     @Override
+    public List<Pivot> find2ndPattern(List<Pivot> pivotsForPatternSearch, List<Scratch> allCompoundScratches) {
+        List<Pivot> pivotsof2ndPattern=new ArrayList<>();
+        List<Scratch> scratchesofNomatch=new ArrayList<>();
+        int case0=0;
+        int case1=0;
+        int case2=0;
+        int case3=0;
+        int case4=0;
+        int case5=0;
+        for(Pivot pivot:pivotsForPatternSearch){
+            // System.out.println("Current Pivot is -------------------- "+pivot.toString());
+            for(Scratch scratch:pivot.getScratches()){
+
+                int flag=0;
+                int startSearch=0;
+                int endofList=allCompoundScratches.size()-1;
+                int endSearch=allCompoundScratches.get(endofList).getStartId()+allCompoundScratches.get(endofList).getLength()-1;
+                if(pivot.getScratches().size()>1){
+                    for(int e=1;e<pivot.getScratches().size();e++){
+                        float compare=(float)pivot.getScratches().get(e).getLength()/scratch.getLength();
+                        boolean b1=compare>1/controlFactor;
+                        boolean b2=pivot.getScratches().get(e).getStartId()>scratch.getStartId();
+
+                        if(b1&&b2&&pivot.getPivotType()>0){
+                            flag=1;
+                            if(e==pivot.getScratches().size()-1){
+                                endSearch=pivot.getStartId()+pivot.getLength()-1;
+                                break;
+                            }
+                            for(int d=e+1;d<=pivot.getScratches().size()-1;d++){
+                                if(pivot.getScratches().get(d).getHigh()>pivot.getScratches().get(e).getHigh()){
+                                    endSearch=pivot.getScratches().get(d).getStartId();
+                                    break;
+                                }
+                            }
+                        }else if(b1&&b2&&pivot.getPivotType()<0){
+                            flag=1;
+                            if(e==pivot.getScratches().size()-1){
+                                endSearch=pivot.getStartId()+pivot.getLength()-1;
+                                break;
+                            }
+                            for(int d=e+1;d<=pivot.getScratches().size()-1;d++){
+                                if(pivot.getScratches().get(d).getLow()<pivot.getScratches().get(e).getLow()){
+                                    endSearch=pivot.getScratches().get(d).getStartId();
+                                    break;
+                                }
+                            }
+                        }
+                        if(endSearch<allCompoundScratches.get(endofList).getStartId()+allCompoundScratches.get(endofList).getLength()-1){
+                            break;
+                        }
+                    }
+                }
+
+                for(int n=0;n<=allCompoundScratches.size()-1;n++){ // Start Line of 2nd Pattern Searching;
+                    if(allCompoundScratches.get(n).getStartId()>endSearch){
+                        break;
+                    }
+                    startSearch=scratch.getStartId()+scratch.getLength()-1;
+                    boolean c1=allCompoundScratches.get(n).getStartId()>startSearch;
+                    boolean c2=allCompoundScratches.get(n).getStatus()*scratch.getStatus()<0;
+                    float a=(float)allCompoundScratches.get(n).getLength()/scratch.getLength();
+                    boolean c3=a>=controlFactor;
+                    boolean c4=true;
+                    if(pivot.getPivotType()>0){
+                        if(allCompoundScratches.get(n).getHigh()>pivot.getHigh()){
+                            c4=false;
+                        }
+                    }else {
+                        if(allCompoundScratches.get(n).getLow()<pivot.getLow()){
+                            c4=false;
+                        }
+                    }
+
+                    if(c1 && c2 && c3 && c4){
+                        for(int i=n-1;allCompoundScratches.get(i).getStartId()>=startSearch;i--){
+                            boolean c6=allCompoundScratches.get(n).getStartId()>allCompoundScratches.get(i).getStartId()+allCompoundScratches.get(i).getLength();
+                            if(scratch.getStatus()>0){
+                                if(c6 && allCompoundScratches.get(i).getLow()<scratch.getLow()
+                                        && allCompoundScratches.get(i).getLow()<allCompoundScratches.get(n).getLow()){
+                                    Pivot pivot1=new Pivot(scratch);
+                                    pivot1.getScratches().add(allCompoundScratches.get(n));
+                                    if(flag<0){
+                                        flag=3;
+                                    }else {
+                                        flag=2;
+                                    }
+
+                                    pivotsof2ndPattern.add(pivot1);
+
+                                    break;
+                                }else if(c6 && allCompoundScratches.get(i).getLow()<scratch.getLow()
+                                        && allCompoundScratches.get(i).getLow()>allCompoundScratches.get(n).getLow()){
+                                    flag=-2;
+                                }
+
+                            }else {
+                                if(c6 && allCompoundScratches.get(i).getHigh()>scratch.getHigh()
+                                        && allCompoundScratches.get(i).getHigh()>allCompoundScratches.get(n).getHigh()){
+                                    Pivot pivot1=new Pivot(scratch);
+                                    pivot1.getScratches().add(allCompoundScratches.get(n));
+                                    if(flag<0){
+                                        flag=3;
+                                        pivot1.setPivotType(pivot1.getPivotType()*100);
+                                    }else {
+                                        flag=2;
+                                    }
+                                    pivotsof2ndPattern.add(pivot1);
+                                    break;
+                                }else if(c6 && allCompoundScratches.get(i).getHigh()>scratch.getHigh()
+                                        && allCompoundScratches.get(i).getHigh()<allCompoundScratches.get(n).getHigh()){
+                                    flag=-2;
+                                }
+                            }
+                        }
+                        if(flag>=2){
+                            if(flag==2){
+                                case2++;
+                            }else {
+                                case3++;
+                            }
+                            break;
+                        }
+                    }else if(c1 && c2 && c3){
+
+                        flag=-1;
+                    }
+                }                                                        // End Line of 2nd Pattern Searching;
+                if(flag<2){
+                    if(flag==1){
+                        //System.out.println("NonMatch Case--111111111 "+scratch.toString());
+                        case1++;
+                    }else if(flag==0) {
+                        //System.out.println("NonMatch Case--000000000 "+scratch.toString());
+                        case0++;
+                    }else if(flag==-1){
+                        case4++;
+                        //System.out.println("NonMatch Case flag=-1 "+scratch.toString());
+                    }else if(flag==-2){
+                        case5++;
+                        //System.out.println("NonMatch Case flag=-2 "+scratch.toString());
+                    }
+                    scratchesofNomatch.add(scratch);
+                }
+            }
+        }
+        System.out.println("Size of scratchesofNomatch is "+scratchesofNomatch.size());
+        System.out.println("case0 = "+case0 +" case1 = "+case1+" case2 = "+case2+" case3 = "+case3+" case4 = "+case4+" case5 = "+case5);
+        //System.out.println("Size of pivotsof2ndPattern is "+pivotsof2ndPattern.size());
+        scratchesofNomatch.sort(Comparator.comparingInt(Scratch::getStartId));
+
+        List<Pivot> pivotList=new ArrayList<>();
+        List<Pivot> pivots=new ArrayList<>();
+        pivotList.addAll(pivotsof2ndPattern);
+        for(int n=0;n<pivotList.size()-1;n++){
+            Pivot maxpivot=new Pivot(pivotList.get(n));
+            for(int i=n+1;i<pivotList.size();i++){
+                if(pivotList.get(n).getScratches().get(1).equals(pivotList.get(i).getScratches().get(1))){
+                        /*System.out.println("pivot n is "+pivotList.get(n).toString());
+                        System.out.println("pivot i is "+pivotList.get(i).toString());*/
+                    if(pivotList.get(n).getLength()<pivotList.get(i).getLength()){
+                        maxpivot=new Pivot(pivotList.get(i));
+                    }
+                    pivotList.remove(i);
+                    i=i-1;
+                }
+            }
+            pivots.add(maxpivot);
+            //System.out.println("pivot max is "+maxpivot.toString());
+        }
+        //System.out.println("Size of pivots is "+pivotList.size());
+        pivots.sort(Comparator.comparingInt(Pivot::getStartId));
+        int nofbroken=0;
+        for(Pivot pivot:pivots){
+            if(pivot.getPivotType()>=100 || pivot.getPivotType()<=-100){
+                // System.out.println("Noticable Pivot --- "+pivot.toString());
+                nofbroken++;
+            }
+        }
+        System.out.println("nofbroker = "+nofbroken);
+        return pivots;
+    }
+    @Override
     public List<Pivot> find3rdPattern(List<Pivot> pivotsForPatternSearch, List<Scratch> scratches) {
         List<Scratch> allCompoundScratches=new ArrayList<>();
         allCompoundScratches.addAll(scratches);
@@ -1195,190 +1196,6 @@ public class PivotHandleImpl implements PivotHandle {
         System.out.println("ratio<0.25: "+r25+" ratio>=0.25 && ratio<0.7: "+r70+" ratio>=0.7 && ratio<1.4: "+r140+" ratio>=1.4 "+rmax);
         return pivotsof3rdPattern;
     }
-    @Override
-    public List<Pivot> find2ndPattern(List<Pivot> pivotsForPatternSearch, List<Scratch> allCompoundScratches) {
-        List<Pivot> pivotsof2ndPattern=new ArrayList<>();
-        List<Scratch> scratchesofNomatch=new ArrayList<>();
-        int case0=0;
-        int case1=0;
-        int case2=0;
-        int case3=0;
-        int case4=0;
-        int case5=0;
-        for(Pivot pivot:pivotsForPatternSearch){
-           // System.out.println("Current Pivot is -------------------- "+pivot.toString());
-            for(Scratch scratch:pivot.getScratches()){
-
-                int flag=0;
-                int startSearch=0;
-                int endofList=allCompoundScratches.size()-1;
-                int endSearch=allCompoundScratches.get(endofList).getStartId()+allCompoundScratches.get(endofList).getLength()-1;
-                if(pivot.getScratches().size()>1){
-                    for(int e=1;e<pivot.getScratches().size();e++){
-                        float compare=(float)pivot.getScratches().get(e).getLength()/scratch.getLength();
-                        boolean b1=compare>1/controlFactor;
-                        boolean b2=pivot.getScratches().get(e).getStartId()>scratch.getStartId();
-
-                        if(b1&&b2&&pivot.getPivotType()>0){
-                            flag=1;
-                            if(e==pivot.getScratches().size()-1){
-                                endSearch=pivot.getStartId()+pivot.getLength()-1;
-                                break;
-                            }
-                            for(int d=e+1;d<=pivot.getScratches().size()-1;d++){
-                                if(pivot.getScratches().get(d).getHigh()>pivot.getScratches().get(e).getHigh()){
-                                    endSearch=pivot.getScratches().get(d).getStartId();
-                                    break;
-                                }
-                            }
-                        }else if(b1&&b2&&pivot.getPivotType()<0){
-                            flag=1;
-                            if(e==pivot.getScratches().size()-1){
-                                endSearch=pivot.getStartId()+pivot.getLength()-1;
-                                break;
-                            }
-                            for(int d=e+1;d<=pivot.getScratches().size()-1;d++){
-                                if(pivot.getScratches().get(d).getLow()<pivot.getScratches().get(e).getLow()){
-                                    endSearch=pivot.getScratches().get(d).getStartId();
-                                    break;
-                                }
-                            }
-                        }
-                        if(endSearch<allCompoundScratches.get(endofList).getStartId()+allCompoundScratches.get(endofList).getLength()-1){
-                            break;
-                        }
-                    }
-                }
-
-                for(int n=0;n<=allCompoundScratches.size()-1;n++){ // Start Line of 2nd Pattern Searching;
-                    if(allCompoundScratches.get(n).getStartId()>endSearch){
-                        break;
-                    }
-                    startSearch=scratch.getStartId()+scratch.getLength()-1;
-                    boolean c1=allCompoundScratches.get(n).getStartId()>startSearch;
-                    boolean c2=allCompoundScratches.get(n).getStatus()*scratch.getStatus()<0;
-                    float a=(float)allCompoundScratches.get(n).getLength()/scratch.getLength();
-                    boolean c3=a>=controlFactor;
-                    boolean c4=true;
-                    if(pivot.getPivotType()>0){
-                        if(allCompoundScratches.get(n).getHigh()>pivot.getHigh()){
-                            c4=false;
-                        }
-                    }else {
-                        if(allCompoundScratches.get(n).getLow()<pivot.getLow()){
-                            c4=false;
-                        }
-                    }
-
-                    if(c1 && c2 && c3 && c4){
-                        for(int i=n-1;allCompoundScratches.get(i).getStartId()>=startSearch;i--){
-                            boolean c6=allCompoundScratches.get(n).getStartId()>allCompoundScratches.get(i).getStartId()+allCompoundScratches.get(i).getLength();
-                            if(scratch.getStatus()>0){
-                                if(c6 && allCompoundScratches.get(i).getLow()<scratch.getLow()
-                                        && allCompoundScratches.get(i).getLow()<allCompoundScratches.get(n).getLow()){
-                                    Pivot pivot1=new Pivot(scratch);
-                                    pivot1.getScratches().add(allCompoundScratches.get(n));
-                                    if(flag<0){
-                                       flag=3;
-                                    }else {
-                                        flag=2;
-                                    }
-
-                                    pivotsof2ndPattern.add(pivot1);
-
-                                    break;
-                                }else if(c6 && allCompoundScratches.get(i).getLow()<scratch.getLow()
-                                        && allCompoundScratches.get(i).getLow()>allCompoundScratches.get(n).getLow()){
-                                    flag=-2;
-                                }
-
-                            }else {
-                                if(c6 && allCompoundScratches.get(i).getHigh()>scratch.getHigh()
-                                        && allCompoundScratches.get(i).getHigh()>allCompoundScratches.get(n).getHigh()){
-                                    Pivot pivot1=new Pivot(scratch);
-                                    pivot1.getScratches().add(allCompoundScratches.get(n));
-                                    if(flag<0){
-                                        flag=3;
-                                        pivot1.setPivotType(pivot1.getPivotType()*100);
-                                    }else {
-                                        flag=2;
-                                    }
-                                    pivotsof2ndPattern.add(pivot1);
-                                    break;
-                                }else if(c6 && allCompoundScratches.get(i).getHigh()>scratch.getHigh()
-                                        && allCompoundScratches.get(i).getHigh()<allCompoundScratches.get(n).getHigh()){
-                                    flag=-2;
-                                }
-                            }
-                        }
-                        if(flag>=2){
-                            if(flag==2){
-                                case2++;
-                            }else {
-                                case3++;
-                            }
-                            break;
-                        }
-                    }else if(c1 && c2 && c3){
-
-                        flag=-1;
-                    }
-                }                                                        // End Line of 2nd Pattern Searching;
-                if(flag<2){
-                    if(flag==1){
-                        //System.out.println("NonMatch Case--111111111 "+scratch.toString());
-                        case1++;
-                    }else if(flag==0) {
-                        //System.out.println("NonMatch Case--000000000 "+scratch.toString());
-                        case0++;
-                    }else if(flag==-1){
-                        case4++;
-                        //System.out.println("NonMatch Case flag=-1 "+scratch.toString());
-                    }else if(flag==-2){
-                        case5++;
-                        //System.out.println("NonMatch Case flag=-2 "+scratch.toString());
-                    }
-                    scratchesofNomatch.add(scratch);
-                }
-            }
-        }
-        System.out.println("Size of scratchesofNomatch is "+scratchesofNomatch.size());
-        System.out.println("case0 = "+case0 +" case1 = "+case1+" case2 = "+case2+" case3 = "+case3+" case4 = "+case4+" case5 = "+case5);
-        //System.out.println("Size of pivotsof2ndPattern is "+pivotsof2ndPattern.size());
-        scratchesofNomatch.sort(Comparator.comparingInt(Scratch::getStartId));
-
-        List<Pivot> pivotList=new ArrayList<>();
-        List<Pivot> pivots=new ArrayList<>();
-        pivotList.addAll(pivotsof2ndPattern);
-            for(int n=0;n<pivotList.size()-1;n++){
-                Pivot maxpivot=new Pivot(pivotList.get(n));
-                for(int i=n+1;i<pivotList.size();i++){
-                    if(pivotList.get(n).getScratches().get(1).equals(pivotList.get(i).getScratches().get(1))){
-                        /*System.out.println("pivot n is "+pivotList.get(n).toString());
-                        System.out.println("pivot i is "+pivotList.get(i).toString());*/
-                        if(pivotList.get(n).getLength()<pivotList.get(i).getLength()){
-                            maxpivot=new Pivot(pivotList.get(i));
-                        }
-                        pivotList.remove(i);
-                        i=i-1;
-                    }
-                }
-                pivots.add(maxpivot);
-                //System.out.println("pivot max is "+maxpivot.toString());
-            }
-        //System.out.println("Size of pivots is "+pivotList.size());
-        pivots.sort(Comparator.comparingInt(Pivot::getStartId));
-            int nofbroken=0;
-            for(Pivot pivot:pivots){
-               if(pivot.getPivotType()>=100 || pivot.getPivotType()<=-100){
-                  // System.out.println("Noticable Pivot --- "+pivot.toString());
-                   nofbroken++;
-               }
-            }
-        System.out.println("nofbroker = "+nofbroken);
-        return pivots;
-    }
-
     @Override
     public List<Pivot> find4thPattern(List<Pivot> pivotsForPatternSearch, List<Scratch> scratches) {
         List<Scratch> allCompoundScratches=new ArrayList<>();
@@ -1479,11 +1296,10 @@ public class PivotHandleImpl implements PivotHandle {
 
         return pivotsof4thPattern;
     }
-
     @Override
-    public List<Pivot> findSubScratch(List<Pivot> pivotsof2ndPattern, List<HighLowPrice> allPrices,List<Scratch> allCompoundScratches) {
+    public List<Pivot> findSubScratch(List<Pivot> pivotsForSearch, List<HighLowPrice> allPrices,List<Scratch> allCompoundScratches) {
         List<Pivot> returnPivotList=new ArrayList<>();
-        for(Pivot pivot:pivotsof2ndPattern){
+        for(Pivot pivot:pivotsForSearch){
             float ratio=(float)pivot.getScratches().get(1).getLength()/pivot.getScratches().get(0).getLength();
             if(ratio>1/controlFactor){
                int startId=pivot.getScratches().get(1).getStartId()+(int)(pivot.getScratches().get(0).getLength()*controlFactor)-1;
