@@ -6,7 +6,9 @@ import com.myproject.mymodel.mapper.ScratchMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import service.PatternStats;
 import service.PivotHandle;
+import service.impl.PatternStatsImpl;
 import service.impl.PivotHandleImpl;
 
 import java.util.*;
@@ -85,6 +87,7 @@ class MymodelApplicationTests {
     @Test
     void findAllPivotsByScratch(){
         PivotHandle pivotHandle=new PivotHandleImpl();
+        PatternStats patternStats=new PatternStatsImpl();
         List<Pivot> allPivotList=pivotHandle.findAllPivotsByScratch(scratchMapper.selectAllScratches());
         List<Scratch> allCompoundScratches=new ArrayList<>();
         for(Pivot pivot:allPivotList){
@@ -98,75 +101,23 @@ class MymodelApplicationTests {
         List<Pivot> keyPivotList=pivotHandle.obtainKeyPivots(allPivotList);
         List<Pivot> pivotsForPatternSearch=pivotHandle.addScratchtoPivot(scratchMapper.selectAllScratches(),keyPivotList);
         pivotsForPatternSearch.sort(Comparator.comparingInt(Pivot::getStartId));
+
         List<Pivot> pivotsof2ndPattern=pivotHandle.find2ndPattern(pivotsForPatternSearch,allCompoundScratches);
         System.out.println("Size of pivotsof2ndPattern "+pivotsof2ndPattern.size());
-        List<Pivot> pivotsforRegression=pivotHandle.findSubScratch(pivotsof2ndPattern,highLowPriceMapper.selectHighLow(),allCompoundScratches);
-        System.out.println("Size of pivotsforRegression "+pivotsforRegression.size());
-        int case25=0;
-        int case50=0;
-        int case70=0;
-        int case100=0;
-        int case140=0;
-        int case200=0;
+        List<Pivot> pivotsof2ndForStats=pivotHandle.findSubScratch(pivotsof2ndPattern,highLowPriceMapper.selectHighLow(),allCompoundScratches);
+        System.out.println("Size of pivotsof2ndForStats "+pivotsof2ndForStats.size());
+        patternStats.statsofGainExtension(pivotsof2ndForStats);
 
-        int trigR70=0;
-        int trigR100=0;
-        int trigR140=0;
-        for (Pivot pivot:pivotsforRegression){
-            int totalLength=0;
-            int maxLength=0;
-
-           for(int n=2;n<pivot.getScratches().size();n++){
-               totalLength=totalLength+pivot.getScratches().get(n).getLength();
-               if(pivot.getScratches().get(n).getLength()>maxLength){maxLength=pivot.getScratches().get(n).getLength();}
-           }
-           float ratio=(float)totalLength/(pivot.getScratches().size()-2)/pivot.getLength();
-           float maxratio=(float)maxLength/pivot.getLength();
-            //System.out.println("Averageratio = "+ratio+" Maxratio ="+maxratio);
-           float triggarRatio=(float)pivot.getScratches().get(1).getLength()/pivot.getScratches().get(0).getLength();
-            if(maxratio<=0.25){
-               //System.out.println("Pivot should be studied is "+pivot.toString());
-                case25++;
-            }else if(maxratio>0.25 && maxratio<=0.5){
-                case50++;
-            }else if(maxratio>0.5 && maxratio<=0.7){
-                case70++;
-            }else if(maxratio>0.7 && maxratio<=1){
-                case100++;
-            }else if(maxratio>1 && maxratio<=1.4){
-                case140++;
-            }else if(maxratio>1.4){
-                case200++;
-            }
-
-            if(triggarRatio>=0.7 && triggarRatio<1){
-                trigR70++;
-            }else if(triggarRatio>=1 && triggarRatio<1.4){
-                trigR100++;
-            }else if(triggarRatio>=1.4){
-                trigR140++;
-            }
-        }
-        System.out.println("maxratio<=0.25: "+case25);
-        System.out.println("maxratio>0.25 && maxratio<=0.5: "+case50);
-        System.out.println("maxratio>0.5 && maxratio<=0.7: "+case70);
-        System.out.println("maxratio>0.7 && maxratio<=1: "+case100);
-        System.out.println("maxratio>1 && maxratio<=1.4: "+case140);
-        System.out.println("maxratio>1.4: "+case200);
-
-        System.out.println("triggarRatio>=0.7 && triggarRatio<1 is: "+trigR70);
-        System.out.println("triggarRatio>=1 && triggarRatio<1.4 is: "+trigR100);
-        System.out.println("triggarRatio>=1.4 is: "+trigR140);
         List<Pivot> pivotsof3rdPattern=pivotHandle.find3rdPattern(pivotsForPatternSearch,allCompoundScratches);
         System.out.println("Size of pivotsof3rdPattern is "+pivotsof3rdPattern.size());
-        for (Pivot pivot:pivotsof3rdPattern){
-            System.out.println(pivot.getScratches().toString());
-        }
-        List<Pivot> pivotsof4thPattern=pivotHandle.find4thPattern(pivotsForPatternSearch,allCompoundScratches);
+        List<Pivot> pivotsof3rdForStats=pivotHandle.findSubScratch(pivotsof3rdPattern,highLowPriceMapper.selectHighLow(),allCompoundScratches);
+        System.out.println("Size of pivotsof3rdForStats "+pivotsof3rdForStats.size());
+        patternStats.statsofGainExtension(pivotsof3rdForStats);
+        /*List<Pivot> pivotsof4thPattern=pivotHandle.find4thPattern(pivotsForPatternSearch,allCompoundScratches);
         System.out.println("Size of pivotsof4thPattern is "+pivotsof4thPattern.size());
         for (Pivot pivot:pivotsof4thPattern){
             System.out.println(pivot.getScratches().toString());
-        }
+        }*/
 
         /* System.out.println("Size of allCompoundScratches 222 is "+allCompoundScratches.size());
         List<Scratch> scratchList=new ArrayList<>();

@@ -1115,10 +1115,6 @@ public class PivotHandleImpl implements PivotHandle {
         int nofoutlier2=0;// Number of found 3rd pattern bigger than twice of expected length range, potential big lose when trading;
         int nofnonematch=0; // Number of scratches that have no 3rd pattern match;
 
-        int r25=0;
-        int r70=0;
-        int r140=0;
-        int rmax=0;
         for(Pivot pivot:pivotsForPatternSearch){
             for(Scratch scratch:pivot.getScratches()){
                 int nofStart=0;
@@ -1163,29 +1159,6 @@ public class PivotHandleImpl implements PivotHandle {
                             if((float)allCompoundScratches.get(n).getLength()/scratch.getLength()>2){
                                 nofoutlier2++;
                             }else {nofoutlier++;}
-
-                        }else {
-                            for(int t=n+1;t<allCompoundScratches.size()-1;t++){
-                                boolean b0=allCompoundScratches.get(t).getStartId()>allCompoundScratches.get(n).getStartId()+allCompoundScratches.get(n).getLength()-1;
-                                if(b0){
-                                    break;
-                                }
-                                boolean b1=allCompoundScratches.get(t).getStatus()*scratch.getStatus()<0;
-                                boolean b2=allCompoundScratches.get(t).getStartId()==allCompoundScratches.get(n).getStartId()+allCompoundScratches.get(n).getLength()-1;
-                                if(b1 && b2){
-                                    pivot1.getScratches().add(allCompoundScratches.get(t));
-                                }
-                            }
-                            float ratio=(float)pivot1.getScratches().get(pivot1.getScratches().size()-1).getLength()/pivot1.getLength();
-                            if(ratio<0.25){
-                                r25++;
-                            }else if(ratio>=0.25 && ratio<0.7){
-                                r70++;
-                            }else if(ratio>=0.7 && ratio<1.4){
-                                r140++;
-                            }else if(ratio>=1.4){
-                                rmax++;
-                            }
                         }
                         break;
                     }
@@ -1193,7 +1166,6 @@ public class PivotHandleImpl implements PivotHandle {
             }
         }
         System.out.println("nofmatch= "+nofmatch+" nofreuse= "+nofreuse+" nofoutlier= "+nofoutlier+" nofoutlier2= "+nofoutlier2+" nofnonematch "+nofnonematch);
-        System.out.println("ratio<0.25: "+r25+" ratio>=0.25 && ratio<0.7: "+r70+" ratio>=0.7 && ratio<1.4: "+r140+" ratio>=1.4 "+rmax);
         return pivotsof3rdPattern;
     }
     @Override
@@ -1309,7 +1281,7 @@ public class PivotHandleImpl implements PivotHandle {
                    n++;
                }
                int cutpoint=n;
-               if(pivot.getPivotType()<0){
+               if(pivot.getScratches().get(1).getStatus()>0){
                    float high=allPrices.get(n).getHigh();
                    while (allPrices.get(n).getId()<endId){
                        if(allPrices.get(n).getHigh()>high){
@@ -1380,7 +1352,7 @@ public class PivotHandleImpl implements PivotHandle {
                 int n=0;
                 while (allCompoundScratches.get(n).getStartId()<startId){n++;}
                 for(int t=n;t<allCompoundScratches.size();t++){
-                    if(pivot.getPivotType()*allCompoundScratches.get(t).getStatus()>0
+                    if(pivot.getScratches().get(1).getStatus()*allCompoundScratches.get(t).getStatus()<0
                             &&allCompoundScratches.get(t).getStartId()==startId){
                         Scratch scratch=new Scratch(allCompoundScratches.get(t));
                         pivot1.getScratches().add(scratch);
