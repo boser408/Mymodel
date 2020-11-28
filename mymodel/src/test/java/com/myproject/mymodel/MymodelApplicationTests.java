@@ -104,13 +104,13 @@ class MymodelApplicationTests {
 
         List<Pivot> pivotsof2ndPattern=pivotHandle.find2ndPattern(pivotsForPatternSearch,allCompoundScratches);
         System.out.println("Size of pivotsof2ndPattern "+pivotsof2ndPattern.size());
-        List<Pivot> pivotsof2ndForStats=pivotHandle.findSubScratch(pivotsof2ndPattern,highLowPriceMapper.selectHighLow(),allCompoundScratches);
+        List<Pivot> pivotsof2ndForStats=pivotHandle.findEarningScratch(pivotsof2ndPattern,highLowPriceMapper.selectHighLow(),allCompoundScratches);
         System.out.println("Size of pivotsof2ndForStats "+pivotsof2ndForStats.size());
         patternStats.statsofGainExtension(pivotsof2ndForStats);
 
         List<Pivot> pivotsof3rdPattern=pivotHandle.find3rdPattern(pivotsForPatternSearch,allCompoundScratches);
         System.out.println("Size of pivotsof3rdPattern is "+pivotsof3rdPattern.size());
-        List<Pivot> pivotsof3rdForStats=pivotHandle.findSubScratch(pivotsof3rdPattern,highLowPriceMapper.selectHighLow(),allCompoundScratches);
+        List<Pivot> pivotsof3rdForStats=pivotHandle.findEarningScratch(pivotsof3rdPattern,highLowPriceMapper.selectHighLow(),allCompoundScratches);
         System.out.println("Size of pivotsof3rdForStats "+pivotsof3rdForStats.size());
         patternStats.statsofGainExtension(pivotsof3rdForStats);
         /*List<Pivot> pivotsof4thPattern=pivotHandle.find4thPattern(pivotsForPatternSearch,allCompoundScratches);

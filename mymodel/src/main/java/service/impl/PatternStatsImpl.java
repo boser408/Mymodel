@@ -27,12 +27,10 @@ public class PatternStatsImpl implements PatternStats {
                 totalLength=totalLength+pivot.getScratches().get(n).getLength();
                 if(pivot.getScratches().get(n).getLength()>maxLength){maxLength=pivot.getScratches().get(n).getLength();}
             }
-            float ratio=(float)totalLength/(pivot.getScratches().size()-2)/pivot.getLength();
+
             float maxratio=(float)maxLength/pivot.getLength();
-            //System.out.println("Averageratio = "+ratio+" Maxratio ="+maxratio);
             float triggarRatio=(float)pivot.getScratches().get(1).getLength()/pivot.getScratches().get(0).getLength();
             if(maxratio<=0.25){
-                //System.out.println("Pivot should be studied is "+pivot.toString());
                 case25++;
             }else if(maxratio>0.25 && maxratio<=0.5){
                 case50++;

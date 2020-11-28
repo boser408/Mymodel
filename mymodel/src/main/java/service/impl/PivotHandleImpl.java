@@ -155,6 +155,85 @@ public class PivotHandleImpl implements PivotHandle {
         return pivotsForPatternSearch;
     }
     @Override
+    public Scratch findSubScratch(int startId, int endId, List<HighLowPrice> highLowPrices, int endPatternPivotDirection) {
+        Scratch returnScratch=new Scratch(highLowPrices.get(startId));
+            for(int n=startId;n<=endId;n++){
+                Scratch subScratch=new Scratch(highLowPrices.get(n));
+                if(endPatternPivotDirection>0){     //Looking for a downtrend subscratch;
+                    if(highLowPrices.get(n+1).getHigh()>highLowPrices.get(n).getHigh()){continue;}
+                }else {                            //Looking for an uptrend subscratch;
+                    if(highLowPrices.get(n+1).getLow()<highLowPrices.get(n).getLow()){continue;}
+                }
+                for(int t=2;t<pivotLength;t++){
+                    List<HighLowPrice> partialList=highLowPrices.subList(n,n+t);
+                    List<HighLowPrice> partialList2=highLowPrices.subList(n+1,n+t);
+                    float valueofHigh=(float)partialList.stream().mapToDouble(HighLowPrice::getHigh).max().getAsDouble();
+                    float valueofLow=(float)partialList.stream().mapToDouble(HighLowPrice::getLow).min().getAsDouble();
+                    float subHigh=(float)partialList2.stream().mapToDouble(HighLowPrice::getHigh).max().getAsDouble();
+                    float subLow=(float)partialList2.stream().mapToDouble(HighLowPrice::getLow).min().getAsDouble();
+                    if(endPatternPivotDirection>0){     //Looking for a downtrend subscratch;
+                        boolean c1=valueofHigh==highLowPrices.get(n).getHigh();
+                        boolean c2=subLow==highLowPrices.get(n+t-1).getLow();
+                       if(highLowPrices.get(n).getClose()>highLowPrices.get(n).getOpen()){ //The starting bar is an uptrend bar;
+                           if(c1&&c2){
+                               subScratch.setLength(t);
+                               subScratch.setStatus(-1);
+                               subScratch.setLow(subLow);
+                           }
+                       }else {                          //The starting bar is a downtrend bar;
+                           if(valueofLow==highLowPrices.get(n).getLow()){
+                               if(subHigh==highLowPrices.get(n+1).getHigh() && subLow==highLowPrices.get(n+t-1).getLow()){
+                                   subScratch.setLength(t-1);
+                                   subScratch.setStatus(-1);
+                                   subScratch.setLow(subLow);
+                               }
+                           }else {
+                               boolean c3=valueofLow==highLowPrices.get(n+t-1).getLow();
+                               if(c1&&c3){
+                                   subScratch.setLength(t);
+                                   subScratch.setStatus(-1);
+                                   subScratch.setLow(valueofLow);
+                               }
+                           }
+                       }
+                    }else {                            //Looking for an uptrend subscratch;
+                       boolean c1=valueofLow==highLowPrices.get(n).getLow();
+                       boolean c2=subHigh==highLowPrices.get(n+t-1).getHigh();
+                       if(highLowPrices.get(n+1).getClose()>highLowPrices.get(n).getOpen()){ //The starting bar is an uptrend bar;
+                           if(valueofHigh==highLowPrices.get(n).getHigh()){
+                               if(subLow==highLowPrices.get(n+1).getLow() && subHigh==highLowPrices.get(n+t-1).getHigh()){
+                                   subScratch.setLength(t-1);
+                                   subScratch.setStatus(1);
+                                   subScratch.setHigh(subHigh);
+                               }
+                           }else {
+                             boolean c3=valueofHigh==highLowPrices.get(n+t-1).getHigh();
+                             if(c1 && c3){
+                                 subScratch.setLength(t);
+                                 subScratch.setStatus(1);
+                                 subScratch.setHigh(subHigh);
+                             }
+                           }
+                       }else {                                                      //The starting bar is a downtrend bar;
+                           if(c1&&c2){
+                               subScratch.setLength(t);
+                               subScratch.setStatus(1);
+                               subScratch.setHigh(subHigh);
+                           }
+                       }
+                    }
+                }
+                boolean b1=subScratch.getLength()>returnScratch.getLength();
+                boolean b2=subScratch.getHigh()-subScratch.getLow()>returnScratch.getHigh()-returnScratch.getLow();
+                if(b1){
+                    returnScratch=new Scratch(subScratch);
+                }else if(subScratch.getLength()==returnScratch.getLength() && b2){
+                    returnScratch=new Scratch(subScratch);
+                }
+            }
+        return returnScratch;
+    }
+    @Override
     public List<Scratch> findScratches(List<HighLowPrice> highLowPrices, int startindex, int length) {
 
         List<Scratch> scratches = new ArrayList<>();
@@ -1269,19 +1348,16 @@ public class PivotHandleImpl implements PivotHandle {
         return pivotsof4thPattern;
     }
     @Override
-    public List<Pivot> findSubScratch(List<Pivot> pivotsForSearch, List<HighLowPrice> allPrices,List<Scratch> allCompoundScratches) {
+    public List<Pivot> findEarningScratch(List<Pivot> pivotsForSearch, List<HighLowPrice> allPrices,List<Scratch> allCompoundScratches) {
         List<Pivot> returnPivotList=new ArrayList<>();
         for(Pivot pivot:pivotsForSearch){
             float ratio=(float)pivot.getScratches().get(1).getLength()/pivot.getScratches().get(0).getLength();
-            if(ratio>1/controlFactor){
+            if(ratio>1/controlFactor){                  // The pattern-ending pivot is an outlier;
                int startId=pivot.getScratches().get(1).getStartId()+(int)(pivot.getScratches().get(0).getLength()*controlFactor)-1;
                int endId=pivot.getScratches().get(1).getStartId()+(int)(pivot.getScratches().get(0).getLength()/controlFactor)-1;
-               int n=0;
-               while (allPrices.get(n).getId()<startId){
-                   n++;
-               }
+               int n=startId-1;
                int cutpoint=n;
-               if(pivot.getScratches().get(1).getStatus()>0){
+               if(pivot.getScratches().get(1).getStatus()>0){   // If the pattern-ending pivot is an uptrend pivot;
                    float high=allPrices.get(n).getHigh();
                    while (allPrices.get(n).getId()<endId){
                        if(allPrices.get(n).getHigh()>high){
@@ -1313,7 +1389,7 @@ public class PivotHandleImpl implements PivotHandle {
                    Pivot pivot1=new Pivot(pivot);
                    pivot1.getScratches().add(scratch);
                    returnPivotList.add(pivot1);
-               }else {
+               }else {                                              // If the pattern-ending pivots is a downtrend pivot;
                    float low=allPrices.get(n).getLow();
                    while (allPrices.get(n).getId()<endId){
                        if(allPrices.get(n).getLow()<low){
@@ -1346,7 +1422,7 @@ public class PivotHandleImpl implements PivotHandle {
                    pivot1.getScratches().add(scratch);
                    returnPivotList.add(pivot1);
                }
-            }else {
+            }else {                                    // The pattern-ending pivot is normal;
                 Pivot pivot1=new Pivot(pivot);
                 int startId=pivot.getScratches().get(1).getStartId()+pivot.getScratches().get(1).getLength()-1;
                 int n=0;
