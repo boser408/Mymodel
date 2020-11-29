@@ -102,11 +102,11 @@ class MymodelApplicationTests {
         List<Pivot> pivotsForPatternSearch=pivotHandle.addScratchtoPivot(scratchMapper.selectAllScratches(),keyPivotList);
         pivotsForPatternSearch.sort(Comparator.comparingInt(Pivot::getStartId));
 
-        List<Pivot> pivotsof2ndPattern=pivotHandle.find2ndPattern(pivotsForPatternSearch,allCompoundScratches);
+        /*List<Pivot> pivotsof2ndPattern=pivotHandle.find2ndPattern(pivotsForPatternSearch,allCompoundScratches);
         System.out.println("Size of pivotsof2ndPattern "+pivotsof2ndPattern.size());
         List<Pivot> pivotsof2ndForStats=pivotHandle.findEarningScratch(pivotsof2ndPattern,highLowPriceMapper.selectHighLow(),allCompoundScratches);
         System.out.println("Size of pivotsof2ndForStats "+pivotsof2ndForStats.size());
-        patternStats.statsofGainExtension(pivotsof2ndForStats);
+        patternStats.statsofGainExtension(pivotsof2ndForStats);*/
 
         List<Pivot> pivotsof3rdPattern=pivotHandle.find3rdPattern(pivotsForPatternSearch,allCompoundScratches);
         System.out.println("Size of pivotsof3rdPattern is "+pivotsof3rdPattern.size());

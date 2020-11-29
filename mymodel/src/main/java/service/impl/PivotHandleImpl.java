@@ -1355,72 +1355,36 @@ public class PivotHandleImpl implements PivotHandle {
             if(ratio>1/controlFactor){                  // The pattern-ending pivot is an outlier;
                int startId=pivot.getScratches().get(1).getStartId()+(int)(pivot.getScratches().get(0).getLength()*controlFactor)-1;
                int endId=pivot.getScratches().get(1).getStartId()+(int)(pivot.getScratches().get(0).getLength()/controlFactor)-1;
-               int n=startId-1;
-               int cutpoint=n;
                if(pivot.getScratches().get(1).getStatus()>0){   // If the pattern-ending pivot is an uptrend pivot;
-                   float high=allPrices.get(n).getHigh();
-                   while (allPrices.get(n).getId()<endId){
-                       if(allPrices.get(n).getHigh()>high){
-                           high=allPrices.get(n).getHigh();
+                   int cutpoint=startId;
+                   for(int n=startId;n<=endId;n++){
+                       List<HighLowPrice> partialList=allPrices.subList(pivot.getScratches().get(1).getStartId()-1,n);
+                       float valueofHigh=(float)partialList.stream().mapToDouble(HighLowPrice::getHigh).max().getAsDouble();
+                       if(valueofHigh==allPrices.get(n).getHigh()){
                            cutpoint=n;
                        }
-                       n++;
                    }
-                   Scratch scratch=new Scratch(allPrices.get(cutpoint));
-                   float low=allPrices.get(cutpoint).getLow();
-                   int t=cutpoint;
-                   int endpoint=t;
-                   if(allPrices.get(cutpoint+1).getId()<pivot.getScratches().get(1).getStartId()+pivot.getScratches().get(1).getLength()-1
-                           &&allPrices.get(cutpoint+1).getHigh()<=allPrices.get(cutpoint).getHigh()){
-                       low=allPrices.get(cutpoint+1).getLow();
-                       t=cutpoint+1;
-                       endpoint=t+1;
+                   if(cutpoint>startId){
+                       Scratch scratch=findSubScratch(startId,endId,allPrices,1);
+                       Pivot pivot1=new Pivot(pivot);
+                       pivot1.getScratches().add(scratch);
+                       returnPivotList.add(pivot1);
                    }
-                   while (allPrices.get(t).getId()<pivot.getScratches().get(1).getStartId()+pivot.getScratches().get(1).getLength()-1){
-                       if(allPrices.get(t).getLow()<=low){
-                           low=allPrices.get(t).getLow();
-                           endpoint=t;
-                       }
-                       t++;
-                   }
-                   scratch.setStatus(-1);
-                   scratch.setLength(allPrices.get(endpoint).getId()-scratch.getStartId()+1);
-                   scratch.setLow(low);
-                   Pivot pivot1=new Pivot(pivot);
-                   pivot1.getScratches().add(scratch);
-                   returnPivotList.add(pivot1);
                }else {                                              // If the pattern-ending pivots is a downtrend pivot;
-                   float low=allPrices.get(n).getLow();
-                   while (allPrices.get(n).getId()<endId){
-                       if(allPrices.get(n).getLow()<low){
-                           low=allPrices.get(n).getLow();
+                   int cutpoint=startId;
+                   for(int n=startId;n<=endId;n++){
+                       List<HighLowPrice> partialList=allPrices.subList(pivot.getScratches().get(1).getStartId()-1,n);
+                       float valueofLow=(float)partialList.stream().mapToDouble(HighLowPrice::getLow).min().getAsDouble();
+                       if(valueofLow==allPrices.get(n).getLow()){
                            cutpoint=n;
                        }
-                       n++;
                    }
-                   Scratch scratch=new Scratch(allPrices.get(cutpoint));
-                   float high=allPrices.get(cutpoint).getHigh();
-                   int t=cutpoint;
-                   int endpoint=t;
-                   if(allPrices.get(cutpoint+1).getId()<pivot.getScratches().get(1).getStartId()+pivot.getScratches().get(1).getLength()-1
-                           &&allPrices.get(cutpoint+1).getLow()>=allPrices.get(cutpoint).getLow() ){
-                        high=allPrices.get(cutpoint+1).getHigh();
-                        t=cutpoint+1;
-                        endpoint=t+1;
+                   if(cutpoint>startId){
+                       Scratch scratch=findSubScratch(startId,endId,allPrices,-1);
+                       Pivot pivot1=new Pivot(pivot);
+                       pivot1.getScratches().add(scratch);
+                       returnPivotList.add(pivot1);
                    }
-                   while (allPrices.get(t).getId()<pivot.getScratches().get(1).getStartId()+pivot.getScratches().get(1).getLength()-1){
-                       if(allPrices.get(t).getHigh()>=high){
-                           high=allPrices.get(t).getHigh();
-                           endpoint=t;
-                       }
-                       t++;
-                   }
-                   scratch.setStatus(1);
-                   scratch.setLength(allPrices.get(endpoint).getId()-scratch.getStartId()+1);
-                   scratch.setHigh(high);
-                   Pivot pivot1=new Pivot(pivot);
-                   pivot1.getScratches().add(scratch);
-                   returnPivotList.add(pivot1);
                }
             }else {                                    // The pattern-ending pivot is normal;
                 Pivot pivot1=new Pivot(pivot);

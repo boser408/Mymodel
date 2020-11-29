@@ -20,6 +20,10 @@ public class PatternStatsImpl implements PatternStats {
         int trigR100=0;
         int trigR140=0;
         for (Pivot pivot:pivotListForStats){
+            if(pivot.getScratches().size()<=2){
+                System.out.println("Pivot of nomatch: "+pivot.toString());
+                continue;
+            }
             int totalLength=0;
             int maxLength=0;
 
@@ -31,6 +35,7 @@ public class PatternStatsImpl implements PatternStats {
             float maxratio=(float)maxLength/pivot.getLength();
             float triggarRatio=(float)pivot.getScratches().get(1).getLength()/pivot.getScratches().get(0).getLength();
             if(maxratio<=0.25){
+                System.out.println("The noticeable pivot is "+pivot.toString());
                 case25++;
             }else if(maxratio>0.25 && maxratio<=0.5){
                 case50++;
