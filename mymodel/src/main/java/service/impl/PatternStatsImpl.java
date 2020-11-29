@@ -46,6 +46,7 @@ public class PatternStatsImpl implements PatternStats {
             }else if(maxratio>1 && maxratio<=1.4){
                 case140++;
             }else if(maxratio>1.4){
+
                 case200++;
             }
 
@@ -54,6 +55,7 @@ public class PatternStatsImpl implements PatternStats {
             }else if(triggarRatio>=1 && triggarRatio<1.4){
                 trigR100++;
             }else if(triggarRatio>=1.4){
+                System.out.println("The noticeable pivot is "+pivot.toString());
                 trigR140++;
             }
         }

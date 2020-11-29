@@ -1205,7 +1205,7 @@ public class PivotHandleImpl implements PivotHandle {
                 }
                 for(int n=nofStart;n<allCompoundScratches.size();n++){ //Start line of pattern search;
                     boolean c1=allCompoundScratches.get(n).getStatus()*scratch.getStatus()>0;
-                    boolean c2=(float)allCompoundScratches.get(n).getLength()/scratch.getLength()>=controlFactor;
+                    boolean c2=(float)allCompoundScratches.get(n).getLength()/scratch.getLength()>controlFactor;
                     boolean c3=allCompoundScratches.get(n).getStartId()>scratch.getStartId();
                     boolean c4=false;
                     if(scratch.getStatus()>0){
@@ -1218,7 +1218,7 @@ public class PivotHandleImpl implements PivotHandle {
                         }
                     }
                     boolean c5=allCompoundScratches.get(n).getStatus()>=100 || allCompoundScratches.get(n).getStatus()<=-100;
-                    boolean c6=(float)allCompoundScratches.get(n).getLength()/scratch.getLength()>1/controlFactor;
+                    boolean c6=(float)allCompoundScratches.get(n).getLength()/scratch.getLength()>=1/controlFactor;
                     if(c1 && c3 && !c4 && c6){
                         nofnonematch++;
                         break;
@@ -1353,37 +1353,60 @@ public class PivotHandleImpl implements PivotHandle {
         for(Pivot pivot:pivotsForSearch){
             float ratio=(float)pivot.getScratches().get(1).getLength()/pivot.getScratches().get(0).getLength();
             if(ratio>1/controlFactor){                  // The pattern-ending pivot is an outlier;
-               int startId=pivot.getScratches().get(1).getStartId()+(int)(pivot.getScratches().get(0).getLength()*controlFactor)-1;
-               int endId=pivot.getScratches().get(1).getStartId()+(int)(pivot.getScratches().get(0).getLength()/controlFactor)-1;
+                int flag=0;
+                int startId=pivot.getScratches().get(1).getStartId()+(int)(pivot.getScratches().get(0).getLength()*controlFactor);
+                int endId=pivot.getScratches().get(1).getStartId()+(int)(pivot.getScratches().get(0).getLength()/controlFactor)-1;
+                if(pivot.getScratches().get(1).getStartId()==2261){
+                    System.out.println("startId= "+startId+" endId= "+endId);
+                }
                if(pivot.getScratches().get(1).getStatus()>0){   // If the pattern-ending pivot is an uptrend pivot;
                    int cutpoint=startId;
                    for(int n=startId;n<=endId;n++){
                        List<HighLowPrice> partialList=allPrices.subList(pivot.getScratches().get(1).getStartId()-1,n);
                        float valueofHigh=(float)partialList.stream().mapToDouble(HighLowPrice::getHigh).max().getAsDouble();
-                       if(valueofHigh==allPrices.get(n).getHigh()){
+                       if(valueofHigh==allPrices.get(n-1).getHigh()){
+                           flag=1;
                            cutpoint=n;
+                           break;
                        }
                    }
-                   if(cutpoint>startId){
-                       Scratch scratch=findSubScratch(startId,endId,allPrices,1);
+                   if(flag>0){
+                       System.out.println("Pivot sent to find subScratch: "+pivot.toString());
+                       Scratch scratch=findSubScratch(cutpoint-1,endId-1,allPrices,1);
                        Pivot pivot1=new Pivot(pivot);
                        pivot1.getScratches().add(scratch);
                        returnPivotList.add(pivot1);
+                   }else{
+                       System.out.println("Pivot of nomatch: "+pivot.toString());
                    }
                }else {                                              // If the pattern-ending pivots is a downtrend pivot;
                    int cutpoint=startId;
                    for(int n=startId;n<=endId;n++){
                        List<HighLowPrice> partialList=allPrices.subList(pivot.getScratches().get(1).getStartId()-1,n);
                        float valueofLow=(float)partialList.stream().mapToDouble(HighLowPrice::getLow).min().getAsDouble();
-                       if(valueofLow==allPrices.get(n).getLow()){
+                       if(pivot.getScratches().get(1).getStartId()==2261){
+                           System.out.println("n= "+n);
+                           System.out.println("valueofLow= "+valueofLow);
+                       }
+                       if(valueofLow==allPrices.get(n-1).getLow()){
+                           flag=1;
                            cutpoint=n;
+                           break;
                        }
                    }
-                   if(cutpoint>startId){
-                       Scratch scratch=findSubScratch(startId,endId,allPrices,-1);
+                   if(pivot.getScratches().get(1).getStartId()==2261){
+                       System.out.println("flag= "+flag);
+                       System.out.println("cutpoint="+cutpoint);
+                       System.out.println("startId= "+startId);
+                   }
+                   if(flag>0){
+                       System.out.println("Pivot sent to find subScratch: "+pivot.toString());
+                       Scratch scratch=findSubScratch(cutpoint-1,endId-1,allPrices,-1);
                        Pivot pivot1=new Pivot(pivot);
                        pivot1.getScratches().add(scratch);
                        returnPivotList.add(pivot1);
+                   }else{
+                       System.out.println("Pivot of nomatch: "+pivot.toString());
                    }
                }
             }else {                                    // The pattern-ending pivot is normal;
