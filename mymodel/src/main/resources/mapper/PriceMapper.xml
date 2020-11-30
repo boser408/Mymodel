@@ -4,7 +4,7 @@
 <mapper namespace="com.myproject.mymodel.mapper.HighLowPriceMapper">
 
     <select id="selectHighLow" resultType="HighLowPrice">
-        select Date, Id, Open, High, Low, Close from spxw
+        select Date, Id, Open, High, Low, Close from spxd
     </select>
 
    <insert id="save" parameterType="HighLowPrice">

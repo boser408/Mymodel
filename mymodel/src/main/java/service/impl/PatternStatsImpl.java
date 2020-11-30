@@ -36,6 +36,7 @@ public class PatternStatsImpl implements PatternStats {
             float triggarRatio=(float)pivot.getScratches().get(1).getLength()/pivot.getScratches().get(0).getLength();
             if(maxratio<=0.25){
                 System.out.println("The noticeable pivot is "+pivot.toString());
+                System.out.println("The maxratio= "+maxratio);
                 case25++;
             }else if(maxratio>0.25 && maxratio<=0.5){
                 case50++;
@@ -55,7 +56,7 @@ public class PatternStatsImpl implements PatternStats {
             }else if(triggarRatio>=1 && triggarRatio<1.4){
                 trigR100++;
             }else if(triggarRatio>=1.4){
-                System.out.println("The noticeable pivot is "+pivot.toString());
+                //System.out.println("The noticeable pivot is "+pivot.toString());
                 trigR140++;
             }
         }
