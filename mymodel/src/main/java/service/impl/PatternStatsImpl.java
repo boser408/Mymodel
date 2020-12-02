@@ -9,6 +9,7 @@ public class PatternStatsImpl implements PatternStats {
 
     @Override
     public void statsofGainExtension(List<Pivot> pivotListForStats) {
+        int totalBreakOut=0;
         int case25=0;
         int case50=0;
         int case70=0;
@@ -24,19 +25,24 @@ public class PatternStatsImpl implements PatternStats {
                 System.out.println("Pivot of nomatch: "+pivot.toString());
                 continue;
             }
-            int totalLength=0;
+            if(pivot.getScratches().get(1).getStatus()>0){
+                if(pivot.getScratches().get(pivot.getScratches().size()-1).getLow()<pivot.getScratches().get(1).getLow()){
+                    totalBreakOut++;
+                }
+            }else {
+                if(pivot.getScratches().get(pivot.getScratches().size()-1).getHigh()>pivot.getScratches().get(1).getHigh()){
+                    totalBreakOut++;
+                }
+            }
             int maxLength=0;
-
             for(int n=2;n<pivot.getScratches().size();n++){
-                totalLength=totalLength+pivot.getScratches().get(n).getLength();
                 if(pivot.getScratches().get(n).getLength()>maxLength){maxLength=pivot.getScratches().get(n).getLength();}
             }
-
             float maxratio=(float)maxLength/pivot.getLength();
             float triggarRatio=(float)pivot.getScratches().get(1).getLength()/pivot.getScratches().get(0).getLength();
             if(maxratio<=0.25){
-                System.out.println("The noticeable pivot is "+pivot.toString());
-                System.out.println("The maxratio= "+maxratio);
+                /*System.out.println("The noticeable pivot is "+pivot.toString());
+                System.out.println("The maxratio= "+maxratio);*/
                 case25++;
             }else if(maxratio>0.25 && maxratio<=0.5){
                 case50++;
@@ -60,6 +66,7 @@ public class PatternStatsImpl implements PatternStats {
                 trigR140++;
             }
         }
+        System.out.println("Total Breakout= "+ totalBreakOut);
         System.out.println("maxratio<=0.25: "+case25);
         System.out.println("maxratio>0.25 && maxratio<=0.5: "+case50);
         System.out.println("maxratio>0.5 && maxratio<=0.7: "+case70);
