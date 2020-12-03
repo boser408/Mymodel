@@ -917,7 +917,9 @@ public class PivotHandleImpl implements PivotHandle {
         return keyPivotList;
     }
     @Override
-    public List<Pivot> find2ndPattern(List<Pivot> pivotsForPatternSearch, List<Scratch> allCompoundScratches) {
+    public List<Pivot> find2ndPattern(List<Pivot> pivotsForPatternSearch, List<Scratch> scratches) {
+        List<Scratch> allCompoundScratches=new ArrayList<>();
+        allCompoundScratches.addAll(scratches);
         List<Pivot> pivotsof2ndPattern=new ArrayList<>();
         List<Scratch> scratchesofNomatch=new ArrayList<>();
         int case0=0;
@@ -979,7 +981,7 @@ public class PivotHandleImpl implements PivotHandle {
                     boolean c1=allCompoundScratches.get(n).getStartId()>startSearch;
                     boolean c2=allCompoundScratches.get(n).getStatus()*scratch.getStatus()<0;
                     float a=(float)allCompoundScratches.get(n).getLength()/scratch.getLength();
-                    boolean c3=a>=controlFactor;
+                    boolean c3=a>controlFactor;
                     boolean c4=true;
                     if(pivot.getPivotType()>0){
                         if(allCompoundScratches.get(n).getHigh()>pivot.getHigh()){
@@ -990,7 +992,8 @@ public class PivotHandleImpl implements PivotHandle {
                             c4=false;
                         }
                     }
-                    if(c1 && c2 && c3 && c4){
+                    boolean c5=allCompoundScratches.get(n).getStatus()>=100 || allCompoundScratches.get(n).getStatus()<=-100;
+                    if(c1 && c2 && c3 && c4 &&!c5){
                         for(int i=n-1;allCompoundScratches.get(i).getStartId()>=startSearch;i--){
                             boolean c6=allCompoundScratches.get(n).getStartId()>allCompoundScratches.get(i).getStartId()+allCompoundScratches.get(i).getLength();
                             if(scratch.getStatus()>0){
@@ -998,12 +1001,31 @@ public class PivotHandleImpl implements PivotHandle {
                                         && allCompoundScratches.get(i).getLow()<allCompoundScratches.get(n).getLow()){
                                     Pivot pivot1=new Pivot(scratch);
                                     pivot1.getScratches().add(allCompoundScratches.get(n));
+                                    pivotsof2ndPattern.add(pivot1);
+                                    allCompoundScratches.get(n).setStatus(allCompoundScratches.get(n).getStatus()*100);
                                     if(flag<0){
                                         flag=3;
                                     }else {
                                         flag=2;
                                     }
-                                    pivotsof2ndPattern.add(pivot1);
+                                    for(int t=n+1;t<allCompoundScratches.size();t++){
+                                        boolean a1=(float)allCompoundScratches.get(t).getLength()/scratch.getLength()<1/controlFactor;
+                                        boolean a2=allCompoundScratches.get(i).getLow()<allCompoundScratches.get(t).getLow();
+                                        boolean a3=allCompoundScratches.get(n).getStartId()==allCompoundScratches.get(t).getStartId();
+                                        if(!a1||!a2||!a3){
+                                            break;
+                                        }else {
+                                            Pivot pivot2=new Pivot(scratch);
+                                            pivot2.getScratches().add(allCompoundScratches.get(t));
+                                            pivotsof2ndPattern.add(pivot2);
+                                            allCompoundScratches.get(t).setStatus(allCompoundScratches.get(t).getStatus()*100);
+                                            if(flag<0){
+                                                flag=3;
+                                            }else {
+                                                flag=2;
+                                            }
+                                        }
+                                    }
                                     break;
                                 }else if(c6 && allCompoundScratches.get(i).getLow()<scratch.getLow()
                                         && allCompoundScratches.get(i).getLow()>allCompoundScratches.get(n).getLow()){
@@ -1014,13 +1036,32 @@ public class PivotHandleImpl implements PivotHandle {
                                         && allCompoundScratches.get(i).getHigh()>allCompoundScratches.get(n).getHigh()){
                                     Pivot pivot1=new Pivot(scratch);
                                     pivot1.getScratches().add(allCompoundScratches.get(n));
+                                    pivotsof2ndPattern.add(pivot1);
+                                    allCompoundScratches.get(n).setStatus(allCompoundScratches.get(n).getStatus()*100);
                                     if(flag<0){
                                         flag=3;
-                                        pivot1.setPivotType(pivot1.getPivotType()*100);
+                                       // pivot1.setPivotType(pivot1.getPivotType()*100);
                                     }else {
                                         flag=2;
                                     }
-                                    pivotsof2ndPattern.add(pivot1);
+                                    for(int t=n+1;t<allCompoundScratches.size();t++){
+                                        boolean a1=(float)allCompoundScratches.get(t).getLength()/scratch.getLength()<1/controlFactor;
+                                        boolean a2=allCompoundScratches.get(i).getHigh()>allCompoundScratches.get(t).getHigh();
+                                        boolean a3=allCompoundScratches.get(n).getStartId()==allCompoundScratches.get(t).getStartId();
+                                        if(!a1||!a2||!a3){
+                                            break;
+                                        }else {
+                                            Pivot pivot2=new Pivot(scratch);
+                                            pivot2.getScratches().add(allCompoundScratches.get(t));
+                                            pivotsof2ndPattern.add(pivot2);
+                                            allCompoundScratches.get(t).setStatus(allCompoundScratches.get(t).getStatus()*100);
+                                            if(flag<0){
+                                                flag=3;
+                                            }else {
+                                                flag=2;
+                                            }
+                                        }
+                                    }
                                     break;
                                 }else if(c6 && allCompoundScratches.get(i).getHigh()>scratch.getHigh()
                                         && allCompoundScratches.get(i).getHigh()<allCompoundScratches.get(n).getHigh()){
