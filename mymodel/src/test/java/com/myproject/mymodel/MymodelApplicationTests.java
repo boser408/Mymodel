@@ -1,5 +1,6 @@
 package com.myproject.mymodel;
 
+import com.myproject.mymodel.controller.GlobalController;
 import com.myproject.mymodel.domain.*;
 import com.myproject.mymodel.mapper.HighLowPriceMapper;
 import com.myproject.mymodel.mapper.ScratchMapper;
@@ -15,11 +16,11 @@ import java.util.*;
 
 @SpringBootTest
 class MymodelApplicationTests {
-    @Autowired
+
     private HighLowPriceMapper highLowPriceMapper;
-    @Autowired
+
     private ScratchMapper scratchMapper;
-    @Test
+
     void trySummaryStats(){
         List<HighLowPrice> highLowPrices = highLowPriceMapper.selectHighLow();
         /* DoubleSummaryStatistics priceMax= highLowPrices.stream().collect(Collectors.summarizingDouble(HighLowPrice::getHigh));
@@ -45,8 +46,8 @@ class MymodelApplicationTests {
         highLowPriceMapper.batchinsert(highLowPrices);
     }
 
-    @Test
-    void findScratches(){ // Create the table of "findscratch"
+
+    void findbasicScratches(){ // Create the table of "findscratch"
         List<HighLowPrice> highLowPrices = highLowPriceMapper.selectHighLow();
         PivotHandle pivotHandle=new PivotHandleImpl();
         List<Scratch> scratchList = pivotHandle.findScratches(highLowPrices, 1, highLowPrices.size());
@@ -84,8 +85,8 @@ class MymodelApplicationTests {
         scratchMapper.deleteAll("findscratch");
         scratchMapper.batchinsert(scratchList);
     }
-    @Test
-    void findAllPivotsByScratch(){
+
+    void findAllPattern(){
         PivotHandle pivotHandle=new PivotHandleImpl();
         PatternStats patternStats=new PatternStatsImpl();
         List<Pivot> allPivotList=pivotHandle.findAllPivotsByScratch(scratchMapper.selectAllScratches());
@@ -98,19 +99,20 @@ class MymodelApplicationTests {
         allCompoundScratches.sort(Comparator.comparingInt(Scratch::getStartId).thenComparingInt(Scratch::getLength)); //Sorted by StartId and Length;
         scratchMapper.deleteAll("tmpscratch");
         scratchMapper.batchtmpinsert(allCompoundScratches);
+
         List<Pivot> keyPivotList=pivotHandle.obtainKeyPivots(allPivotList);
         List<Pivot> pivotsForPatternSearch=pivotHandle.addScratchtoPivot(scratchMapper.selectAllScratches(),keyPivotList);
         pivotsForPatternSearch.sort(Comparator.comparingInt(Pivot::getStartId));
 
-        List<Pivot> pivotsof2ndPattern=pivotHandle.find2ndPattern(pivotsForPatternSearch,allCompoundScratches);
+        List<Pivot> pivotsof2ndPattern=pivotHandle.find2ndPattern(pivotsForPatternSearch,scratchMapper.selectfromTemp());
         System.out.println("Size of pivotsof2ndPattern "+pivotsof2ndPattern.size());
-        List<Pivot> pivotsof2ndForStats=pivotHandle.findEarningScratch(pivotsof2ndPattern,highLowPriceMapper.selectHighLow(),allCompoundScratches);
+        List<Pivot> pivotsof2ndForStats=pivotHandle.findEarningScratch(pivotsof2ndPattern,highLowPriceMapper.selectHighLow(),scratchMapper.selectfromTemp());
         System.out.println("Size of pivotsof2ndForStats "+pivotsof2ndForStats.size());
         patternStats.statsofGainExtension(pivotsof2ndForStats);
 
-        List<Pivot> pivotsof3rdPattern=pivotHandle.find3rdPattern(pivotsForPatternSearch,allCompoundScratches);
+        List<Pivot> pivotsof3rdPattern=pivotHandle.find3rdPattern(pivotsForPatternSearch,scratchMapper.selectfromTemp());
         System.out.println("Size of pivotsof3rdPattern is "+pivotsof3rdPattern.size());
-        List<Pivot> pivotsof3rdForStats=pivotHandle.findEarningScratch(pivotsof3rdPattern,highLowPriceMapper.selectHighLow(),allCompoundScratches);
+        List<Pivot> pivotsof3rdForStats=pivotHandle.findEarningScratch(pivotsof3rdPattern,highLowPriceMapper.selectHighLow(),scratchMapper.selectfromTemp());
         System.out.println("Size of pivotsof3rdForStats "+pivotsof3rdForStats.size());
         patternStats.statsofGainExtension(pivotsof3rdForStats);
         /*List<Pivot> pivotsof4thPattern=pivotHandle.find4thPattern(pivotsForPatternSearch,allCompoundScratches);
@@ -131,6 +133,12 @@ class MymodelApplicationTests {
         }
         scratchMapper.batchsmallinsert(scratchList);*/
     }
+
+    /*@Test
+    void trymymain(){
+        GlobalController globalController=new GlobalController();
+        globalController.findBasicScratches();
+    }*/
 }
 
 
