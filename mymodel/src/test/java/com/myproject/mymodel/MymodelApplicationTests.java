@@ -16,11 +16,11 @@ import java.util.*;
 
 @SpringBootTest
 class MymodelApplicationTests {
-
+    @Autowired
     private HighLowPriceMapper highLowPriceMapper;
-
+    @Autowired
     private ScratchMapper scratchMapper;
-
+    @Test
     void trySummaryStats(){
         List<HighLowPrice> highLowPrices = highLowPriceMapper.selectHighLow();
         /* DoubleSummaryStatistics priceMax= highLowPrices.stream().collect(Collectors.summarizingDouble(HighLowPrice::getHigh));
@@ -45,8 +45,7 @@ class MymodelApplicationTests {
        // System.out.println(highLowPrices.get(0).toString());
         highLowPriceMapper.batchinsert(highLowPrices);
     }
-
-
+    @Test
     void findbasicScratches(){ // Create the table of "findscratch"
         List<HighLowPrice> highLowPrices = highLowPriceMapper.selectHighLow();
         PivotHandle pivotHandle=new PivotHandleImpl();
@@ -85,7 +84,7 @@ class MymodelApplicationTests {
         scratchMapper.deleteAll("findscratch");
         scratchMapper.batchinsert(scratchList);
     }
-
+    @Test
     void findAllPattern(){
         PivotHandle pivotHandle=new PivotHandleImpl();
         PatternStats patternStats=new PatternStatsImpl();
@@ -134,11 +133,7 @@ class MymodelApplicationTests {
         scratchMapper.batchsmallinsert(scratchList);*/
     }
 
-    /*@Test
-    void trymymain(){
-        GlobalController globalController=new GlobalController();
-        globalController.findBasicScratches();
-    }*/
+
 }
 
 
