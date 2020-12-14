@@ -8,5 +8,4 @@ public class MymodelApplication {
     public static void main(String[] args) {
         SpringApplication.run(MymodelApplication.class, args);
     }
-
 }

@@ -1,28 +1,26 @@
 package com.myproject.mymodel;
 
-import com.myproject.mymodel.controller.GlobalController;
-import com.myproject.mymodel.domain.*;
-import com.myproject.mymodel.mapper.HighLowPriceMapper;
-import com.myproject.mymodel.mapper.ScratchMapper;
+import com.myproject.mymodel.domain.HighLowPrice;
+import com.myproject.mymodel.domain.Pivot;
+import com.myproject.mymodel.domain.Scratch;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import service.InAndOutHandle;
 import service.PatternStats;
 import service.PivotHandle;
+import service.impl.InAndOutHandleImpl;
 import service.impl.PatternStatsImpl;
 import service.impl.PivotHandleImpl;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 
-@SpringBootTest
 class MymodelApplicationTests {
-    @Autowired
-    private HighLowPriceMapper highLowPriceMapper;
-    @Autowired
-    private ScratchMapper scratchMapper;
     @Test
     void trySummaryStats(){
-        List<HighLowPrice> highLowPrices = highLowPriceMapper.selectHighLow();
+        InAndOutHandle inAndOutHandle=new InAndOutHandleImpl();
+        List<HighLowPrice> highLowPrices = inAndOutHandle.readBarFromCSV("C:\\Users\\bjsh2\\Documents\\Investment\\Data\\spxw1927.csv");
         /* DoubleSummaryStatistics priceMax= highLowPrices.stream().collect(Collectors.summarizingDouble(HighLowPrice::getHigh));
         Optional<HighLowPrice> optionalHighLowPrice= highLowPrices.stream().min(Comparator.comparingDouble(HighLowPrice::getLow));
         HighLowPrice minItem= optionalHighLowPrice.get();
@@ -40,14 +38,11 @@ class MymodelApplicationTests {
             highLowPrices.get(n).setNdlow(min.get().getLow());
 
         }
-       // System.out.println(max);
-       // System.out.println(min);
-       // System.out.println(highLowPrices.get(0).toString());
-        highLowPriceMapper.batchinsert(highLowPrices);
     }
     @Test
     void findbasicScratches(){ // Create the table of "findscratch"
-        List<HighLowPrice> highLowPrices = highLowPriceMapper.selectHighLow();
+        InAndOutHandle inAndOutHandle=new InAndOutHandleImpl();
+        List<HighLowPrice> highLowPrices = inAndOutHandle.readBarFromCSV("C:\\Users\\bjsh2\\Documents\\Investment\\Data\\spxw1927.csv");
         PivotHandle pivotHandle=new PivotHandleImpl();
         List<Scratch> scratchList = pivotHandle.findScratches(highLowPrices, 1, highLowPrices.size());
         System.out.println(scratchList.size());
@@ -81,37 +76,40 @@ class MymodelApplicationTests {
         /*for(Scratch scratch:scratchList){
             System.out.println(scratch.toString());
         }*/
-        scratchMapper.deleteAll("findscratch");
-        scratchMapper.batchinsert(scratchList);
+        inAndOutHandle.saveScratchListToCSV(scratchList,"E:\\out\\tryWrite\\basicScratch.csv");
     }
     @Test
     void findAllPattern(){
+        InAndOutHandle inAndOutHandle=new InAndOutHandleImpl();
+
+        String priceBarAddress="C:\\Users\\bjsh2\\Documents\\Investment\\Data\\spxw1927.csv";
+        String basicScratchAddress="E:\\out\\tryWrite\\basicScratch.csv";
+        String allCompoundScratchAddress="E:\\out\\tryWrite\\AllCompoundScratch.csv";
+
         PivotHandle pivotHandle=new PivotHandleImpl();
         PatternStats patternStats=new PatternStatsImpl();
-        List<Pivot> allPivotList=pivotHandle.findAllPivotsByScratch(scratchMapper.selectAllScratches());
+        List<Pivot> allPivotList=pivotHandle.findAllPivotsByScratch(inAndOutHandle.readScratchFromCSV(basicScratchAddress));
         List<Scratch> allCompoundScratches=new ArrayList<>();
         for(Pivot pivot:allPivotList){
             Scratch scratch=new Scratch(pivot);
             allCompoundScratches.add(scratch);
         }
-        allCompoundScratches.addAll(scratchMapper.selectAllScratches());
+        allCompoundScratches.addAll(inAndOutHandle.readScratchFromCSV(basicScratchAddress));
         allCompoundScratches.sort(Comparator.comparingInt(Scratch::getStartId).thenComparingInt(Scratch::getLength)); //Sorted by StartId and Length;
-        scratchMapper.deleteAll("tmpscratch");
-        scratchMapper.batchtmpinsert(allCompoundScratches);
-
+        inAndOutHandle.saveScratchListToCSV(allCompoundScratches,"E:\\out\\tryWrite\\AllCompoundScratch.csv");
         List<Pivot> keyPivotList=pivotHandle.obtainKeyPivots(allPivotList);
-        List<Pivot> pivotsForPatternSearch=pivotHandle.addScratchtoPivot(scratchMapper.selectAllScratches(),keyPivotList);
+        List<Pivot> pivotsForPatternSearch=pivotHandle.addScratchtoPivot(inAndOutHandle.readScratchFromCSV(basicScratchAddress),keyPivotList);
         pivotsForPatternSearch.sort(Comparator.comparingInt(Pivot::getStartId));
 
-        List<Pivot> pivotsof2ndPattern=pivotHandle.find2ndPattern(pivotsForPatternSearch,scratchMapper.selectfromTemp());
+        List<Pivot> pivotsof2ndPattern=pivotHandle.find2ndPattern(pivotsForPatternSearch,inAndOutHandle.readScratchFromCSV(allCompoundScratchAddress));
         System.out.println("Size of pivotsof2ndPattern "+pivotsof2ndPattern.size());
-        List<Pivot> pivotsof2ndForStats=pivotHandle.findEarningScratch(pivotsof2ndPattern,highLowPriceMapper.selectHighLow(),scratchMapper.selectfromTemp());
+        List<Pivot> pivotsof2ndForStats=pivotHandle.findEarningScratch(pivotsof2ndPattern,inAndOutHandle.readBarFromCSV(priceBarAddress),inAndOutHandle.readScratchFromCSV(allCompoundScratchAddress));
         System.out.println("Size of pivotsof2ndForStats "+pivotsof2ndForStats.size());
         patternStats.statsofGainExtension(pivotsof2ndForStats);
 
-        List<Pivot> pivotsof3rdPattern=pivotHandle.find3rdPattern(pivotsForPatternSearch,scratchMapper.selectfromTemp());
+        List<Pivot> pivotsof3rdPattern=pivotHandle.find3rdPattern(pivotsForPatternSearch,inAndOutHandle.readScratchFromCSV(allCompoundScratchAddress));
         System.out.println("Size of pivotsof3rdPattern is "+pivotsof3rdPattern.size());
-        List<Pivot> pivotsof3rdForStats=pivotHandle.findEarningScratch(pivotsof3rdPattern,highLowPriceMapper.selectHighLow(),scratchMapper.selectfromTemp());
+        List<Pivot> pivotsof3rdForStats=pivotHandle.findEarningScratch(pivotsof3rdPattern,inAndOutHandle.readBarFromCSV(priceBarAddress),inAndOutHandle.readScratchFromCSV(allCompoundScratchAddress));
         System.out.println("Size of pivotsof3rdForStats "+pivotsof3rdForStats.size());
         patternStats.statsofGainExtension(pivotsof3rdForStats);
         /*List<Pivot> pivotsof4thPattern=pivotHandle.find4thPattern(pivotsForPatternSearch,allCompoundScratches);
