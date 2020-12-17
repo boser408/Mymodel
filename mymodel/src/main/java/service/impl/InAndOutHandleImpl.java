@@ -38,6 +38,34 @@ public class InAndOutHandleImpl implements InAndOutHandle {
     }
 
     @Override
+    public List<HighLowPrice> readDataFromIBCSV(String fileAddress) {
+        List<HighLowPrice> highLowPrices=new ArrayList<>();
+        try {
+            File filename = new File(fileAddress);
+            InputStreamReader reader = new InputStreamReader(new FileInputStream(filename));
+            BufferedReader br = new BufferedReader(reader);
+            String line = "";
+            String cvsSplitBy=",";
+
+            while ((line = br.readLine())!= null) {
+                String[] pricebar=line.split(cvsSplitBy);
+                HighLowPrice highLowPrice=new HighLowPrice();
+                highLowPrice.setId(Integer.parseInt(pricebar[0]));
+                highLowPrice.setDate(pricebar[1]);
+                highLowPrice.setOpen(Float.parseFloat(pricebar[2]));
+                highLowPrice.setHigh(Float.parseFloat(pricebar[3]));
+                highLowPrice.setLow(Float.parseFloat(pricebar[4]));
+                highLowPrice.setClose(Float.parseFloat(pricebar[5]));
+                highLowPrices.add(highLowPrice);
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return highLowPrices;
+    }
+
+    @Override
     public void saveScratchListToCSV(List<Scratch> scratchList,String filePath) {
         try{
             File writename = new File(filePath);
