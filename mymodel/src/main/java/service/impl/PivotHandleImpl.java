@@ -12,7 +12,14 @@ import java.util.List;
 public class PivotHandleImpl implements PivotHandle {
     public static final double controlFactor=0.7;
     public static final int pivotLength=5;
-
+    @Override
+    public double getControlFactor() {
+        return controlFactor;
+    }
+    @Override
+    public int getPivotLength() {
+        return pivotLength;
+    }
     @Override
     public Scratch checkHiddenScratch(List<HighLowPrice> highLowPrices) {
 
@@ -215,14 +222,14 @@ public class PivotHandleImpl implements PivotHandle {
         return returnScratch;
     }
     @Override
-    public List<Scratch> findScratches(List<HighLowPrice> highLowPrices, int startindex, int length) {
+    public List<Scratch> findScratches(List<HighLowPrice> highLowPrices, int startindex,Scratch upscratch,Scratch dwscratch,int nofupscratch,int nofdwscratch) {
 
         List<Scratch> scratches = new ArrayList<>();
-        Scratch upscratch=new Scratch(highLowPrices.get(startindex-1));
+       /* Scratch upscratch=new Scratch(highLowPrices.get(startindex-1));
         Scratch dwscratch=new Scratch(highLowPrices.get(startindex-1));
         int nofupscratch=0; //number when upscratch ended;
-        int nofdwscratch=0; //number when dwscratch ended;
-        for(int n=startindex;n<startindex+length-1;n++){
+        int nofdwscratch=0; //number when dwscratch ended;*/
+        for(int n=startindex;n<highLowPrices.size();n++){
             if (upscratch.getStatus()==1) { //Scenario 1: A formed up trend scratch exists;
 
                 if(highLowPrices.get(n).getHigh()>=upscratch.getHigh()     // 1.1: uptrend creates a new high;
@@ -784,6 +791,32 @@ public class PivotHandleImpl implements PivotHandle {
         scratches.add(upscratch);
         scratches.add(dwscratch);
         scratches.sort(Comparator.comparingInt(Scratch::getStartId));
+        int endofList=scratches.size()-1;
+        for(int n=0;n<endofList;n++){          // Asign direction to all scratches;
+            if(scratches.get(n).getStatus()==1){
+                scratches.get(n).setStatus(2);
+            }else if(scratches.get(n).getStatus()==-1){
+                scratches.get(n).setStatus(-2);
+            }else if(scratches.get(n).getStatus()==0){
+                if(scratches.get(n).getHigh()==scratches.get(n+1).getHigh()){
+                    scratches.get(n).setStatus(1);
+                }else {
+                    scratches.get(n).setStatus(-1);
+                }
+            }
+        }
+        if(scratches.get(endofList).getHigh()==scratches.get(endofList-1).getHigh()){ //Asign direction to scratches whose status is 0;
+            scratches.get(endofList).setStatus(-1);
+        }else {
+            scratches.get(endofList).setStatus(1);
+        }
+        for(int n=1;n<scratches.size()-1;n++){
+            boolean crite1=scratches.get(n).getHigh()==scratches.get(n+1).getHigh() && scratches.get(n).getLow()==scratches.get(n-1).getLow();
+            boolean crite2=scratches.get(n).getHigh()==scratches.get(n-1).getHigh() && scratches.get(n).getLow()==scratches.get(n+1).getLow();
+            if(!crite1 && !crite2) {
+                System.out.println("Check Data with scratch id ="+scratches.get(n).toString());
+            }
+        }
         return scratches;
     }
     @Override

@@ -66,6 +66,24 @@ public class InAndOutHandleImpl implements InAndOutHandle {
     }
 
     @Override
+    public void savePriceBarToCSV(List<HighLowPrice> highLowPrices, String fileAddress) {
+        try{
+            File writename = new File(fileAddress);
+            writename.createNewFile();
+            BufferedWriter out = new BufferedWriter(new FileWriter(writename));
+            for(HighLowPrice highLowPrice:highLowPrices){
+                out.write(highLowPrice.getId()+","+highLowPrice.getDate()+","
+                        +highLowPrice.getOpen()+","+highLowPrice.getHigh()+","+highLowPrice.getLow()+","+highLowPrice.getClose());
+                out.newLine();
+            }
+            out.flush();
+            out.close();
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
     public void saveScratchListToCSV(List<Scratch> scratchList,String filePath) {
         try{
             File writename = new File(filePath);

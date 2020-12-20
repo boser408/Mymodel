@@ -52,34 +52,8 @@ class MymodelApplicationTests {
         List<HighLowPrice> highLowPrices = inAndOutHandle.readBarFromCSV(priceBarAddress);
         //List<HighLowPrice> highLowPrices = inAndOutHandle.readDataFromIBCSV("C:\\Users\\bjsh2\\Documents\\Investment\\Data\\Futures\\ESZ01min.csv");
 
-        List<Scratch> scratchList = pivotHandle.findScratches(highLowPrices, 1, highLowPrices.size());
+        List<Scratch> scratchList = pivotHandle.findScratches(highLowPrices, 1,new Scratch(highLowPrices.get(0)),new Scratch(highLowPrices.get(0)),0,0);
         System.out.println(scratchList.size());
-        int endofList=scratchList.size()-1;
-        for(int n=0;n<endofList;n++){          // Asign direction to all scratches;
-            if(scratchList.get(n).getStatus()==1){
-                scratchList.get(n).setStatus(2);
-            }else if(scratchList.get(n).getStatus()==-1){
-                scratchList.get(n).setStatus(-2);
-            }else if(scratchList.get(n).getStatus()==0){
-                if(scratchList.get(n).getHigh()==scratchList.get(n+1).getHigh()){
-                    scratchList.get(n).setStatus(1);
-                }else {
-                    scratchList.get(n).setStatus(-1);
-                }
-            }
-        }
-        if(scratchList.get(endofList).getHigh()==scratchList.get(endofList-1).getHigh()){ //Asign direction to scratches whose status is 0;
-            scratchList.get(endofList).setStatus(-1);
-        }else {
-            scratchList.get(endofList).setStatus(1);
-        }
-        for(int n=1;n<scratchList.size()-1;n++){
-            boolean crite1=scratchList.get(n).getHigh()==scratchList.get(n+1).getHigh() && scratchList.get(n).getLow()==scratchList.get(n-1).getLow();
-            boolean crite2=scratchList.get(n).getHigh()==scratchList.get(n-1).getHigh() && scratchList.get(n).getLow()==scratchList.get(n+1).getLow();
-            if(!crite1 && !crite2) {
-                System.out.println("Check Data with scratch id ="+scratchList.get(n).toString());
-            }
-        }
         inAndOutHandle.saveScratchListToCSV(scratchList,basicScratchAddress);
 
         List<Pivot> allPivotList=pivotHandle.findAllPivotsByScratch(inAndOutHandle.readScratchFromCSV(basicScratchAddress));

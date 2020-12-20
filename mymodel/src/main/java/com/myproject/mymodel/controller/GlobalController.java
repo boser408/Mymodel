@@ -1,5 +1,6 @@
 package com.myproject.mymodel.controller;
 
+import com.myproject.mymodel.domain.HighLowPrice;
 import com.myproject.mymodel.domain.Pivot;
 import com.myproject.mymodel.domain.Scratch;
 import com.myproject.mymodel.mapper.HighLowPriceMapper;
@@ -27,35 +28,9 @@ public class GlobalController {
 
         PivotHandle pivotHandle=new PivotHandleImpl();
         PatternStats patternStats=new PatternStatsImpl();
-        List<Scratch> basicScratchList = pivotHandle.findScratches(highLowPriceMapper.selectHighLow(), 1, highLowPriceMapper.selectHighLow().size());
+        List<HighLowPrice> highLowPrices=highLowPriceMapper.selectHighLow();
+        List<Scratch> basicScratchList = pivotHandle.findScratches(highLowPrices, 1,new Scratch(highLowPrices.get(0)),new Scratch(highLowPrices.get(0)),0,0);
         System.out.println("scratchList size is: "+basicScratchList.size());
-        int endofList=basicScratchList.size()-1;
-        for(int n=0;n<endofList;n++){          // Asign direction to all scratches;
-            if(basicScratchList.get(n).getStatus()==1){
-                basicScratchList.get(n).setStatus(2);
-            }else if(basicScratchList.get(n).getStatus()==-1){
-                basicScratchList.get(n).setStatus(-2);
-            }else if(basicScratchList.get(n).getStatus()==0){
-                if(basicScratchList.get(n).getHigh()==basicScratchList.get(n+1).getHigh()){
-                    basicScratchList.get(n).setStatus(1);
-                }else {
-                    basicScratchList.get(n).setStatus(-1);
-                }
-            }
-        }
-        if(basicScratchList.get(endofList).getHigh()==basicScratchList.get(endofList-1).getHigh()){ //Asign direction to scratches whose status is 0;
-            basicScratchList.get(endofList).setStatus(-1);
-        }else {
-            basicScratchList.get(endofList).setStatus(1);
-        }
-        for(int n=1;n<basicScratchList.size()-1;n++){
-            boolean crite1=basicScratchList.get(n).getHigh()==basicScratchList.get(n+1).getHigh() && basicScratchList.get(n).getLow()==basicScratchList.get(n-1).getLow();
-            boolean crite2=basicScratchList.get(n).getHigh()==basicScratchList.get(n-1).getHigh() && basicScratchList.get(n).getLow()==basicScratchList.get(n+1).getLow();
-            if(!crite1 && !crite2) {
-                System.out.println("Check Data with scratch id ="+basicScratchList.get(n).toString());
-            }
-        }
-
         scratchMapper.deleteAll("findscratch");
         scratchMapper.batchinsert(basicScratchList);
 
@@ -78,13 +53,13 @@ public class GlobalController {
 
         List<Pivot> pivotsof2ndPattern=pivotHandle.find2ndPattern(pivotsForPatternSearch,scratchMapper.selectfromTemp());
         System.out.println("Size of pivotsof2ndPattern "+pivotsof2ndPattern.size());
-        List<Pivot> pivotsof2ndForStats=pivotHandle.findEarningScratch(pivotsof2ndPattern,highLowPriceMapper.selectHighLow(),scratchMapper.selectfromTemp());
+        List<Pivot> pivotsof2ndForStats=pivotHandle.findEarningScratch(pivotsof2ndPattern,highLowPrices,scratchMapper.selectfromTemp());
         System.out.println("Size of pivotsof2ndForStats "+pivotsof2ndForStats.size());
         patternStats.statsofGainExtension(pivotsof2ndForStats);
 
         List<Pivot> pivotsof3rdPattern=pivotHandle.find3rdPattern(pivotsForPatternSearch,scratchMapper.selectfromTemp());
         System.out.println("Size of pivotsof3rdPattern is "+pivotsof3rdPattern.size());
-        List<Pivot> pivotsof3rdForStats=pivotHandle.findEarningScratch(pivotsof3rdPattern,highLowPriceMapper.selectHighLow(),scratchMapper.selectfromTemp());
+        List<Pivot> pivotsof3rdForStats=pivotHandle.findEarningScratch(pivotsof3rdPattern,highLowPrices,scratchMapper.selectfromTemp());
         System.out.println("Size of pivotsof3rdForStats "+pivotsof3rdForStats.size());
         patternStats.statsofGainExtension(pivotsof3rdForStats);
     }
