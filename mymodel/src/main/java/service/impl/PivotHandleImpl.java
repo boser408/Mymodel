@@ -950,6 +950,41 @@ public class PivotHandleImpl implements PivotHandle {
         return keyPivotList;
     }
     @Override
+    public List<Scratch> findEigenScratches(List<Pivot> pivotsForPatternSearch) {
+        List<Scratch> eigenscratches=new ArrayList<>();
+        float highPoint=pivotsForPatternSearch.get(0).getHigh();
+        float lowPoint=pivotsForPatternSearch.get(0).getLow();
+        int indexofeigenPivot=0;
+        for(int n=0;n<pivotsForPatternSearch.size();n++){
+            boolean b1=pivotsForPatternSearch.get(n).getHigh()>=highPoint;
+            boolean b2=pivotsForPatternSearch.get(n).getLow()<=lowPoint;
+            if(b1 && b2){
+                indexofeigenPivot=n;
+                highPoint=pivotsForPatternSearch.get(n).getHigh();
+                lowPoint=pivotsForPatternSearch.get(n).getLow();
+            }
+        }
+        System.out.println("Eigen Pivot is "+pivotsForPatternSearch.get(indexofeigenPivot).toString());
+        eigenscratches.addAll(pivotsForPatternSearch.get(indexofeigenPivot).getScratches());
+        if(eigenscratches.size()>1){
+            eigenscratches.sort(Comparator.comparingInt(Scratch::getLength).reversed());
+            int n=0;
+            while (n<eigenscratches.size()){
+                Scratch maxScratch=new Scratch(eigenscratches.get(n));
+                for(int t=n+1;t<eigenscratches.size();t++){
+                    boolean b=maxScratch.getStartId()>eigenscratches.get(t).getStartId();
+                    if(b){
+                       eigenscratches.remove(t);
+                       t--;
+                    }
+                }
+                n++;
+            }
+            eigenscratches.sort(Comparator.comparingInt(Scratch::getStartId));
+        }
+        return eigenscratches;
+    }
+    @Override
     public List<Pivot> find2ndPattern(List<Pivot> pivotsForPatternSearch, List<Scratch> scratches) {
         List<Scratch> allCompoundScratches=new ArrayList<>();
         allCompoundScratches.addAll(scratches);

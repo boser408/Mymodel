@@ -40,10 +40,12 @@ class MymodelApplicationTests {
         }
     }
     @Test
-    void findbasicScratches(){ // Create the table of "findscratch
-        String priceBarAddress="C:\\Users\\bjsh2\\Documents\\Investment\\Data\\spxd1927.csv";
+    void myModel(){ // Create the table of "findscratch
+        String addressAdjust="d";
+        String priceBarAddress="C:\\Users\\bjsh2\\Documents\\Investment\\Data\\spx"+addressAdjust+"1927.csv";
         String basicScratchAddress="E:\\out\\tryWrite\\basicScratch.csv";
         String allCompoundScratchAddress="E:\\out\\tryWrite\\AllCompoundScratch.csv";
+        String eigenScratchAddress="C:\\Users\\bjsh2\\Documents\\Investment\\Data\\EigenScratch\\eigenScrachspx"+addressAdjust+"1927.csv";
 
         InAndOutHandle inAndOutHandle=new InAndOutHandleImpl();
         PatternStats patternStats=new PatternStatsImpl();
@@ -68,6 +70,10 @@ class MymodelApplicationTests {
         List<Pivot> keyPivotList=pivotHandle.obtainKeyPivots(allPivotList);
         List<Pivot> pivotsForPatternSearch=pivotHandle.addScratchtoPivot(inAndOutHandle.readScratchFromCSV(basicScratchAddress),keyPivotList);
         pivotsForPatternSearch.sort(Comparator.comparingInt(Pivot::getStartId));
+
+        List<Scratch> eigenScratches=pivotHandle.findEigenScratches(pivotsForPatternSearch);
+        System.out.println("Size of eigenScratches "+eigenScratches.size());
+        inAndOutHandle.saveScratchListToCSV(eigenScratches,eigenScratchAddress);
 
         List<Pivot> pivotsof2ndPattern=pivotHandle.find2ndPattern(pivotsForPatternSearch,inAndOutHandle.readScratchFromCSV(allCompoundScratchAddress));
         System.out.println("Size of pivotsof2ndPattern "+pivotsof2ndPattern.size());

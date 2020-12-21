@@ -17,6 +17,7 @@ public interface PivotHandle {
     List<Scratch> findScratches(List<HighLowPrice> highLowPrices, int startindex,Scratch upscratch,Scratch dwscratch,int nofupscratch,int nofdwscratch);
     List<Pivot> findAllPivotsByScratch(List<Scratch> scratchList);
     List<Pivot> obtainKeyPivots(List<Pivot> allPivotList);
+    List<Scratch> findEigenScratches(List<Pivot> pivotsForPatternSearch); // EigenScratches are scratches will be paired as the potential first scratch for 2nd or 3rd pattern;
     List<Pivot> find2ndPattern(List<Pivot> pivotsForPatternSearch, List<Scratch> allCompoundScratches);
     List<Pivot> find3rdPattern(List<Pivot> pivotsForPatternSearch, List<Scratch> allCompoundScratches);
     List<Pivot> find4thPattern(List<Pivot> pivotsForPatternSearch, List<Scratch> allCompoundScratches);
