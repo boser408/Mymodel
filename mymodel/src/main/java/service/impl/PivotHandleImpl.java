@@ -545,7 +545,7 @@ public class PivotHandleImpl implements PivotHandle {
                         Scratch dscratch=new Scratch(dwscratch);//amended because new constructor is added;
                         scratches.add(dscratch);
                     }else if(upscratch.getStartId()==dwscratch.getStartId()&&highLowPrices.get(n).getLow()==dwscratch.getLow()){
-                        dwscratch.setLength(n-dwscratch.getStartId()+1);
+                        dwscratch.setLength(n-dwscratch.getStartId()+2);
                         Scratch dscratch=new Scratch(dwscratch);//amended because new constructor is added;
                         scratches.add(dscratch);
                     }
@@ -564,7 +564,7 @@ public class PivotHandleImpl implements PivotHandle {
                         Scratch scratch=new Scratch(upscratch);//amended because new constructor is added;
                         scratches.add(scratch);
                     }else if(upscratch.getStartId()==dwscratch.getStartId()&&highLowPrices.get(n).getHigh()==upscratch.getHigh()){
-                        upscratch.setLength(n-upscratch.getStartId());
+                        upscratch.setLength(n-upscratch.getStartId()+2);
                         Scratch scratch=new Scratch(upscratch);//amended because new constructor is added;
                         scratches.add(scratch);
                     }
