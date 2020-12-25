@@ -225,10 +225,7 @@ public class PivotHandleImpl implements PivotHandle {
     public List<Scratch> findScratches(List<HighLowPrice> highLowPrices, int startindex,Scratch upscratch,Scratch dwscratch,int nofupscratch,int nofdwscratch) {
 
         List<Scratch> scratches = new ArrayList<>();
-       /* Scratch upscratch=new Scratch(highLowPrices.get(startindex-1));
-        Scratch dwscratch=new Scratch(highLowPrices.get(startindex-1));
-        int nofupscratch=0; //number when upscratch ended;
-        int nofdwscratch=0; //number when dwscratch ended;*/
+
         for(int n=startindex;n<highLowPrices.size();n++){
             if (upscratch.getStatus()==1) { //Scenario 1: A formed up trend scratch exists;
 
@@ -244,7 +241,7 @@ public class PivotHandleImpl implements PivotHandle {
                 }else if(highLowPrices.get(n).getHigh()>upscratch.getHigh()  //1.2: a bar breaks both high and low of this uptrend scrach;
                         && highLowPrices.get(n).getLow()<upscratch.getLow()){
 
-                    if(highLowPrices.get(n).getOpen()>highLowPrices.get(n).getClose()){
+                    if(highLowPrices.get(n).getOpen()>highLowPrices.get(n).getClose()){ //n is considered as a negative bar: which means the intraday highest point(top) appeared earlier than the intraday lowest point(bottom)
                         upscratch.setLength(highLowPrices.get(n).getId()-upscratch.getStartId()+1);
                         upscratch.setHigh(highLowPrices.get(n).getHigh());
                         Scratch scratch=new Scratch(upscratch);
@@ -256,7 +253,7 @@ public class PivotHandleImpl implements PivotHandle {
                         dwscratch=new Scratch(highLowPrices.get(n));
                         nofdwscratch=n;
 
-                    }else {
+                    }else {  //n is considered as a positive bar: which means the intraday lowest point(bottom) appeared earlier than the intraday highest point(top)
                         dwscratch.setLength(highLowPrices.get(n).getId()-dwscratch.getStartId()+1);
                         dwscratch.setLow(highLowPrices.get(n).getLow());
                         if(n-dwscratch.getStartId()>=pivotLength-2){ // A down trend scratch formed
@@ -463,6 +460,10 @@ public class PivotHandleImpl implements PivotHandle {
                 }else {
 
                     if(highLowPrices.get(n).getHigh()>dwscratch.getHigh()){
+                        /*if(dwscratch.getStartId()==2001){
+                            System.out.println("22222--upscratch is "+upscratch.toString());
+                            System.out.println("22222--dwscratch is "+dwscratch.toString());
+                        }*/
                         dwscratch.setLength(upscratch.getStartId()-dwscratch.getStartId()+1);
                         Scratch dscratch=new Scratch(dwscratch);
                         scratches.add(dscratch);
@@ -534,34 +535,38 @@ public class PivotHandleImpl implements PivotHandle {
                 }
             }else {     // Scenario 3:  no direction
 
-                if(highLowPrices.get(n).getHigh()>upscratch.getHigh() && highLowPrices.get(n).getHigh()>dwscratch.getHigh()
+                if(highLowPrices.get(n).getHigh()>=upscratch.getHigh() && highLowPrices.get(n).getHigh()>=dwscratch.getHigh()
                         && highLowPrices.get(n).getLow()>=upscratch.getLow()){
                     upscratch.setLength(highLowPrices.get(n).getId()-upscratch.getStartId()+1);
                     upscratch.setHigh(highLowPrices.get(n).getHigh());
                     nofupscratch=n;
                     if(dwscratch.getStartId()<upscratch.getStartId()){
                         dwscratch.setLength(upscratch.getStartId()-dwscratch.getStartId()+1);
-
                         Scratch dscratch=new Scratch(dwscratch);//amended because new constructor is added;
                         scratches.add(dscratch);
-
+                    }else if(upscratch.getStartId()==dwscratch.getStartId()&&highLowPrices.get(n).getLow()==dwscratch.getLow()){
+                        dwscratch.setLength(n-dwscratch.getStartId()+1);
+                        Scratch dscratch=new Scratch(dwscratch);//amended because new constructor is added;
+                        scratches.add(dscratch);
                     }
                     dwscratch=new Scratch(highLowPrices.get(n));
                     nofdwscratch=n;
                     if(n-upscratch.getStartId()>=pivotLength-2){ // An up trend scratch formed
                         upscratch.setStatus(1);
                     }
-                }else if(highLowPrices.get(n).getLow()<dwscratch.getLow() && highLowPrices.get(n).getLow()< upscratch.getLow()
+                }else if(highLowPrices.get(n).getLow()<=dwscratch.getLow() && highLowPrices.get(n).getLow()<=upscratch.getLow()
                         && highLowPrices.get(n).getHigh()<=dwscratch.getHigh()){
                     dwscratch.setLength(highLowPrices.get(n).getId()-dwscratch.getStartId()+1);
                     dwscratch.setLow(highLowPrices.get(n).getLow());
                     nofdwscratch=n;
                     if(upscratch.getStartId()<dwscratch.getStartId()){
                         upscratch.setLength(dwscratch.getStartId()-upscratch.getStartId()+1);
-
                         Scratch scratch=new Scratch(upscratch);//amended because new constructor is added;
                         scratches.add(scratch);
-
+                    }else if(upscratch.getStartId()==dwscratch.getStartId()&&highLowPrices.get(n).getHigh()==upscratch.getHigh()){
+                        upscratch.setLength(n-upscratch.getStartId());
+                        Scratch scratch=new Scratch(upscratch);//amended because new constructor is added;
+                        scratches.add(scratch);
                     }
                     upscratch=new Scratch(highLowPrices.get(n));
                     nofupscratch=n;
@@ -877,14 +882,7 @@ public class PivotHandleImpl implements PivotHandle {
             for(int t=n;t<scratchList.size();t++){
                 scratchesforLoop.add(scratchList.get(t));
             }
-            //System.out.println("Size of final pivotList "+pivotList.size());
-            for( n=1;n<scratchesforLoop.size()-1;n++){
-                boolean crite1=scratchesforLoop.get(n).getHigh()==scratchesforLoop.get(n+1).getHigh() && scratchesforLoop.get(n).getLow()==scratchesforLoop.get(n-1).getLow();
-                boolean crite2=scratchesforLoop.get(n).getHigh()==scratchesforLoop.get(n-1).getHigh() && scratchesforLoop.get(n).getLow()==scratchesforLoop.get(n+1).getLow();
-                if(!crite1 && !crite2) {
-                    System.out.println("Check Data with scratch id ="+scratchesforLoop.get(n).toString());
-                }
-            }                      // End Line of original simple method;
+             // End Line of original simple method;
             allPivotList.addAll(pivotList);
             sizeoftable=scratchesforLoop.size();
             scratchList.clear();

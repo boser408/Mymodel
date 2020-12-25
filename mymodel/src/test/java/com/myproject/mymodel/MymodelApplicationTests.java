@@ -45,17 +45,17 @@ class MymodelApplicationTests {
         String priceBarAddress="C:\\Users\\bjsh2\\Documents\\Investment\\Data\\spx"+addressAdjust+"1927.csv";
         String basicScratchAddress="E:\\out\\tryWrite\\basicScratch.csv";
         String allCompoundScratchAddress="E:\\out\\tryWrite\\AllCompoundScratch.csv";
-        String eigenScratchAddress="C:\\Users\\bjsh2\\Documents\\Investment\\Data\\EigenScratch\\eigenScrachspx"+addressAdjust+"1927.csv";
+        String eigenScratchAddress="C:\\Users\\bjsh2\\Documents\\Investment\\Data\\EigenScratch\\eigenScrachESZ01Hour.csv";
 
         InAndOutHandle inAndOutHandle=new InAndOutHandleImpl();
         PatternStats patternStats=new PatternStatsImpl();
         PivotHandle pivotHandle=new PivotHandleImpl();
 
-        List<HighLowPrice> highLowPrices = inAndOutHandle.readBarFromCSV(priceBarAddress);
-        //List<HighLowPrice> highLowPrices = inAndOutHandle.readDataFromIBCSV("C:\\Users\\bjsh2\\Documents\\Investment\\Data\\Futures\\ESZ01min.csv");
+        //List<HighLowPrice> highLowPrices = inAndOutHandle.readBarFromCSV(priceBarAddress);
+        List<HighLowPrice> highLowPrices = inAndOutHandle.readDataFromIBCSV("C:\\Users\\bjsh2\\Documents\\Investment\\Data\\Futures\\ESZ015mins.csv");
 
         List<Scratch> scratchList = pivotHandle.findScratches(highLowPrices, 1,new Scratch(highLowPrices.get(0)),new Scratch(highLowPrices.get(0)),0,0);
-        System.out.println(scratchList.size());
+        System.out.println("Size of basicScratch "+scratchList.size());
         inAndOutHandle.saveScratchListToCSV(scratchList,basicScratchAddress);
 
         List<Pivot> allPivotList=pivotHandle.findAllPivotsByScratch(inAndOutHandle.readScratchFromCSV(basicScratchAddress));
@@ -104,8 +104,6 @@ class MymodelApplicationTests {
         }
         scratchMapper.batchsmallinsert(scratchList);*/
     }
-
-
 }
 
 
