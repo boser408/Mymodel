@@ -41,18 +41,18 @@ class MymodelApplicationTests {
     }
     @Test
     void myModel(){ // Create the table of "findscratch
-        String addressAdjust="d";
-        String priceBarAddress="C:\\Users\\bjsh2\\Documents\\Investment\\Data\\spx"+addressAdjust+"1927.csv";
+        String addressAdjust="w";
+        String priceBarAddress="E:\\Data\\DownloadData\\ES\\spx"+addressAdjust+"1927.csv";
         String basicScratchAddress="E:\\out\\tryWrite\\basicScratch.csv";
         String allCompoundScratchAddress="E:\\out\\tryWrite\\AllCompoundScratch.csv";
-        String eigenScratchAddress="C:\\Users\\bjsh2\\Documents\\Investment\\Data\\EigenScratch\\eigenScrachESZ01Hour.csv";
+        String eigenScratchAddress="E:\\Data\\EigenScratch\\eigenScrachESZ015mins.csv";
 
         InAndOutHandle inAndOutHandle=new InAndOutHandleImpl();
         PatternStats patternStats=new PatternStatsImpl();
         PivotHandle pivotHandle=new PivotHandleImpl();
 
         //List<HighLowPrice> highLowPrices = inAndOutHandle.readBarFromCSV(priceBarAddress);
-        List<HighLowPrice> highLowPrices = inAndOutHandle.readDataFromIBCSV("C:\\Users\\bjsh2\\Documents\\Investment\\Data\\Futures\\ESZ015mins.csv");
+        List<HighLowPrice> highLowPrices = inAndOutHandle.readDataFromIBCSV("E:\\Data\\DownloadData\\ES\\ESZ015mins.csv");
 
         List<Scratch> scratchList = pivotHandle.findScratches(highLowPrices, 1,new Scratch(highLowPrices.get(0)),new Scratch(highLowPrices.get(0)),0,0);
         System.out.println("Size of basicScratch "+scratchList.size());

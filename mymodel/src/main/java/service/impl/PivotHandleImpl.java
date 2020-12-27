@@ -971,9 +971,25 @@ public class PivotHandleImpl implements PivotHandle {
                 Scratch maxScratch=new Scratch(eigenscratches.get(n));
                 for(int t=n+1;t<eigenscratches.size();t++){
                     boolean b=maxScratch.getStartId()>eigenscratches.get(t).getStartId();
-                    if(b){
+                    boolean c=(float)eigenscratches.get(t).getLength()/maxScratch.getLength()<controlFactor;
+                    if(b && c){
                        eigenscratches.remove(t);
                        t--;
+                    }else if(b && !c){
+                        boolean a=false;
+                        if(maxScratch.getStatus()>0){
+                            if(eigenscratches.get(t).getLow()>maxScratch.getHigh()){
+                                a=true;
+                            }
+                        }else {
+                            if(maxScratch.getLow()>eigenscratches.get(t).getHigh()){
+                                a=true;
+                            }
+                        }
+                        if(!a){
+                            eigenscratches.remove(t);
+                            t--;
+                        }
                     }
                 }
                 n++;

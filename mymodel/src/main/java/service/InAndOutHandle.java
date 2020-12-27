@@ -11,4 +11,5 @@ public interface InAndOutHandle {
     void savePriceBarToCSV(List<HighLowPrice> highLowPrices,String fileAddress);
     void saveScratchListToCSV(List<Scratch> scratchList,String filePath);
     List<Scratch> readScratchFromCSV(String fileAddress);
+
 }

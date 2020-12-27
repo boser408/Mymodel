@@ -12,7 +12,10 @@ import service.impl.PatternStatsImpl;
 import service.impl.PivotHandleImpl;
 
 import java.io.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -130,5 +133,32 @@ public class MyTryReadandWrite {
         List<Scratch> scratchList = pivotHandle.findScratches(highLowPrices, inAndOutHandle.readBarFromCSV(priceBarAddress).size(),upscratch,dwscratch,nofupscratch,nofdwscratch);
         System.out.println(scratchList.size());
         inAndOutHandle.saveScratchListToCSV(scratchList,updatedBasicScratch);
+    }
+    @Test
+    void trymergeDailyandIntraday(){
+        String dailyAddress="E:\\Data\\EigenScratch\\eigenScrachspxd1927.csv";
+        String intradayAddress="E:\\Data\\EigenScratch\\eigenScrachESZ015mins.csv";
+        InAndOutHandle inAndOutHandle=new InAndOutHandleImpl();
+        List<Scratch> dailyEigenScratches=inAndOutHandle.readScratchFromCSV(dailyAddress);
+        List<Scratch> intradayEigenScratches=inAndOutHandle.readScratchFromCSV(intradayAddress);
+        List<Scratch> mergedScratches=new ArrayList<>();
+        SimpleDateFormat intradayTime=new SimpleDateFormat("yyyyMMdd HH:mm:ss");
+        SimpleDateFormat dailyTime=new SimpleDateFormat("yyyy/MM/dd");
+        for(int n=0;n<dailyEigenScratches.size();n++){
+            try {
+                Date mergedate=dailyTime.parse(dailyTime.format(intradayTime.parse(intradayEigenScratches.get(0).getStartdate())));
+                Date date=dailyTime.parse(dailyEigenScratches.get(n).getStartdate());
+                if(date.getTime()==mergedate.getTime()){
+                    mergedScratches.addAll(dailyEigenScratches.subList(0,n));
+                    mergedScratches.addAll(intradayEigenScratches);
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+        System.out.println("Size of mergedScratches is "+mergedScratches.size());
+        for(Scratch scratch:mergedScratches){
+            System.out.println(scratch.toString());
+        }
     }
 }
