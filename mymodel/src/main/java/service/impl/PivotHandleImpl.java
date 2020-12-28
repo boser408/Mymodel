@@ -3,10 +3,14 @@ package service.impl;
 import com.myproject.mymodel.domain.HighLowPrice;
 import com.myproject.mymodel.domain.Pivot;
 import com.myproject.mymodel.domain.Scratch;
+import service.InAndOutHandle;
 import service.PivotHandle;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 public class PivotHandleImpl implements PivotHandle {
@@ -999,6 +1003,27 @@ public class PivotHandleImpl implements PivotHandle {
         }
         return eigenscratches;
     }
+
+    @Override
+    public List<Scratch> mergeEigenScratches(List<Scratch> dailyEigenScratches, List<Scratch> intradayEigenScratches) {
+        List<Scratch> mergedScratches=new ArrayList<>();
+        SimpleDateFormat intradayTime=new SimpleDateFormat("yyyyMMdd HH:mm:ss");
+        SimpleDateFormat dailyTime=new SimpleDateFormat("yyyy/MM/dd");
+        for(int n=0;n<dailyEigenScratches.size();n++){
+            try {
+                Date mergedate=dailyTime.parse(dailyTime.format(intradayTime.parse(intradayEigenScratches.get(0).getStartdate())));
+                Date date=dailyTime.parse(dailyEigenScratches.get(n).getStartdate());
+                if(date.getTime()==mergedate.getTime()){
+                    mergedScratches.addAll(dailyEigenScratches.subList(0,n));
+                    mergedScratches.addAll(intradayEigenScratches);
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+        return mergedScratches;
+    }
+
     @Override
     public List<Pivot> find2ndPattern(List<Pivot> pivotsForPatternSearch, List<Scratch> scratches) {
         List<Scratch> allCompoundScratches=new ArrayList<>();

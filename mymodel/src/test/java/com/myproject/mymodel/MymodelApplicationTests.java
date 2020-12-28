@@ -2,9 +2,12 @@ package com.myproject.mymodel;
 
 import com.myproject.mymodel.controller.GlobalController;
 import com.myproject.mymodel.domain.HighLowPrice;
+import com.myproject.mymodel.domain.Scratch;
 import org.junit.jupiter.api.Test;
 import service.InAndOutHandle;
+import service.PivotHandle;
 import service.impl.InAndOutHandleImpl;
+import service.impl.PivotHandleImpl;
 
 import java.util.Comparator;
 import java.util.List;
@@ -47,6 +50,27 @@ class MymodelApplicationTests {
             GlobalController globalController=new GlobalController(downloadDataPath,eigenScratchAddress,basicScratchAddress,allCompoundScratchAddress,string,contractSubLabel,priceBarType);
             globalController.dataHandle();
         }
+    }
+    @Test
+    void trymergeEigenScratches(){
+        String eigenScratchAddress="E:\\Data\\EigenScratch\\eigenScrach";
+        String[] contractList={"ES","NQ","YM","RTY","GC"};
+        String bigSubLabel="daily";
+        String smallSubLabel="Z0";
+        String bigBarType="d";
+        String smallBarType="15mins";
+        InAndOutHandle inAndOutHandle=new InAndOutHandleImpl();
+        PivotHandle pivotHandle=new PivotHandleImpl();
+        for(String string:contractList){
+            String dailyAddress=eigenScratchAddress+string+bigSubLabel+bigBarType+".csv";
+            String intradayAddress=eigenScratchAddress+string+smallSubLabel+smallBarType+".csv";
+            String mergeFilePath="E:\\Data\\EigenScratch\\eigenScrach"+string+"merged.csv";
+            List<Scratch> dailyEigenScratches=inAndOutHandle.readScratchFromCSV(dailyAddress);
+            List<Scratch> intradayEigenScratches=inAndOutHandle.readScratchFromCSV(intradayAddress);
+            List<Scratch> mergedEigenScratches=pivotHandle.mergeEigenScratches(dailyEigenScratches,intradayEigenScratches);
+            inAndOutHandle.saveScratchListToCSV(mergedEigenScratches,mergeFilePath);
+        }
+
     }
 }
 
