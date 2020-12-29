@@ -11,7 +11,6 @@ import service.impl.PivotHandleImpl;
 import java.util.List;
 
 public class MyTryReadandWrite {
-
     @Test
     void tryUpdate(){
         String priceBarAddress="C:\\Users\\bjsh2\\Documents\\Investment\\Data\\spxd1927.csv";
@@ -54,5 +53,4 @@ public class MyTryReadandWrite {
         System.out.println(scratchList.size());
         inAndOutHandle.saveScratchListToCSV(scratchList,updatedBasicScratch);
     }
-
 }

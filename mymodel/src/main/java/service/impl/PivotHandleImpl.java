@@ -8,10 +8,7 @@ import service.PivotHandle;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class PivotHandleImpl implements PivotHandle {
     public static final double controlFactor=0.7;
@@ -1013,13 +1010,28 @@ public class PivotHandleImpl implements PivotHandle {
             try {
                 Date mergedate=dailyTime.parse(dailyTime.format(intradayTime.parse(intradayEigenScratches.get(0).getStartdate())));
                 Date date=dailyTime.parse(dailyEigenScratches.get(n).getStartdate());
-                if(date.getTime()==mergedate.getTime()){
+                Calendar calendar=Calendar.getInstance();
+                calendar.setTime(date);
+                calendar.add(Calendar.DAY_OF_YEAR,dailyEigenScratches.get(n).getLength()-1);
+                Date endofScratch=calendar.getTime();
+                int convertLength=dailyEigenScratches.get(n).getLength()*91;//there are 91 15mins bar everyday;
+                boolean a=endofScratch.getTime()>=mergedate.getTime();
+                boolean b=(float)intradayEigenScratches.get(0).getLength()/convertLength>controlFactor;
+                boolean c=(float)convertLength/intradayEigenScratches.get(0).getLength()>controlFactor;
+                /*System.out.println("Current dailyeigenscratch is: "+dailyEigenScratches.get(n).toString());
+                System.out.println("a: "+a+"b: "+b+"c: "+c);*/
+                if(a && b && c){
                     mergedScratches.addAll(dailyEigenScratches.subList(0,n));
                     mergedScratches.addAll(intradayEigenScratches);
+                    break;
                 }
             } catch (ParseException e) {
                 e.printStackTrace();
             }
+        }
+        if(mergedScratches.size()==0){
+            mergedScratches.addAll(dailyEigenScratches);
+            mergedScratches.addAll(intradayEigenScratches);
         }
         return mergedScratches;
     }
