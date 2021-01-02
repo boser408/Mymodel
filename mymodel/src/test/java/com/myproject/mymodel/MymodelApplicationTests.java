@@ -38,14 +38,14 @@ class MymodelApplicationTests {
     }
     @Test
     void GlobalControl(){
-        String[] contractList={"ES","NQ","YM","RTY","GC"};
+        String[] contractList={"DBA","GLD","USO","UUP","VIX"};//{"ES","NQ","YM","RTY","GC"};
         String downloadDataPath="E:\\Data\\DownloadData\\";
         String basicScratchAddress="E:\\out\\tryWrite\\basicScratch.csv";
         String allCompoundScratchAddress="E:\\out\\tryWrite\\AllCompoundScratch.csv";
         String eigenScratchAddress="E:\\Data\\EigenScratch\\eigenScrach";
         //String contractClass="ES"; //Ticker like: ES, NQ, YM, RTY, GC, GLD...
-        String contractSubLabel="Z0"; //Supplementary description for contract such as "Z0" for ES, then build the full ticker of a contract like "ESZ0";
-        String priceBarType="15mins";
+        String contractSubLabel="daily";//"Z0"; //Supplementary description for contract such as "Z0" for ES, then build the full ticker of a contract like "ESZ0";
+        String priceBarType="d";//"15mins";
         for(String string:contractList){
             GlobalController globalController=new GlobalController(downloadDataPath,eigenScratchAddress,basicScratchAddress,allCompoundScratchAddress,string,contractSubLabel,priceBarType);
             globalController.dataHandle();

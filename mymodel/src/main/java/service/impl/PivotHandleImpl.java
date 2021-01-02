@@ -981,10 +981,14 @@ public class PivotHandleImpl implements PivotHandle {
                         boolean a=false;
                         if(maxScratch.getStatus()>0){
                             if(eigenscratches.get(t).getLow()>maxScratch.getHigh()){
+                                maxScratch.setStatus(maxScratch.getStatus()*100);
+                                eigenscratches.get(t).setStatus(eigenscratches.get(t).getStatus()*100);
                                 a=true;
                             }
                         }else {
                             if(maxScratch.getLow()>eigenscratches.get(t).getHigh()){
+                                maxScratch.setStatus(maxScratch.getStatus()*100);
+                                eigenscratches.get(t).setStatus(eigenscratches.get(t).getStatus()*100);
                                 a=true;
                             }
                         }
@@ -996,11 +1000,35 @@ public class PivotHandleImpl implements PivotHandle {
                 }
                 n++;
             }
+            //-----Start Line for finding major patterns out of EigenScratchPivot;
+            int endofEigenPivot=pivotsForPatternSearch.get(indexofeigenPivot).getStartId()+pivotsForPatternSearch.get(indexofeigenPivot).getLength()-1;
+            List<Pivot> upPivots=new ArrayList<>();
+            List<Pivot> dwPivots=new ArrayList<>();
+            for(Pivot pivot:pivotsForPatternSearch){
+                boolean a=pivot.getStartId()>=endofEigenPivot;
+                if(a && pivot.getPivotType()>0){
+                    upPivots.add(pivot);
+                }else if(a && pivot.getPivotType()<0){
+                    dwPivots.add(pivot);
+                }
+            }
+            if(upPivots.size()>0){
+                upPivots.sort(Comparator.comparingInt(Pivot::getLength).reversed());
+                Scratch scratch=new Scratch(upPivots.get(0));
+                scratch.setStatus(scratch.getStatus()*1000);
+                eigenscratches.add(scratch);
+            }
+            if(dwPivots.size()>0){
+                dwPivots.sort(Comparator.comparingInt(Pivot::getLength).reversed());
+                Scratch scratch=new Scratch(dwPivots.get(0));
+                scratch.setStatus(scratch.getStatus()*1000);
+                eigenscratches.add(scratch);
+            }
+            //-----End Line for finding major patterns out of EigenScratchPivot;
             eigenscratches.sort(Comparator.comparingInt(Scratch::getStartId));
         }
         return eigenscratches;
     }
-
     @Override
     public List<Scratch> mergeEigenScratches(List<Scratch> dailyEigenScratches, List<Scratch> intradayEigenScratches) {
         List<Scratch> mergedScratches=new ArrayList<>();
@@ -1035,7 +1063,6 @@ public class PivotHandleImpl implements PivotHandle {
         }
         return mergedScratches;
     }
-
     @Override
     public List<Pivot> find2ndPattern(List<Pivot> pivotsForPatternSearch, List<Scratch> scratches) {
         List<Scratch> allCompoundScratches=new ArrayList<>();
