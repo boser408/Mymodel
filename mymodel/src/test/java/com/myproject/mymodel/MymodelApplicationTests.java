@@ -38,17 +38,33 @@ class MymodelApplicationTests {
     }
     @Test
     void GlobalControl(){
-        String[] contractList={"DBA","GLD","USO","UUP","VIX"};//{"ES","NQ","YM","RTY","GC"};
-        String downloadDataPath="E:\\Data\\DownloadData\\";
-        String basicScratchAddress="E:\\out\\tryWrite\\basicScratch.csv";
-        String allCompoundScratchAddress="E:\\out\\tryWrite\\AllCompoundScratch.csv";
+        String[] contractList={"ES","NQ","YM","RTY"};//{"DBA","GLD","USO","UUP","VIX"};//
+        String operateDataPath="E:\\Data\\operateData\\";
+        String basicScratchAddress="E:\\Data\\Scratches\\";
+        String allCompoundScratchAddress="E:\\Data\\Scratches\\";
         String eigenScratchAddress="E:\\Data\\EigenScratch\\eigenScrach";
         //String contractClass="ES"; //Ticker like: ES, NQ, YM, RTY, GC, GLD...
-        String contractSubLabel="daily";//"Z0"; //Supplementary description for contract such as "Z0" for ES, then build the full ticker of a contract like "ESZ0";
-        String priceBarType="d";//"15mins";
+        String contractSubLabel="Z0";//"daily";//"Z0"; //Supplementary description for contract such as "Z0" for ES, then build the full ticker of a contract like "ESZ0";
+        String priceBarType="15mins";//"d";//"15mins";
         for(String string:contractList){
-            GlobalController globalController=new GlobalController(downloadDataPath,eigenScratchAddress,basicScratchAddress,allCompoundScratchAddress,string,contractSubLabel,priceBarType);
+            GlobalController globalController=new GlobalController(operateDataPath,eigenScratchAddress,basicScratchAddress,string,contractSubLabel,priceBarType);
             globalController.dataHandle();
+        }
+    }
+    @Test
+    void tryMergeUpdateData(){
+        PivotHandle pivotHandle=new PivotHandleImpl();
+
+        String[] contractList={"ES","NQ","YM","RTY"};//{"DBA","GLD","USO","UUP","VIX"};//
+        String contractSubLabel="Z0";
+        String priceBarType="15mins";//"d";//"15mins";
+        String cutTime="20201210 15:00:00";
+
+        for(String string:contractList){
+            String currenDataPath="E:\\Data\\DownloadData\\"+string+"\\"+string+contractSubLabel+priceBarType+".csv";
+            String updateDataPath="E:\\Data\\tempData\\tempHistoricalData"+string+".csv";
+            String operatDataPath="E:\\Data\\operateData\\"+string+priceBarType+".csv";
+            pivotHandle.mergeUpdateData(currenDataPath,updateDataPath,operatDataPath,cutTime);
         }
     }
     @Test
@@ -70,7 +86,6 @@ class MymodelApplicationTests {
             List<Scratch> mergedEigenScratches=pivotHandle.mergeEigenScratches(dailyEigenScratches,intradayEigenScratches);
             inAndOutHandle.saveScratchListToCSV(mergedEigenScratches,mergeFilePath);
         }
-
     }
 }
 

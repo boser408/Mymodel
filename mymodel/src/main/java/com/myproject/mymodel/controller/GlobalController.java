@@ -15,19 +15,19 @@ import java.util.Comparator;
 import java.util.List;
 
 public class GlobalController {
-    private String downloadDataPath;
+    private String operatDataPath;
     private String eigenScratchPath;
     private String basicScratchAddress;
-    private String allCompoundScratchAddress;
+    private String allScratchAddress;
     private String contractClass; //Ticker like: ES, NQ, YM, RTY, GC, GLD...
     private String contractSubLabel; //Supplementary description for contract such as "Z0" for ES, then build the full ticker of a contract like "ESZ0";
     private String priceBarType; //weekly,daily,hour,min;
 
-    public GlobalController(String downloadDataPath, String eigenScratchPath, String basicScratchAddress, String allCompoundScratchAddress, String contractClass, String contractSubLabel, String priceBarType) {
-        this.downloadDataPath = downloadDataPath;
+    public GlobalController(String operatDataPath, String eigenScratchPath, String basicScratchAddress, String contractClass, String contractSubLabel, String priceBarType) {
+        this.operatDataPath = operatDataPath;
         this.eigenScratchPath = eigenScratchPath;
-        this.basicScratchAddress = basicScratchAddress;
-        this.allCompoundScratchAddress = allCompoundScratchAddress;
+        this.basicScratchAddress = basicScratchAddress+"basic"+contractClass+priceBarType+".csv";
+        this.allScratchAddress = basicScratchAddress+"all"+contractClass+priceBarType+".csv";
         this.contractClass = contractClass;
         this.contractSubLabel = contractSubLabel;
         this.priceBarType = priceBarType;
@@ -38,15 +38,15 @@ public class GlobalController {
         PatternStats patternStats=new PatternStatsImpl();
         PivotHandle pivotHandle=new PivotHandleImpl();
         List<HighLowPrice> highLowPrices=new ArrayList<>();
-        String priceBarAddress=downloadDataPath+contractClass+"\\"+contractClass+contractSubLabel+priceBarType+".csv";
-        String eigenScratchAddress=eigenScratchPath+contractClass+contractSubLabel+priceBarType+".csv";
+        String priceBarAddress=operatDataPath+contractClass+priceBarType+".csv";
+        String eigenScratchAddress=eigenScratchPath+contractClass+priceBarType+".csv";
         if(priceBarType=="m"||priceBarType=="w"||priceBarType=="d"){
             highLowPrices = inAndOutHandle.readBarFromCSV(priceBarAddress);
         }else {
             highLowPrices = inAndOutHandle.readDataFromIBCSV(priceBarAddress);
         }
         List<Scratch> scratchList = pivotHandle.findScratches(highLowPrices, 1,new Scratch(highLowPrices.get(0)),new Scratch(highLowPrices.get(0)),0,0);
-        System.out.println("Size of basicScratch for "+contractClass+contractSubLabel+priceBarType+" is: "+scratchList.size());
+        System.out.println("Size of basicScratch for "+contractClass+priceBarType+" is: "+scratchList.size());
         inAndOutHandle.saveScratchListToCSV(scratchList,basicScratchAddress);
 
         List<Pivot> allPivotList=pivotHandle.findAllPivotsByScratch(inAndOutHandle.readScratchFromCSV(basicScratchAddress));
@@ -57,7 +57,7 @@ public class GlobalController {
         }
         allCompoundScratches.addAll(inAndOutHandle.readScratchFromCSV(basicScratchAddress));
         allCompoundScratches.sort(Comparator.comparingInt(Scratch::getStartId).thenComparingInt(Scratch::getLength)); //Sorted by StartId and Length;
-        inAndOutHandle.saveScratchListToCSV(allCompoundScratches,allCompoundScratchAddress);
+        inAndOutHandle.saveScratchListToCSV(allCompoundScratches,allScratchAddress);
         List<Pivot> keyPivotList=pivotHandle.obtainKeyPivots(allPivotList);
         List<Pivot> pivotsForPatternSearch=pivotHandle.addScratchtoPivot(inAndOutHandle.readScratchFromCSV(basicScratchAddress),keyPivotList);
         pivotsForPatternSearch.sort(Comparator.comparingInt(Pivot::getStartId));
@@ -66,15 +66,15 @@ public class GlobalController {
         System.out.println("Size of eigenScratches "+eigenScratches.size());
         inAndOutHandle.saveScratchListToCSV(eigenScratches,eigenScratchAddress);
 
-        List<Pivot> pivotsof2ndPattern=pivotHandle.find2ndPattern(pivotsForPatternSearch,inAndOutHandle.readScratchFromCSV(allCompoundScratchAddress));
+        List<Pivot> pivotsof2ndPattern=pivotHandle.find2ndPattern(pivotsForPatternSearch,inAndOutHandle.readScratchFromCSV(allScratchAddress));
         System.out.println("Size of pivotsof2ndPattern "+pivotsof2ndPattern.size());
-        List<Pivot> pivotsof2ndForStats=pivotHandle.findEarningScratch(pivotsof2ndPattern,highLowPrices,inAndOutHandle.readScratchFromCSV(allCompoundScratchAddress));
+        List<Pivot> pivotsof2ndForStats=pivotHandle.findEarningScratch(pivotsof2ndPattern,highLowPrices,inAndOutHandle.readScratchFromCSV(allScratchAddress));
         System.out.println("Size of pivotsof2ndForStats "+pivotsof2ndForStats.size());
         patternStats.statsofGainExtension(pivotsof2ndForStats);
 
-        List<Pivot> pivotsof3rdPattern=pivotHandle.find3rdPattern(pivotsForPatternSearch,inAndOutHandle.readScratchFromCSV(allCompoundScratchAddress));
+        List<Pivot> pivotsof3rdPattern=pivotHandle.find3rdPattern(pivotsForPatternSearch,inAndOutHandle.readScratchFromCSV(allScratchAddress));
         System.out.println("Size of pivotsof3rdPattern is "+pivotsof3rdPattern.size());
-        List<Pivot> pivotsof3rdForStats=pivotHandle.findEarningScratch(pivotsof3rdPattern,highLowPrices,inAndOutHandle.readScratchFromCSV(allCompoundScratchAddress));
+        List<Pivot> pivotsof3rdForStats=pivotHandle.findEarningScratch(pivotsof3rdPattern,highLowPrices,inAndOutHandle.readScratchFromCSV(allScratchAddress));
         System.out.println("Size of pivotsof3rdForStats "+pivotsof3rdForStats.size());
         patternStats.statsofGainExtension(pivotsof3rdForStats);
         /*List<Pivot> pivotsof4thPattern=pivotHandle.find4thPattern(pivotsForPatternSearch,allCompoundScratches);

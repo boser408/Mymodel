@@ -6,6 +6,7 @@ import com.myproject.mymodel.domain.Scratch;
 import service.InAndOutHandle;
 import service.PivotHandle;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -364,6 +365,7 @@ public class PivotHandleImpl implements PivotHandle {
                                     tempscratch.setLow(highLowPrices.get(nofdwscratch).getLow());         //Insert lines to fix the bug on 1987/11/1;
                                 }else {
                                     dwscratch.setLength(tempscratch.getStartId()-dwscratch.getStartId()+1);
+                                    dwscratch.setStatus(-1);
                                     dwscratch.setLow(tempscratch.getLow());
                                 }
 
@@ -513,6 +515,7 @@ public class PivotHandleImpl implements PivotHandle {
                                 }else {
                                     upscratch.setLength(tempscratch.getStartId()-upscratch.getStartId()+1);
                                     upscratch.setHigh(tempscratch.getHigh());
+                                    upscratch.setStatus(1);
                                 }
 
                                 Scratch scratch=new Scratch(upscratch);
@@ -716,6 +719,7 @@ public class PivotHandleImpl implements PivotHandle {
                                 }else {
                                     dwscratch.setLength(tempscratch.getStartId()-dwscratch.getStartId()+1);
                                     dwscratch.setLow(tempscratch.getLow());
+                                    dwscratch.setStatus(-1);
                                 }
 
                                 Scratch dscratch=new Scratch(dwscratch);
@@ -780,6 +784,7 @@ public class PivotHandleImpl implements PivotHandle {
                                 }else {
                                     upscratch.setLength(tempscratch.getStartId()-upscratch.getStartId()+1);
                                     upscratch.setHigh(tempscratch.getHigh());
+                                    upscratch.setStatus(1);
                                 }
 
                                 Scratch scratch=new Scratch(upscratch);
@@ -838,9 +843,9 @@ public class PivotHandleImpl implements PivotHandle {
             int n=0;
             while (n<scratchList.size()-2){
                 boolean crite1=scratchList.get(n).getHigh()>=scratchList.get(n+2).getHigh() &&
-                        scratchList.get(n+2).getLow()<=scratchList.get(n).getLow() &&
+                        scratchList.get(n+2).getLow()<scratchList.get(n).getLow() &&
                         scratchList.get(n).getStatus()<0;
-                boolean crite2=scratchList.get(n+2).getHigh()>=scratchList.get(n).getHigh() &&
+                boolean crite2=scratchList.get(n+2).getHigh()>scratchList.get(n).getHigh() &&
                         scratchList.get(n).getLow()<=scratchList.get(n+2).getLow() &&
                         scratchList.get(n).getStatus()>0;
                 if(crite1){          // Scenarial #1: scratch n is a start scratch of downtrend pivot
@@ -977,22 +982,14 @@ public class PivotHandleImpl implements PivotHandle {
                     if(b && c){
                        eigenscratches.remove(t);
                        t--;
-                    }else if(b && !c){
+                    }else if(!c){
                         boolean a=false;
-                        if(maxScratch.getStatus()>0){
-                            if(eigenscratches.get(t).getLow()>maxScratch.getHigh()){
-                                maxScratch.setStatus(maxScratch.getStatus()*100);
-                                eigenscratches.get(t).setStatus(eigenscratches.get(t).getStatus()*100);
-                                a=true;
-                            }
-                        }else {
-                            if(maxScratch.getLow()>eigenscratches.get(t).getHigh()){
-                                maxScratch.setStatus(maxScratch.getStatus()*100);
-                                eigenscratches.get(t).setStatus(eigenscratches.get(t).getStatus()*100);
-                                a=true;
-                            }
+                        if(eigenscratches.get(t).getLow()>maxScratch.getHigh()||maxScratch.getLow()>eigenscratches.get(t).getHigh()){
+                            eigenscratches.get(n).setStatus(eigenscratches.get(n).getStatus()*100);
+                            eigenscratches.get(t).setStatus(eigenscratches.get(t).getStatus()*100);
+                            a=true;
                         }
-                        if(!a){
+                        if(b&&!a){
                             eigenscratches.remove(t);
                             t--;
                         }
@@ -1015,13 +1012,13 @@ public class PivotHandleImpl implements PivotHandle {
             if(upPivots.size()>0){
                 upPivots.sort(Comparator.comparingInt(Pivot::getLength).reversed());
                 Scratch scratch=new Scratch(upPivots.get(0));
-                scratch.setStatus(scratch.getStatus()*1000);
+                scratch.setStatus(scratch.getStatus()*666);
                 eigenscratches.add(scratch);
             }
             if(dwPivots.size()>0){
                 dwPivots.sort(Comparator.comparingInt(Pivot::getLength).reversed());
                 Scratch scratch=new Scratch(dwPivots.get(0));
-                scratch.setStatus(scratch.getStatus()*1000);
+                scratch.setStatus(scratch.getStatus()*666);
                 eigenscratches.add(scratch);
             }
             //-----End Line for finding major patterns out of EigenScratchPivot;
@@ -1062,6 +1059,58 @@ public class PivotHandleImpl implements PivotHandle {
             mergedScratches.addAll(intradayEigenScratches);
         }
         return mergedScratches;
+    }
+    @Override
+    public void mergeUpdateData(String currenDataPath, String updateDataPath, String operatDataPath, String cutTime) {
+        List<HighLowPrice> operateData=new ArrayList<>();
+        InAndOutHandle inAndOutHandle=new InAndOutHandleImpl();
+        DateFormat intradayTime=new SimpleDateFormat("yyyyMMdd HH:mm:ss");
+        List<HighLowPrice> currentData=inAndOutHandle.readDataFromIBCSV(currenDataPath);
+        List<HighLowPrice> updateData=inAndOutHandle.readDataFromIBCSV(updateDataPath);
+        int cutIndex=0;
+        for(HighLowPrice highLowPrice:currentData){
+            try {
+                Date date=intradayTime.parse(highLowPrice.getDate());
+                Calendar recordTime=Calendar.getInstance();
+                recordTime.setTime(date);
+                Date date1=intradayTime.parse(cutTime);
+                Calendar transmitTime=Calendar.getInstance();
+                transmitTime.setTime(date1);
+
+                if(transmitTime.equals(recordTime)){
+                    System.out.println(highLowPrice.toString());
+                    operateData.addAll(currentData.subList(0,highLowPrice.getId()-1));
+                    cutIndex=highLowPrice.getId()-1;
+                    break;
+                }
+
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+        for(HighLowPrice highLowPrice:updateData){
+            try {
+                Date date=intradayTime.parse(highLowPrice.getDate());
+                Calendar recordTime=Calendar.getInstance();
+                recordTime.setTime(date);
+                Date date1=intradayTime.parse(cutTime);
+                Calendar transmitTime=Calendar.getInstance();
+                transmitTime.setTime(date1);
+
+                if(transmitTime.equals(recordTime)){
+                    System.out.println(highLowPrice.toString());
+                    operateData.addAll(updateData.subList(highLowPrice.getId()-1,updateData.size()));
+                    break;
+                }
+
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+        for(int t=cutIndex;t<operateData.size();t++){
+            operateData.get(t).setId(t+1);
+        }
+        inAndOutHandle.savePriceBarToCSV(operateData,operatDataPath);
     }
     @Override
     public List<Pivot> find2ndPattern(List<Pivot> pivotsForPatternSearch, List<Scratch> scratches) {

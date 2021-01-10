@@ -19,6 +19,7 @@ public interface PivotHandle {
     List<Pivot> obtainKeyPivots(List<Pivot> allPivotList);
     List<Scratch> findEigenScratches(List<Pivot> pivotsForPatternSearch); // EigenScratches are scratches will be paired as the potential first scratch for 2nd or 3rd pattern;
     List<Scratch> mergeEigenScratches(List<Scratch> dailyEigenScratches, List<Scratch> intradayEigenScratches);//Merge daily and intraday (15mins etc) EigenScratches;
+    void mergeUpdateData(String currenDataPath, String updateDataPath, String operatDataPath, String cutTime);
     List<Pivot> find2ndPattern(List<Pivot> pivotsForPatternSearch, List<Scratch> allCompoundScratches);
     List<Pivot> find3rdPattern(List<Pivot> pivotsForPatternSearch, List<Scratch> allCompoundScratches);
     List<Pivot> find4thPattern(List<Pivot> pivotsForPatternSearch, List<Scratch> allCompoundScratches);
