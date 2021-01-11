@@ -52,19 +52,19 @@ class MymodelApplicationTests {
         }
     }
     @Test
-    void tryMergeUpdateData(){
+    void tryAddPriceRecord(){
         PivotHandle pivotHandle=new PivotHandleImpl();
-
         String[] contractList={"ES","NQ","YM","RTY"};//{"DBA","GLD","USO","UUP","VIX"};//
-        String contractSubLabel="Z0";
         String priceBarType="15mins";//"d";//"15mins";
-        String cutTime="20201210 15:00:00";
+        //String contractSubLabel="Z0";
+        //String cutTime="20201210 15:00:00";
 
         for(String string:contractList){
-            String currenDataPath="E:\\Data\\DownloadData\\"+string+"\\"+string+contractSubLabel+priceBarType+".csv";
-            String updateDataPath="E:\\Data\\tempData\\tempHistoricalData"+string+".csv";
-            String operatDataPath="E:\\Data\\operateData\\"+string+priceBarType+".csv";
-            pivotHandle.mergeUpdateData(currenDataPath,updateDataPath,operatDataPath,cutTime);
+            String downlodDataPath="E:\\Data\\DownloadData\\"+string+"\\"+string+priceBarType+".csv";
+            String fromDataPath="E:\\Data\\tempData\\tempHistoricalData"+string+".csv";
+            String operateDataPath="E:\\Data\\operateData\\"+string+priceBarType+".csv";
+            pivotHandle.addPriceRecords(fromDataPath,operateDataPath);
+            pivotHandle.addPriceRecords(fromDataPath,downlodDataPath);
         }
     }
     @Test

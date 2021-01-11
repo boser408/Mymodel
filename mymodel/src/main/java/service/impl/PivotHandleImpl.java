@@ -1112,6 +1112,41 @@ public class PivotHandleImpl implements PivotHandle {
         }
         inAndOutHandle.savePriceBarToCSV(operateData,operatDataPath);
     }
+
+    @Override
+    public void addPriceRecords(String fromDataPth, String toDataPath) {
+
+        InAndOutHandle inAndOutHandle=new InAndOutHandleImpl();
+        DateFormat intradayTime=new SimpleDateFormat("yyyyMMdd HH:mm:ss");
+        List<HighLowPrice> fromData=inAndOutHandle.readDataFromIBCSV(fromDataPth);
+        List<HighLowPrice> toData=inAndOutHandle.readDataFromIBCSV(toDataPath);
+        String endTime=toData.get(toData.size()-1).getDate();
+        int endIndex=toData.size()-1;
+        for(HighLowPrice highLowPrice:fromData){
+            try {
+                Date date=intradayTime.parse(highLowPrice.getDate());
+                Calendar recordTime=Calendar.getInstance();
+                recordTime.setTime(date);
+                Date date1=intradayTime.parse(endTime);
+                Calendar transmitTime=Calendar.getInstance();
+                transmitTime.setTime(date1);
+
+                if(transmitTime.equals(recordTime)){
+                    System.out.println(highLowPrice.toString());
+                    toData.addAll(fromData.subList(highLowPrice.getId(),fromData.size()));
+                    break;
+                }
+
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+        for(int t=endIndex+1;t<toData.size();t++){
+            toData.get(t).setId(t+1);
+        }
+        inAndOutHandle.savePriceBarToCSV(toData,toDataPath);
+    }
+
     @Override
     public List<Pivot> find2ndPattern(List<Pivot> pivotsForPatternSearch, List<Scratch> scratches) {
         List<Scratch> allCompoundScratches=new ArrayList<>();
