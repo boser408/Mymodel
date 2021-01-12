@@ -13,6 +13,15 @@ public class Scratch {
     public Scratch() {
     }
 
+    public Scratch(String startdate, int length, int startId, float high, float low, int status) {
+        this.startdate = startdate;
+        this.length = length;
+        this.startId = startId;
+        this.high = high;
+        this.low = low;
+        this.status = status;
+    }
+
     public Scratch(Scratch scratch) {
         this.startdate=scratch.getStartdate();
         this.length = scratch.getLength();

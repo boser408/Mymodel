@@ -1112,7 +1112,6 @@ public class PivotHandleImpl implements PivotHandle {
         }
         inAndOutHandle.savePriceBarToCSV(operateData,operatDataPath);
     }
-
     @Override
     public void addPriceRecords(String fromDataPth, String toDataPath) {
 
@@ -1146,7 +1145,6 @@ public class PivotHandleImpl implements PivotHandle {
         }
         inAndOutHandle.savePriceBarToCSV(toData,toDataPath);
     }
-
     @Override
     public List<Pivot> find2ndPattern(List<Pivot> pivotsForPatternSearch, List<Scratch> scratches) {
         List<Scratch> allCompoundScratches=new ArrayList<>();

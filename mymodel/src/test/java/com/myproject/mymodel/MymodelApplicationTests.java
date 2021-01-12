@@ -9,6 +9,7 @@ import service.PivotHandle;
 import service.impl.InAndOutHandleImpl;
 import service.impl.PivotHandleImpl;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -38,10 +39,11 @@ class MymodelApplicationTests {
     }
     @Test
     void GlobalControl(){
+        InAndOutHandle inAndOutHandle=new InAndOutHandleImpl();
+        List<Scratch> allEigenscratchList=new ArrayList<>();
         String[] contractList={"ES","NQ","YM","RTY"};//{"DBA","GLD","USO","UUP","VIX"};//
         String operateDataPath="E:\\Data\\operateData\\";
         String basicScratchAddress="E:\\Data\\Scratches\\";
-        String allCompoundScratchAddress="E:\\Data\\Scratches\\";
         String eigenScratchAddress="E:\\Data\\EigenScratch\\eigenScrach";
         //String contractClass="ES"; //Ticker like: ES, NQ, YM, RTY, GC, GLD...
         String contractSubLabel="Z0";//"daily";//"Z0"; //Supplementary description for contract such as "Z0" for ES, then build the full ticker of a contract like "ESZ0";
@@ -50,6 +52,13 @@ class MymodelApplicationTests {
             GlobalController globalController=new GlobalController(operateDataPath,eigenScratchAddress,basicScratchAddress,string,contractSubLabel,priceBarType);
             globalController.dataHandle();
         }
+        for(String string:contractList){
+            String filePath=eigenScratchAddress+string+priceBarType+".csv";
+            Scratch dummyScratch=new Scratch(string,0,0,0,0,0);
+            allEigenscratchList.add(dummyScratch);
+            allEigenscratchList.addAll(inAndOutHandle.readScratchFromCSV(filePath));
+        }
+        inAndOutHandle.saveScratchListToCSV(allEigenscratchList,"E:\\Data\\allEigenScratches.csv");
     }
     @Test
     void tryAddPriceRecord(){
