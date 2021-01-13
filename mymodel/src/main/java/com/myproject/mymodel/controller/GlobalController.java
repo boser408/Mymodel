@@ -33,6 +33,39 @@ public class GlobalController {
         this.priceBarType = priceBarType;
     }
 
+    public void createDailyEigenScratch(){
+        InAndOutHandle inAndOutHandle=new InAndOutHandleImpl();
+        PivotHandle pivotHandle=new PivotHandleImpl();
+        List<HighLowPrice> highLowPrices=new ArrayList<>();
+        String priceBarAddress=operatDataPath+contractClass+priceBarType+".csv";
+        String eigenScratchAddress=eigenScratchPath+contractClass+priceBarType+".csv";
+        if(priceBarType=="m"||priceBarType=="w"||priceBarType=="d"){
+            highLowPrices = inAndOutHandle.readBarFromCSV(priceBarAddress);
+        }else {
+            highLowPrices = inAndOutHandle.readDataFromIBCSV(priceBarAddress);
+        }
+        List<Scratch> scratchList = pivotHandle.findScratches(highLowPrices, 1,new Scratch(highLowPrices.get(0)),new Scratch(highLowPrices.get(0)),0,0);
+        System.out.println("Size of basicScratch for "+contractClass+priceBarType+" is: "+scratchList.size());
+        inAndOutHandle.saveScratchListToCSV(scratchList,basicScratchAddress);
+
+        List<Pivot> allPivotList=pivotHandle.findAllPivotsByScratch(inAndOutHandle.readScratchFromCSV(basicScratchAddress));
+        List<Scratch> allCompoundScratches=new ArrayList<>();
+        for(Pivot pivot:allPivotList){
+            Scratch scratch=new Scratch(pivot);
+            allCompoundScratches.add(scratch);
+        }
+        allCompoundScratches.addAll(inAndOutHandle.readScratchFromCSV(basicScratchAddress));
+        allCompoundScratches.sort(Comparator.comparingInt(Scratch::getStartId).thenComparingInt(Scratch::getLength)); //Sorted by StartId and Length;
+        inAndOutHandle.saveScratchListToCSV(allCompoundScratches,allScratchAddress);
+        List<Pivot> keyPivotList=pivotHandle.obtainKeyPivots(allPivotList);
+        List<Pivot> pivotsForPatternSearch=pivotHandle.addScratchtoPivot(inAndOutHandle.readScratchFromCSV(basicScratchAddress),keyPivotList);
+        pivotsForPatternSearch.sort(Comparator.comparingInt(Pivot::getStartId));
+
+        List<Scratch> eigenScratches=pivotHandle.findEigenScratches(pivotsForPatternSearch);
+        System.out.println("Size of eigenScratches "+eigenScratches.size());
+        inAndOutHandle.saveScratchListToCSV(eigenScratches,eigenScratchAddress);
+    }
+
     public void dataHandle(){
         InAndOutHandle inAndOutHandle=new InAndOutHandleImpl();
         PatternStats patternStats=new PatternStatsImpl();
