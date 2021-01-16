@@ -47,9 +47,9 @@ class MymodelApplicationTests {
         String eigenScratchAddress="E:\\Data\\EigenScratch\\eigenScrach";
         //String contractClass="ES"; //Ticker like: ES, NQ, YM, RTY, GC, GLD...
         String contractSubLabel="Z0";//"daily";//"Z0"; //Supplementary description for contract such as "Z0" for ES, then build the full ticker of a contract like "ESZ0";
-        String priceBarType="15mins";//"d";//"15mins";
+        String priceBarType="1min";//"d";//"15mins";
         for(String string:contractList){
-            GlobalController globalController=new GlobalController(operateDataPath,eigenScratchAddress,basicScratchAddress,string,contractSubLabel,priceBarType);
+            GlobalController globalController=new GlobalController(operateDataPath,eigenScratchAddress,basicScratchAddress,string,priceBarType);
             globalController.dataHandle();
         }
         for(String string:contractList){
@@ -58,7 +58,7 @@ class MymodelApplicationTests {
             allEigenscratchList.add(dummyScratch);
             allEigenscratchList.addAll(inAndOutHandle.readScratchFromCSV(filePath));
         }
-        inAndOutHandle.saveScratchListToCSV(allEigenscratchList,"E:\\Data\\allEigenScratches.csv");
+        inAndOutHandle.saveScratchListToCSV(allEigenscratchList,"E:\\Data\\allEigenScratches"+priceBarType+".csv");
     }
     @Test
     void tryAddPriceRecord(){

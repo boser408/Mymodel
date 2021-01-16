@@ -20,32 +20,30 @@ public class GlobalController {
     private String basicScratchAddress;
     private String allScratchAddress;
     private String contractClass; //Ticker like: ES, NQ, YM, RTY, GC, GLD...
-    private String contractSubLabel; //Supplementary description for contract such as "Z0" for ES, then build the full ticker of a contract like "ESZ0";
-    private String priceBarType; //weekly,daily,hour,min;
+    private String priceBar; //weekly,daily,hour,min;
 
-    public GlobalController(String operatDataPath, String eigenScratchPath, String basicScratchAddress, String contractClass, String contractSubLabel, String priceBarType) {
+    public GlobalController(String operatDataPath, String eigenScratchPath, String basicScratchAddress, String contractClass, String priceBar) {
         this.operatDataPath = operatDataPath;
         this.eigenScratchPath = eigenScratchPath;
-        this.basicScratchAddress = basicScratchAddress+"basic"+contractClass+priceBarType+".csv";
-        this.allScratchAddress = basicScratchAddress+"all"+contractClass+priceBarType+".csv";
+        this.basicScratchAddress = basicScratchAddress+"basic"+contractClass+priceBar+".csv";
+        this.allScratchAddress = basicScratchAddress+"all"+contractClass+priceBar+".csv";
         this.contractClass = contractClass;
-        this.contractSubLabel = contractSubLabel;
-        this.priceBarType = priceBarType;
+        this.priceBar = priceBar;
     }
 
     public void createDailyEigenScratch(){
         InAndOutHandle inAndOutHandle=new InAndOutHandleImpl();
         PivotHandle pivotHandle=new PivotHandleImpl();
         List<HighLowPrice> highLowPrices=new ArrayList<>();
-        String priceBarAddress=operatDataPath+contractClass+priceBarType+".csv";
-        String eigenScratchAddress=eigenScratchPath+contractClass+priceBarType+".csv";
-        if(priceBarType=="m"||priceBarType=="w"||priceBarType=="d"){
+        String priceBarAddress=operatDataPath+contractClass+priceBar+".csv";
+        String eigenScratchAddress=eigenScratchPath+contractClass+priceBar+".csv";
+        if(priceBar=="m"||priceBar=="w"||priceBar=="d"){
             highLowPrices = inAndOutHandle.readBarFromCSV(priceBarAddress);
         }else {
             highLowPrices = inAndOutHandle.readDataFromIBCSV(priceBarAddress);
         }
         List<Scratch> scratchList = pivotHandle.findScratches(highLowPrices, 1,new Scratch(highLowPrices.get(0)),new Scratch(highLowPrices.get(0)),0,0);
-        System.out.println("Size of basicScratch for "+contractClass+priceBarType+" is: "+scratchList.size());
+        System.out.println("Size of basicScratch for "+contractClass+priceBar+" is: "+scratchList.size());
         inAndOutHandle.saveScratchListToCSV(scratchList,basicScratchAddress);
 
         List<Pivot> allPivotList=pivotHandle.findAllPivotsByScratch(inAndOutHandle.readScratchFromCSV(basicScratchAddress));
@@ -71,15 +69,15 @@ public class GlobalController {
         PatternStats patternStats=new PatternStatsImpl();
         PivotHandle pivotHandle=new PivotHandleImpl();
         List<HighLowPrice> highLowPrices=new ArrayList<>();
-        String priceBarAddress=operatDataPath+contractClass+priceBarType+".csv";
-        String eigenScratchAddress=eigenScratchPath+contractClass+priceBarType+".csv";
-        if(priceBarType=="m"||priceBarType=="w"||priceBarType=="d"){
+        String priceBarAddress=operatDataPath+contractClass+priceBar+".csv";
+        String eigenScratchAddress=eigenScratchPath+contractClass+priceBar+".csv";
+        if(priceBar=="m"||priceBar=="w"||priceBar=="d"){
             highLowPrices = inAndOutHandle.readBarFromCSV(priceBarAddress);
         }else {
             highLowPrices = inAndOutHandle.readDataFromIBCSV(priceBarAddress);
         }
         List<Scratch> scratchList = pivotHandle.findScratches(highLowPrices, 1,new Scratch(highLowPrices.get(0)),new Scratch(highLowPrices.get(0)),0,0);
-        System.out.println("Size of basicScratch for "+contractClass+priceBarType+" is: "+scratchList.size());
+        System.out.println("Size of basicScratch for "+contractClass+priceBar+" is: "+scratchList.size());
         inAndOutHandle.saveScratchListToCSV(scratchList,basicScratchAddress);
 
         List<Pivot> allPivotList=pivotHandle.findAllPivotsByScratch(inAndOutHandle.readScratchFromCSV(basicScratchAddress));

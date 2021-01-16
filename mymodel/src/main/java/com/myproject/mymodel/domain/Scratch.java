@@ -1,7 +1,5 @@
 package com.myproject.mymodel.domain;
 
-import java.util.Properties;
-
 public class Scratch {
     private String startdate;
     private int length;

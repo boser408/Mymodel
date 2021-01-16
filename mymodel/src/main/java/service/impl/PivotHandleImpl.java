@@ -310,7 +310,6 @@ public class PivotHandleImpl implements PivotHandle {
                     }else if(n-nofupscratch>=pivotLength && dwscratch.getStatus()==0
                             && (highLowPrices.get(n).getLow()==
                             ((float)highLowPrices.subList(nofupscratch+1,n+1).stream().mapToDouble(HighLowPrice::getLow).min().getAsDouble())) ){ // find hidden downtrend scratch;
-
                             upscratch.setLength(dwscratch.getStartId()-upscratch.getStartId()+1);
                             Scratch scratch=new Scratch(upscratch);
                             scratches.add(scratch);
@@ -320,7 +319,6 @@ public class PivotHandleImpl implements PivotHandle {
                             dwscratch.setLength(highLowPrices.get(n).getId()-dwscratch.getStartId()+1);
                             dwscratch.setStatus(-1);
                             nofdwscratch=n;
-
                     }else if(dwscratch.getLength()==1 && n-nofdwscratch==1
                             && highLowPrices.get(n-1).getOpen()<highLowPrices.get(n-1).getClose()
                             && highLowPrices.get(n).getHigh()<=highLowPrices.get(n-1).getHigh()){
@@ -331,7 +329,6 @@ public class PivotHandleImpl implements PivotHandle {
                     else {
                         if(n-nofupscratch>=pivotLength){
                             List<HighLowPrice> partialHighLowPrice=highLowPrices.subList(nofupscratch,n+1);
-
                             Scratch tempscratch=checkHiddenScratch(partialHighLowPrice);
                             if(tempscratch.getStatus()==-1){
                                 upscratch.setLength(highLowPrices.get(nofupscratch).getId()-upscratch.getStartId()+1);
@@ -395,7 +392,6 @@ public class PivotHandleImpl implements PivotHandle {
                         if(n-upscratch.getStartId()>=pivotLength-2){ // A up trend scratch formed
                             upscratch.setStatus(1);
                         }
-
                         Scratch scratch=new Scratch(upscratch);
                         scratches.add(scratch);
 
@@ -403,7 +399,6 @@ public class PivotHandleImpl implements PivotHandle {
                         nofupscratch=n;
                         Scratch dscratch=new Scratch(dwscratch);
                         scratches.add(dscratch);
-
                         dwscratch=new Scratch(highLowPrices.get(n));
                         nofdwscratch=n;
                     }else {
@@ -419,7 +414,6 @@ public class PivotHandleImpl implements PivotHandle {
                         upscratch=new Scratch(highLowPrices.get(n));
                         nofupscratch=n;
                     }
-
                 }else if(highLowPrices.get(n).getHigh()>=upscratch.getHigh()
                         && highLowPrices.get(n).getLow()>=upscratch.getLow()
                         && n-upscratch.getStartId()>=pivotLength-2){
@@ -1113,11 +1107,10 @@ public class PivotHandleImpl implements PivotHandle {
         inAndOutHandle.savePriceBarToCSV(operateData,operatDataPath);
     }
     @Override
-    public void addPriceRecords(String fromDataPth, String toDataPath) {
-
+    public void addPriceRecords(String fromDataPath, String toDataPath) {
         InAndOutHandle inAndOutHandle=new InAndOutHandleImpl();
         DateFormat intradayTime=new SimpleDateFormat("yyyyMMdd HH:mm:ss");
-        List<HighLowPrice> fromData=inAndOutHandle.readDataFromIBCSV(fromDataPth);
+        List<HighLowPrice> fromData=inAndOutHandle.readDataFromIBCSV(fromDataPath);
         List<HighLowPrice> toData=inAndOutHandle.readDataFromIBCSV(toDataPath);
         String endTime=toData.get(toData.size()-1).getDate();
         int endIndex=toData.size()-1;
@@ -1131,7 +1124,7 @@ public class PivotHandleImpl implements PivotHandle {
                 transmitTime.setTime(date1);
 
                 if(transmitTime.equals(recordTime)){
-                    System.out.println(highLowPrice.toString());
+                    System.out.println("Record with endTime is: "+highLowPrice.toString());
                     toData.addAll(fromData.subList(highLowPrice.getId(),fromData.size()));
                     break;
                 }
